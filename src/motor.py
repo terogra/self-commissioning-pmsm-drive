@@ -1,1 +1,1 @@
-
+"""PMSM mathematical model."""
