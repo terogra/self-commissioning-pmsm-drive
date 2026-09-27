@@ -15,29 +15,40 @@ def rad_per_sec_to_rpm(omega):
     return omega * 60.0 / (2.0 * np.pi)
 
 
-def main():
+def run_speed_foc_simulation(
+    plant_params=None,
+    controller_params=None,
+    dt=20e-6,
+    simulation_time=0.6,
+    speed_ref_rpm=1000.0,
+    load_step_time=0.30,
+    load_step_torque=0.05,
+):
+    """Run speed/current FOC with independent motor and controller models.
 
-    # Motor model
-    params = PMSMParameters()
-    motor = PMSMModel(params)
+    New PI controllers are constructed for every run, avoiding state leakage
+    between parameter experiments.
+    """
+    if dt <= 0 or simulation_time <= 0 or not 0 <= load_step_time < simulation_time:
+        raise ValueError("Require dt > 0 and 0 <= load_step_time < simulation_time")
+
+    plant_params = plant_params if plant_params is not None else PMSMParameters()
+    controller_params = controller_params if controller_params is not None else PMSMParameters()
+    motor = PMSMModel(plant_params)
 
     # Inner current-control loop
     current_controller = CurrentFOCController(
-        params,
+        controller_params,
         current_bandwidth_hz=300.0
     )
 
     # Outer speed-control loop
     speed_controller = SpeedController(
-        params,
+        controller_params,
         natural_frequency_hz=10.0,
         damping_ratio=1.0,
         iq_limit=5.0
     )
-
-    # Simulation settings
-    dt = 20e-6
-    simulation_time = 0.6
 
     time = np.arange(
         0.0,
@@ -50,8 +61,6 @@ def main():
     state = np.zeros(4)
 
     # Desired motor speed
-    speed_ref_rpm = 1000.0
-
     omega_ref = rpm_to_rad_per_sec(
         speed_ref_rpm
     )
@@ -73,11 +82,11 @@ def main():
         i_q = state[1]
         omega_m = state[2]
 
-        # Apply load disturbance after 0.30 s
-        if t < 0.30:
+        # Apply the configured load step.
+        if t < load_step_time:
             load_torque = 0.0
         else:
-            load_torque = 0.05
+            load_torque = load_step_torque
 
         # Outer speed loop
         iq_ref = speed_controller.update(
@@ -124,6 +133,32 @@ def main():
 
         load_history[k] = load_torque
 
+    return {
+        "time": time,
+        "rpm": rpm_history,
+        "id": id_history,
+        "iq": iq_history,
+        "iq_ref": iq_ref_history,
+        "torque": torque_history,
+        "load_torque": load_history,
+        "speed_ref_rpm": speed_ref_rpm,
+        "load_step_time": load_step_time,
+        "plant_params": plant_params,
+        "controller_params": controller_params,
+    }
+
+
+def main():
+    result = run_speed_foc_simulation()
+    time = result["time"]
+    rpm_history = result["rpm"]
+    id_history = result["id"]
+    iq_history = result["iq"]
+    iq_ref_history = result["iq_ref"]
+    torque_history = result["torque"]
+    load_history = result["load_torque"]
+    speed_ref_rpm = result["speed_ref_rpm"]
+
     # Final values
     print(
         f"Final speed: "
@@ -166,7 +201,7 @@ def main():
     )
 
     plt.axvline(
-        0.30,
+        result["load_step_time"],
         linestyle=":",
         label="Load applied"
     )
