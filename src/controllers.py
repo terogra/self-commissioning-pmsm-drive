@@ -33,3 +33,7 @@ class PIController:
 
     def reset(self):
         self.integral = 0.0
+
+    def track_output(self, applied: float, requested: float, dt: float, gain: float):
+        """Back-calculate the integrator when a downstream limit changes output."""
+        self.integral += gain * dt * (applied - requested)

@@ -23,6 +23,7 @@ def run_speed_foc_simulation(
     speed_ref_rpm=1000.0,
     load_step_time=0.30,
     load_step_torque=0.05,
+    dc_bus_voltage=48.0,
 ):
     """Run speed/current FOC with independent motor and controller models.
 
@@ -39,7 +40,8 @@ def run_speed_foc_simulation(
     # Inner current-control loop
     current_controller = CurrentFOCController(
         controller_params,
-        current_bandwidth_hz=300.0
+        current_bandwidth_hz=300.0,
+        dc_bus_voltage=dc_bus_voltage,
     )
 
     # Outer speed-control loop
@@ -75,6 +77,11 @@ def run_speed_foc_simulation(
     iq_ref_history = np.zeros(len(time))
     torque_history = np.zeros(len(time))
     load_history = np.zeros(len(time))
+    voltage_d_history = np.zeros(len(time))
+    voltage_q_history = np.zeros(len(time))
+    voltage_magnitude_history = np.zeros(len(time))
+    requested_voltage_magnitude_history = np.zeros(len(time))
+    voltage_saturated_history = np.zeros(len(time), dtype=bool)
 
     for k, t in enumerate(time):
 
@@ -132,6 +139,11 @@ def run_speed_foc_simulation(
         )
 
         load_history[k] = load_torque
+        voltage_d_history[k] = v_d
+        voltage_q_history[k] = v_q
+        voltage_magnitude_history[k] = current_controller.voltage_magnitude
+        requested_voltage_magnitude_history[k] = current_controller.requested_voltage_magnitude
+        voltage_saturated_history[k] = current_controller.voltage_saturated
 
     return {
         "time": time,
@@ -141,6 +153,13 @@ def run_speed_foc_simulation(
         "iq_ref": iq_ref_history,
         "torque": torque_history,
         "load_torque": load_history,
+        "voltage_d": voltage_d_history,
+        "voltage_q": voltage_q_history,
+        "voltage_magnitude": voltage_magnitude_history,
+        "requested_voltage_magnitude": requested_voltage_magnitude_history,
+        "voltage_saturated": voltage_saturated_history,
+        "dc_bus_voltage": dc_bus_voltage,
+        "voltage_limit": current_controller.voltage_limit,
         "speed_ref_rpm": speed_ref_rpm,
         "load_step_time": load_step_time,
         "plant_params": plant_params,
@@ -271,6 +290,16 @@ def main():
     plt.xlabel("Time [s]")
     plt.ylabel("Torque [N.m]")
     plt.title("Motor Torque and Load")
+    plt.grid()
+    plt.legend()
+
+    plt.figure()
+    plt.plot(time, result["voltage_magnitude"], label="Applied dq voltage")
+    if result["voltage_limit"] is not None:
+        plt.axhline(result["voltage_limit"], linestyle="--", label="SVPWM limit")
+    plt.xlabel("Time [s]")
+    plt.ylabel("Voltage magnitude [V]")
+    plt.title("Current-Controller Voltage Command")
     plt.grid()
     plt.legend()
 
