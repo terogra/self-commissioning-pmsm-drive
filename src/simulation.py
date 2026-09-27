@@ -12,37 +12,25 @@ def rk4_step(
     load_torque,
     dt
 ):
-    """
-    One numerical integration step using
-    fourth-order Runge-Kutta (RK4).
-    """
+    """One fourth-order Runge-Kutta integration step."""
 
     k1 = motor.derivatives(
-        state,
-        v_d,
-        v_q,
-        load_torque
+        state, v_d, v_q, load_torque
     )
 
     k2 = motor.derivatives(
         state + 0.5 * dt * k1,
-        v_d,
-        v_q,
-        load_torque
+        v_d, v_q, load_torque
     )
 
     k3 = motor.derivatives(
         state + 0.5 * dt * k2,
-        v_d,
-        v_q,
-        load_torque
+        v_d, v_q, load_torque
     )
 
     k4 = motor.derivatives(
         state + dt * k3,
-        v_d,
-        v_q,
-        load_torque
+        v_d, v_q, load_torque
     )
 
     return state + (dt / 6.0) * (
@@ -50,21 +38,33 @@ def rk4_step(
     )
 
 
-def main():
+def steady_state_mean(signal, fraction=0.10):
+    """
+    Return the mean value over the final fraction
+    of the simulation.
+    """
+    start_index = int(
+        len(signal) * (1.0 - fraction)
+    )
 
-    # ---------------------------------
-    # Motor parameters
-    # ---------------------------------
+    return np.mean(signal[start_index:])
+
+
+def run_open_loop_simulation(
+    load_torque=0.0,
+    v_d=0.0,
+    v_q=8.0,
+    dt=20e-6,
+    simulation_time=0.5
+):
+    """
+    Run an open-loop PMSM simulation.
+
+    Returns simulation signals and parameters.
+    """
 
     params = PMSMParameters()
     motor = PMSMModel(params)
-
-    # ---------------------------------
-    # Simulation settings
-    # ---------------------------------
-
-    dt = 20e-6
-    simulation_time = 0.5
 
     time = np.arange(
         0.0,
@@ -72,22 +72,9 @@ def main():
         dt
     )
 
-    # State:
+    # State vector:
     # [id, iq, omega_m, theta_e]
-
-    state = np.array([
-        0.0,
-        0.0,
-        0.0,
-        0.0
-    ])
-
-    # Open-loop dq voltages
-    v_d = 0.0
-    v_q = 8.0
-
-    # No mechanical load for first test
-    load_torque = 0.00
+    state = np.zeros(4)
 
     states = np.zeros(
         (len(time), 4)
@@ -96,10 +83,6 @@ def main():
     torque = np.zeros(
         len(time)
     )
-
-    # ---------------------------------
-    # Simulation loop
-    # ---------------------------------
 
     for k in range(len(time)):
 
@@ -119,10 +102,6 @@ def main():
             dt
         )
 
-    # ---------------------------------
-    # Extract results
-    # ---------------------------------
-
     i_d = states[:, 0]
     i_q = states[:, 1]
     omega_m = states[:, 2]
@@ -133,9 +112,48 @@ def main():
         / (2.0 * np.pi)
     )
 
-    # ---------------------------------
-    # Plot results
-    # ---------------------------------
+    return {
+        "time": time,
+        "id": i_d,
+        "iq": i_q,
+        "omega_m": omega_m,
+        "rpm": rpm,
+        "torque": torque,
+        "params": params
+    }
+
+
+def main():
+
+    result = run_open_loop_simulation(
+        load_torque=0.0
+    )
+
+    time = result["time"]
+    i_d = result["id"]
+    i_q = result["iq"]
+    rpm = result["rpm"]
+    torque = result["torque"]
+
+    print(
+        f"Steady-state id: "
+        f"{steady_state_mean(i_d):.4f} A"
+    )
+
+    print(
+        f"Steady-state iq: "
+        f"{steady_state_mean(i_q):.4f} A"
+    )
+
+    print(
+        f"Steady-state speed: "
+        f"{steady_state_mean(rpm):.2f} rpm"
+    )
+
+    print(
+        f"Steady-state torque: "
+        f"{steady_state_mean(torque):.4f} N.m"
+    )
 
     plt.figure()
     plt.plot(time, i_d)
@@ -164,11 +182,6 @@ def main():
     plt.ylabel("Torque [N.m]")
     plt.title("Electromagnetic Torque")
     plt.grid()
-
-    print(f"Steady-state id: {i_d[-1]:.4f} A")
-    print(f"Steady-state iq: {i_q[-1]:.4f} A")
-    print(f"Steady-state speed: {rpm[-1]:.2f} rpm")
-    print(f"Steady-state torque: {torque[-1]:.4f} N.m")
 
     plt.show()
 
