@@ -4,7 +4,9 @@ Python model of a permanent-magnet synchronous motor (PMSM) drive. The current
 stage includes a dq-axis plant, Clarke/Park transforms, cascaded speed and dq
 current PI control, a DC-bus voltage constraint, and one-at-a-time motor
 parameter mismatch experiments.
-Motor parameter identification and automatic PI retuning are future work.
+The first locked-rotor electrical commissioning stage estimates `Rs`, `Ld`,
+and `Lq` from sampled measurements. Flux-linkage identification and automatic
+PI retuning remain future work.
 
 ## Current simulation
 
@@ -31,9 +33,11 @@ case does not saturate and retains the previous trajectory. Simulation output
 includes applied `voltage_d`, `voltage_q`, their magnitude, the requested
 magnitude, and a per-step `voltage_saturated` flag.
 
-The voltage circle approximates an ideal linear SVPWM inverter. The model
-does not include switching, bus sag, overmodulation, dead time, measurement
-noise, or sampling delays; rotor position and currents are measured exactly.
+The voltage circle approximates an ideal linear SVPWM inverter. The closed-loop
+model does not include switching, bus sag, overmodulation, dead time,
+measurement noise, or sampling delays; rotor position and currents are
+measured exactly. The commissioning experiment below can add sampled
+measurement noise independently.
 
 ## Run
 
@@ -45,9 +49,12 @@ python -m pytest -q
 python -m src.speed_foc_simulation
 python -m experiments.parameter_sensitivity
 python -m experiments.voltage_saturation_mismatch
+python -m experiments.standstill_identification
 ```
 
 The experiment commands write CSV tables and comparison plots to `results/`.
+GitHub Actions runs pytest on pushes and pull requests using Python 3.11 and
+3.12.
 Other existing examples include `src.simulation`, `src.foc_simulation`,
 `experiments.load_sweep`, and `experiments.foc_load_sweep`.
 
@@ -86,7 +93,57 @@ limited case settles near 936 rpm, while the unconstrained case reaches
 within the 0.6 s run. The experiment is intended to expose this voltage
 feasibility effect, not to represent inverter switching behavior.
 
+## Standstill electrical commissioning
+
+`src.identification` provides reusable excitation, sampled measurement,
+estimation, and fitted-current prediction functions. The rotor is held by a
+mechanical fixture at zero speed. Independent bipolar voltage holds are
+applied to the d and q axes with different switching intervals. The requested
+vector remains inside the 24 V bus linear SVPWM circle. The data generator
+uses the existing PMSM electrical plant; its output contains only sampled
+time, applied voltage, current, and measured speed. Optional Gaussian noise
+can be configured separately for current, voltage, and speed measurements.
+
+At standstill, the electrical equations reduce to:
+
+```text
+v_d = Rs i_d + Ld (di_d/dt)
+v_q = Rs i_q + Lq (di_q/dt)
+```
+
+For each non-overlapping window from sample `a` to `b`, the estimator
+integrates these equations:
+
+```text
+Σ v_d[k] Δt = Rs Σ ((i_d[k] + i_d[k+1])/2) Δt + Ld (i_d[b] − i_d[a])
+Σ v_q[k] Δt = Rs Σ ((i_q[k] + i_q[k+1])/2) Δt + Lq (i_q[b] − i_q[a])
+```
+
+Each window contributes two rows to a linear regression with unknown vector
+`[Rs, Ld, Lq]`. The estimator scales the regression columns and solves least
+squares. It checks sampled speed and rejects rank-deficient excitation. Using
+window integrals avoids pointwise differentiation of noisy current samples.
+The independent voltage changes create transient current changes for `Ld`
+and `Lq`, while sustained currents provide information for `Rs`.
+
+The default experiment uses a hidden plant with `Rs = 0.48 Ω`,
+`Ld = 0.8 mH`, and `Lq = 1.25 mH`, plus sampled noise. The estimator receives
+only measurements. The experiment then compares its estimates against the
+plant values and saves `results/standstill_identification.csv` and a plot of
+excitation, measured and fitted currents, speed, residuals, and parameter
+convergence. With the default seed, absolute errors are below 0.2%.
+
+This stage assumes a locked rotor, known dq alignment, known applied
+phase-neutral voltage, constant linear `Rs/Ld/Lq`, and adequate sampling.
+Measurement errors in both sides of this ordinary least-squares regression
+can bias estimates, especially at higher noise levels. `psi_f` does not
+appear in the standstill equations and cannot be inferred from this test.
+Ordinary closed-loop speed operation also does not guarantee identification:
+feedback may correlate voltages and currents or fail to excite independent
+electrical dynamics. Rotating identification needs a separate experiment and
+model for back-EMF and cross-coupling.
+
 ## Next steps
 
-Use the separate parameter sets as an interface for online motor parameter
-identification, then update the controller assumptions and retune the PI loops.
+Extend identification to rotating operation and flux linkage, then update
+controller assumptions and retune the PI loops from validated estimates.
