@@ -13,6 +13,7 @@ from dataclasses import dataclass
 import numpy as np
 
 from src.motor import PMSMModel, PMSMParameters
+from src.identification_quality import MeasurementNoise, RegressionDiagnostics, standstill_diagnostics
 
 
 @dataclass(frozen=True)
@@ -39,6 +40,7 @@ class StandstillMeasurements:
     speed_rad_s: np.ndarray       # N + 1 measured mechanical speeds
     voltage_d_v: np.ndarray       # N applied/measured interval voltages
     voltage_q_v: np.ndarray
+    noise: MeasurementNoise | None = None
 
 
 @dataclass(frozen=True)
@@ -50,6 +52,7 @@ class ElectricalEstimate:
     scaled_condition_number: float
     convergence_time_s: np.ndarray
     convergence_parameters: np.ndarray  # columns: Rs, Ld, Lq
+    diagnostics: RegressionDiagnostics | None = None
 
 
 def _integer_ratio(numerator, denominator, name):
@@ -126,6 +129,8 @@ def simulate_locked_rotor_measurements(
         speed_rad_s=rng.normal(0, config.speed_noise_std_rad_s, samples + 1),
         voltage_d_v=voltage_d + rng.normal(0, config.voltage_noise_std_v, samples),
         voltage_q_v=voltage_q + rng.normal(0, config.voltage_noise_std_v, samples),
+        noise=MeasurementNoise(config.current_noise_std_a, config.voltage_noise_std_v,
+                               config.speed_noise_std_rad_s),
     )
 
 
@@ -216,6 +221,7 @@ def estimate_standstill_parameters(
         scaled_condition_number=condition_number,
         convergence_time_s=np.asarray(convergence_time),
         convergence_parameters=np.asarray(convergence),
+        diagnostics=standstill_diagnostics(data, matrix, target, coefficients, starts, ends),
     )
 
 

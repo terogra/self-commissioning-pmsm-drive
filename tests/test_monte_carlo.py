@@ -14,6 +14,7 @@ from src.monte_carlo import (
     summarize_population,
 )
 from src.motor import PMSMParameters
+from experiments.commissioning_quality_validation import population_config
 
 
 def test_population_is_reproducible_and_covers_design_conditions():
@@ -105,3 +106,33 @@ def test_all_estimator_failures_still_produce_summary_and_plots(tmp_path):
     assert summary["metrics"]["absolute_error_psi_f_percent"]["n_available"] == 0
     assert summary["paired_metrics"]["speed_rmse_rpm"]["n_pairs"] == 0
     assert all(path.is_file() for path in save_results(rows, summary, tmp_path))
+
+
+def test_quality_population_preserves_rejections_and_scores_decisions():
+    config = MonteCarloConfig(
+        seed=987, repeats=1, commissioning_speeds_rpm=(600.0,), dc_bus_voltages_v=(24.0,),
+        noise_conditions=(NoiseCondition("low", 0.01, 0.01, 0.02),
+                          NoiseCondition("high", 0.4, 0.2, 0.1)),
+    )
+    rows = run_population(config)
+    assert [r["status"] for r in rows] == ["completed", "quality_rejected", "estimator_failed"]
+    assert rows[1]["estimate_Ld"] is not None
+    assert not rows[1]["retuning_applied"]
+    assert rows[1]["commissioned_speed_rmse_rpm"] is None
+    gate = summarize_population(rows)["quality_gate"]
+    assert gate["accepted_count"] == 1
+    assert gate["quality_rejected_count"] == 1
+    assert gate["estimator_failure_count"] == 1
+    assert gate["coverage"] == pytest.approx(1 / 3)
+    assert gate["false_acceptance_count"] == 0
+    assert gate["accepted_parameter_reliability"] == 1
+    # Scoring changes do not feed back into decisions already made from measurements.
+    changed_scoring = [{**r, "parameter_accurate": True} for r in rows]
+    assert summarize_population(changed_scoring)["quality_gate"]["false_rejection_count"] == 1
+    assert [r["quality_accepted"] for r in changed_scoring] == [r["quality_accepted"] for r in rows]
+
+
+def test_development_and_evaluation_use_disjoint_random_draws():
+    development = generate_cases(population_config("development"))
+    evaluation = generate_cases(population_config("evaluation"))
+    assert {c.seed for c in development}.isdisjoint({c.seed for c in evaluation})

@@ -36,7 +36,7 @@ def run_speed_foc_simulation(
 
     plant_params = plant_params if plant_params is not None else PMSMParameters()
     controller_params = controller_params if controller_params is not None else PMSMParameters()
-    if commissioning_result is not None:
+    if commissioning_result is not None and commissioning_result.quality.accepted:
         controller_params = commissioning_result.retuned_controller_parameters(controller_params)
     motor = PMSMModel(plant_params)
 
@@ -167,6 +167,10 @@ def run_speed_foc_simulation(
         "load_step_time": load_step_time,
         "plant_params": plant_params,
         "controller_params": controller_params,
+        "commissioning_accepted": (None if commissioning_result is None else
+                                   commissioning_result.quality.accepted),
+        "commissioning_rejection_reasons": (() if commissioning_result is None else
+                                           commissioning_result.quality.rejection_reasons),
     }
 
 
