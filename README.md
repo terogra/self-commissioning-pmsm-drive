@@ -51,6 +51,7 @@ python -m experiments.voltage_saturation_mismatch
 python -m experiments.standstill_identification
 python -m experiments.rotating_flux_identification
 python -m experiments.commissioning_recovery
+python -m experiments.commissioning_monte_carlo
 ```
 
 The experiment commands write CSV tables and comparison plots to `results/`.
@@ -219,3 +220,84 @@ This is a simulation of offline commissioning under imposed speed, not an
 online estimator or hardware commissioning procedure. Mechanics, sensor
 offsets, inverter nonidealities, thermal drift, magnetic saturation, and
 uncertainty in rotor angle remain outside the model.
+
+## Monte Carlo robustness validation
+
+`src.monte_carlo` preserves the standstill estimator, rotating flux estimator,
+and automatic retuning path. Run
+`python -m experiments.commissioning_monte_carlo` to reproduce the seeded
+validation. The design crosses three measurement-noise levels, four driven
+commissioning speeds (0, 150, 600, and 1200 rpm), and three DC-bus voltages
+(12, 24, and 48 V), with two independently drawn plants per cell: 72 cases.
+One additional zero-voltage standstill case tests rank-deficient excitation.
+The zero-speed cases are deliberate negative controls. The seed is `20260929`.
+
+Each synthetic plant independently draws `Rs` uniformly from 0.25–0.75 Ω,
+`Ld` from 0.65–1.55 mH, `Lq` from 0.60–1.50 mH, and `psi_f` from 12–36 mWb.
+These are a chosen test envelope, not a statistical model of manufactured
+motors. Mechanical parameters and pole pairs stay at their baseline values.
+Low, medium, and high Gaussian measurement-noise standard deviations are,
+respectively, `(0.01 A, 0.01 V, 0.02 rad/s)`,
+`(0.08 A, 0.05 V, 0.05 rad/s)`, and
+`(0.4 A, 0.2 V, 0.1 rad/s)` for sampled current, voltage, and speed.
+Both commissioning tests use the case's bus voltage; rotating q-axis bias is
+`min(6 V, 0.25 Vdc)`. The control comparison uses the same true plant for a
+fixed incorrect controller and a freshly commissioned controller, with the
+configured voltage limit. The 0.6 s speed/load test uses a 40 µs control
+step for this population run. True plant constants are used only to simulate
+measurements/control and to score errors; neither estimator receives them.
+
+The per-case CSV retains **every** case with its inputs, true and estimated
+parameters, signed percentage errors, before/after post-load speed RMSE,
+post-load iq tracking RMSE, recovery time, saturation fraction, status, and
+failure reason. An unavailable estimate or retuned run is blank. `NaN`
+recovery time means speed did not enter and remain within ±1% of 1000 rpm
+before the run ended. The JSON summary reports medians, 95th percentiles,
+worst finite values, and available/missing counts. Paired statistics use only
+cases with both controllers measured; the overall before and after summaries
+have different denominators when estimation fails. Plots show parameter-error
+distributions, paired control performance, and pairwise failure rates versus
+noise, commissioning speed, and bus voltage. The intentionally unexcited
+case remains in the CSV and totals but is excluded from the factorial
+heatmaps.
+
+This validation defines a **workflow success** as: all four parameter errors
+within 10%; post-load speed RMSE at most 10 rpm; post-load iq RMSE at most
+0.05 A; recovery within 0.10 s; and neither post-load RMSE more than 5% worse
+than the mismatched controller. These are study thresholds, not guarantees
+for hardware. Approximate steady-state voltage feasibility is also reported
+for diagnosis: at 1000 rpm after the load step, set `id = 0`, calculate the
+required `iq` from torque, then compare
+`sqrt((-omega_e Lq iq)^2 + (Rs iq + omega_e psi_f)^2)` with `Vdc/sqrt(3)`.
+This uses the hidden plant only in analysis, ignores transients, and is not
+fed to the estimator or controller.
+
+In the default 73-case run, **25 cases succeed (34.2%)**, 54 complete both
+control runs, and 19 report estimator failure. Eighteen failures are the
+zero-speed flux tests; the other is the deliberately unexcited standstill
+test. Among completed estimations, 36 meet the 10% parameter criterion.
+The median absolute errors for `Rs`, `Ld`, `Lq`, and `psi_f` are 0.068%,
+2.04%, 1.42%, and 0.275%; their 95th percentiles are 1.19%, 46.2%,
+41.7%, and 6.55%. On the 54 paired control cases, median post-load speed
+RMSE falls from 8.30 to 4.42 rpm and median iq RMSE from 0.0102 to 0.00354 A.
+The high-noise group has 0 successes in 24 cases, while low and medium noise
+have 12/24 and 13/24. The 12 V group has 2/24 successes; 23/73 cases are
+approximately voltage infeasible and 15 completed retuned cases never recover
+within the simulated interval. The worst speed RMSE exceeds 500 rpm under
+severe voltage shortage; retuning cannot create voltage headroom.
+Among the 26 cases with nonzero speed, low or medium noise, and diagnostic
+steady-state voltage feasibility, 25 meet all thresholds. The remaining case
+tracks well in absolute terms but misses the strict 5% relative improvement
+criterion. The overall 34.2% rate includes all deliberate boundary cases.
+
+Failure mechanisms are visible separately: zero or insufficient driven speed
+removes the flux regressor; absent standstill voltage changes make the
+`Rs/Ld/Lq` regression rank deficient; excessive noise can yield positive but
+inaccurate inductance estimates without an exception; and insufficient bus
+voltage can prevent closed-loop tracking even with good identification.
+The finite-sample failure maps pool one factor per panel and have few draws
+per cell, so their percentages are diagnostic for this seeded population,
+not population-wide confidence estimates. Sensor bias, correlated noise,
+temperature dependence, inverter errors, and unsafe physical excitation are
+still outside this simulation. The driven-rotor test holds speed with an ideal
+external rig and does not enforce a commissioning current limit.
