@@ -2,11 +2,10 @@
 
 Python model of a permanent-magnet synchronous motor (PMSM) drive. The current
 stage includes a dq-axis plant, Clarke/Park transforms, cascaded speed and dq
-current PI control, a DC-bus voltage constraint, and one-at-a-time motor
-parameter mismatch experiments.
-The first locked-rotor electrical commissioning stage estimates `Rs`, `Ld`,
-and `Lq` from sampled measurements. Flux-linkage identification and automatic
-PI retuning remain future work.
+current PI control, a DC-bus voltage constraint, parameter mismatch studies,
+and a two-stage electrical commissioning workflow. Locked-rotor excitation
+estimates `Rs`, `Ld`, and `Lq`; driven-rotor excitation estimates `psi_f`.
+The resulting parameters automatically retune the current and speed PI loops.
 
 ## Current simulation
 
@@ -50,6 +49,8 @@ python -m src.speed_foc_simulation
 python -m experiments.parameter_sensitivity
 python -m experiments.voltage_saturation_mismatch
 python -m experiments.standstill_identification
+python -m experiments.rotating_flux_identification
+python -m experiments.commissioning_recovery
 ```
 
 The experiment commands write CSV tables and comparison plots to `results/`.
@@ -140,10 +141,81 @@ can bias estimates, especially at higher noise levels. `psi_f` does not
 appear in the standstill equations and cannot be inferred from this test.
 Ordinary closed-loop speed operation also does not guarantee identification:
 feedback may correlate voltages and currents or fail to excite independent
-electrical dynamics. Rotating identification needs a separate experiment and
-model for back-EMF and cross-coupling.
+electrical dynamics.
 
-## Next steps
+## Rotating flux-linkage commissioning
 
-Extend identification to rotating operation and flux linkage, then update
-controller assumptions and retune the PI loops from validated estimates.
+`src.rotating_identification` runs a **separate** driven-rotor experiment.
+An external drive holds the rotor at 600 rpm while a fixed q-axis voltage bias
+and independent d/q bipolar perturbations excite the existing PMSM electrical
+plant. The requested dq voltage remains inside the 24 V linear SVPWM circle.
+The measurement record contains only sampled applied voltage, current, and
+mechanical speed; optional Gaussian noise is configured independently for all
+three. The estimator receives the previous standstill estimates, the sampled
+record, and a known pole-pair count. It never receives the true `psi_f`.
+
+For electrical speed `omega_e = pole_pairs * omega_m`, the rotating q-axis
+voltage balance is:
+
+```text
+v_q = Rs i_q + Lq (di_q/dt) + omega_e (Ld i_d + psi_f)
+```
+
+Integrating from sample `a` to `b` gives one regression row per window:
+
+```text
+y = Σ v_q[k] Δt − Rs ∫i_q dt − Lq(i_q[b] − i_q[a]) − Ld ∫omega_e i_d dt
+x = ∫omega_e dt
+y = x psi_f
+```
+
+The integrals of sampled current and speed use trapezoids; applied voltage is
+held over each sample interval. Least squares through the origin estimates
+`psi_f = Σ(x y) / Σ(x²)`. Windows avoid differentiating noisy current.
+The estimator requires sustained, same-sign speed above a configurable
+threshold and rejects zero-speed data. At zero speed the flux term vanishes,
+so `psi_f` is unidentifiable from these equations. The estimate also depends
+on correct dq alignment, known pole-pair count, accurate applied fundamental
+voltage and speed, constant linear motor parameters, and adequately identified
+`Rs/Ld/Lq`. Biased sensor readings or incorrect electrical parameters can bias
+the flux fit. A driven rotor and programmed excitation are deliberate; normal
+closed-loop operation need not supply enough independent information.
+
+Run `python -m experiments.rotating_flux_identification` for a standalone
+sampled-signal plot, fitted back-EMF voltage integral, parameter convergence,
+and a CSV comparing the estimate with the hidden plant value.
+
+## Automatic retuning and recovery
+
+`src.commissioning.commission_from_measurements` combines both data sets into
+one `CommissioningResult`. Its `retuned_controller_parameters(prior)` replaces
+only `Rs`, `Ld`, `Lq`, and `psi_f` in a new controller parameter object. Known
+pole pairs and the prior mechanical `J` and `B` remain the controller inputs.
+Passing `commissioning_result=...` to `run_speed_foc_simulation` constructs
+fresh current and speed controllers from that object. Current PI gains are
+`Kp,d = Ld omega_c`, `Kp,q = Lq omega_c`, and `Ki,d = Ki,q = Rs omega_c`.
+The speed PI uses `Kt = 1.5 pole_pairs psi_f`,
+`Kp = (2 zeta omega_n J − B) / Kt`, and `Ki = omega_n² J / Kt`.
+The controller also uses the new constants for dq decoupling and back-EMF
+feedforward. PI state is reset at retuning; online bumpless transfer has not
+been modeled.
+
+`python -m experiments.commissioning_recovery` compares a true-parameter
+reference, an incorrect controller, and the self-commissioned controller with
+the **same plant and a 12 V DC bus**. The incorrect controller starts with
+`Rs = 0.24 Ω`, `Ld = 0.6 mH`, `Lq = 1.4 mH`, and `psi_f = 35 mWb` against a
+plant with `0.56 Ω`, `1.4 mH`, `0.8 mH`, and `15 mWb`. Sampled commissioning
+data include noise. The deterministic seed gives parameter errors below
+0.12%. In the 0.05 N·m load-step interval, speed RMSE falls from 10.46 to
+4.41 rpm and iq tracking RMSE from 0.0137 to 0.0046 A after retuning;
+the true-parameter reference is 4.41 rpm and 0.0046 A. Maximum speed dip
+falls from 29.45 to 14.31 rpm. Voltage saturation occurs in all three runs.
+The experiment saves parameter and performance CSV files plus identification
+and recovery plots in `results/`. Full-run RMSE includes startup and should be
+read alongside post-load metrics; different startup saturation can reverse
+the apparent ranking of full-run iq RMSE.
+
+This is a simulation of offline commissioning under imposed speed, not an
+online estimator or hardware commissioning procedure. Mechanics, sensor
+offsets, inverter nonidealities, thermal drift, magnetic saturation, and
+uncertainty in rotor angle remain outside the model.
