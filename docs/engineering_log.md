@@ -419,3 +419,49 @@ This is a small seeded synthetic population with fixed mechanical parameters, id
 ### Next Decision
 
 Before hardware commissioning or online adaptation, evaluate uncertainty and excitation quality, add feasibility and confidence gates, enforce safe current/voltage limits during tests, and validate nonideal sensors and inverter behavior. These are future decisions, not completed capabilities.
+
+## Milestone 12 — Measured-data commissioning quality and independent validation
+
+### Problem / Motivation
+
+Milestone 11 produced positive but inaccurate inductance estimates under noise. Numerical success alone permitted those estimates to retune the controller. A usable commissioning result needed an explicit measurement-quality decision without consulting hidden plant truth.
+
+### Engineering Decision
+
+Preserve both integrated least-squares estimators and add measured-data diagnostics: scaled rank/SVD/condition, physical regressor energy, residual RMS, expected design-noise contamination, local sensor-noise covariance, chronological half-fit consistency, and rotating back-EMF strength. Require every quality check to pass before updating parameters. Use separate development and final populations, with the policy committed before final evaluation. Do not call the local covariance a calibrated confidence interval.
+
+### Implementation
+
+[`identification_quality.py`](../src/identification_quality.py) propagates sampled-sensor sensitivities through the actual regressions, including noisy regressors, shared integration-window endpoints, physical column scaling, and electrical-estimate covariance entering flux estimation. [`commissioning_quality.py`](../src/commissioning_quality.py) uses only estimates, diagnostics, noise metadata, and known pole count. [`commissioning.py`](../src/commissioning.py) returns explicit acceptance/rejection and blocks rejected retuning; the speed simulation preserves the original controller on rejection. The Monte Carlo runner records quality outcomes, reasons, errors, and available control metrics for every case. The [validation experiment](../experiments/commissioning_quality_validation.py) saves development and final case tables, summaries, and four diagnostic/performance plots. The [policy freeze record](quality_policy_freeze.md) documents every threshold and the protocol, committed as `b33b227` before the final run.
+
+### Problems / Unexpected Results
+
+Development accepted 4/13 cases; all four estimates met the post-hoc 10% criterion, but only two met the full closed-loop criterion. Two accurate estimates were rejected under weak excitation. In final evaluation, six accurate low-noise estimates at 8% standstill excitation were rejected solely for excessive expected information contamination. Conversely, four accurately estimated accepted plants could not recover at 12 V. Small local standard errors and small raw residuals alone do not rule out regression bias. Rejected final inductance errors reached 99.58% (Ld) and 99.50% (Lq).
+
+### Resolution
+
+Retain the candidate engineering budgets unchanged after development rather than relax them for favorable individual error realizations. Freeze before seed `20261002`; use hidden true parameters solely in physical simulation and post-hoc scoring. Report measurement quality separately from control success and voltage feasibility. Preserve all failures and rejections, with missing retuned metrics explicitly unavailable. The gate's 5% noise-information budget, 10% half-fit tolerance, three-local-SE/10% precision budget, residual allowance, and other limits are engineering screens, not calibrated probabilities. Future changes require another independent evaluation.
+
+### Validation / Results
+
+Development seed **20261001**: **13 cases**, **1 estimator failure**, **8 quality rejections**, **4 accepted (30.77% coverage)**. False acceptance **0/4**; false rejection **2/6 accurate complete estimates (33.33%)**; accepted closed-loop success **2/4**. Accepted median absolute errors `Rs/Ld/Lq/psi_f`: **0.0436% / 0.2281% / 0.7293% / 0.0503%**.
+
+Independent final seed **20261002**: **73 cases**, **19 estimator failures** (18 zero-speed excitation requests, one unexcited rank failure), **33 quality rejections**, **21 accepted (28.77% coverage)**. False acceptance **0/21 accepted**, also **0/27 inaccurate complete estimates**. False rejection **6/27 accurate complete estimates (22.22%)**. Accuracy among accepted is **21/21**, compared with **27/54** complete numerical estimates before gating; this is observed finite-sample accuracy, not a guaranteed reliability probability. **17/21 accepted cases (80.95%)** meet the composite closed-loop criterion, or **17/73** across all cases.
+
+Final accepted median / p95 / worst absolute errors are **Rs 0.0644 / 0.2004 / 0.3310%**, **Ld 1.2541 / 4.5592 / 4.6201%**, **Lq 1.0657 / 3.7185 / 5.0665%**, and **psi_f 0.0752 / 1.2176 / 1.6621%**. Rejected medians are **2.0779% / 77.8349% / 62.6344% / 8.9286%**, respectively.
+
+Across all 21 accepted controller pairs, median post-load speed RMSE changes **7.5141 → 4.4143 rpm**, iq RMSE **0.007944 → 0.003147 A**. Among 17 finite recovery pairs, median recovery changes **0.04932 → 0.03228 s**. Four accepted cases remain unrecovered and voltage infeasible; worst commissioned speed RMSE is **469.1840 rpm**, and maximum saturation fraction is **98.6%**. The final dataset retains **22 total voltage-infeasible cases**. Full precision and denominators are in the [development summary](../results/quality_gate/development/summary.json), [final summary](../results/quality_gate/evaluation/summary.json), and [final case table](../results/quality_gate/evaluation/cases.csv). See [diagnostics](../results/quality_gate/evaluation/diagnostics_vs_error.png), [error distributions](../results/quality_gate/evaluation/accepted_rejected_errors.png), [acceptance regions](../results/quality_gate/evaluation/acceptance_regions.png), and [accepted control comparison](../results/quality_gate/evaluation/accepted_control_recovery.png).
+
+### What We Learned
+
+Information quality must accompany numerical solvability. First-order precision does not capture errors-in-variables bias; combined diagnostics improve observed accepted-estimate accuracy while reducing coverage. Accurate identification and adequate actuator voltage are distinct requirements. Retuning cannot recover a voltage-infeasible operating point.
+
+The full local regression suite passes **53 tests**. Tests explicitly verify accepted retuning, rejected retuning refusal and unchanged fallback trajectories, estimate-only gate inputs, disjoint development/evaluation seeds, and finite-difference uncertainty propagation for both stages. The final case table independently records **0 rejected retuning attempts** and **21 accepted retuning attempts**. Source comparison confirms no policy or estimator changes after the pre-evaluation freeze.
+
+### Remaining Limitations
+
+Thresholds are explicit engineering tolerances with a small development sample, not statistically optimized universal constants. There is no calibrated confidence coverage or guarantee of zero false acceptance. Sensor noise is known, independent, and zero mean; bias, correlation, noise-model error, thermal/inverter/angle effects, and nonlinear magnetic behavior remain untested. Commissioning speed is imposed externally and current safety is not enforced. Gate acceptance does not imply voltage feasibility. The sentinel is a repeated structural negative control, not an independent random plant. Hypothetical rejected-controller retuning is not run.
+
+### Next Decision
+
+Add an operating-point feasibility and excitation-safety stage using available measurements/accepted estimates, then validate sensor bias and model mismatch on a fresh population. These are future work; this milestone implements measured-data acceptance and offline fallback only.

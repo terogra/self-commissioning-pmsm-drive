@@ -12,6 +12,7 @@ import numpy as np
 
 from src.identification import ElectricalEstimate, _integer_ratio
 from src.motor import PMSMModel, PMSMParameters
+from src.identification_quality import MeasurementNoise, RegressionDiagnostics, flux_diagnostics
 
 
 @dataclass(frozen=True)
@@ -40,6 +41,7 @@ class RotatingMeasurements:
     speed_rad_s: np.ndarray
     voltage_d_v: np.ndarray
     voltage_q_v: np.ndarray
+    noise: MeasurementNoise | None = None
 
 
 @dataclass(frozen=True)
@@ -51,6 +53,7 @@ class FluxEstimate:
     fitted_back_emf_integral_v_s: np.ndarray
     convergence_time_s: np.ndarray
     convergence_psi_f: np.ndarray
+    diagnostics: RegressionDiagnostics | None = None
 
 
 def simulate_driven_rotor_measurements(
@@ -125,6 +128,8 @@ def simulate_driven_rotor_measurements(
         speed_rad_s=true_speed + rng.normal(0, config.speed_noise_std_rad_s, samples + 1),
         voltage_d_v=voltage_d + rng.normal(0, config.voltage_noise_std_v, samples),
         voltage_q_v=voltage_q + rng.normal(0, config.voltage_noise_std_v, samples),
+        noise=MeasurementNoise(config.current_noise_std_a, config.voltage_noise_std_v,
+                               config.speed_noise_std_rad_s),
     )
 
 
@@ -200,4 +205,6 @@ def estimate_flux_linkage(
         fitted_back_emf_integral_v_s=speed_area * psi_f,
         convergence_time_s=time[ends],
         convergence_psi_f=convergence,
+        diagnostics=flux_diagnostics(data, electrical, pole_pairs, psi_f, speed_area,
+                                     observed, starts, ends, q_current_area, cross_area),
     )
