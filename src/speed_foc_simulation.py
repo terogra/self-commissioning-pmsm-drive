@@ -24,6 +24,7 @@ def run_speed_foc_simulation(
     load_step_time=0.30,
     load_step_torque=0.05,
     dc_bus_voltage=48.0,
+    commissioning_result=None,
 ):
     """Run speed/current FOC with independent motor and controller models.
 
@@ -35,6 +36,8 @@ def run_speed_foc_simulation(
 
     plant_params = plant_params if plant_params is not None else PMSMParameters()
     controller_params = controller_params if controller_params is not None else PMSMParameters()
+    if commissioning_result is not None:
+        controller_params = commissioning_result.retuned_controller_parameters(controller_params)
     motor = PMSMModel(plant_params)
 
     # Inner current-control loop
