@@ -9,7 +9,7 @@ from src.commissioning_quality import assess_commissioning
 from src.identification import ExcitationConfig, estimate_standstill_parameters, simulate_locked_rotor_measurements
 from src.identification_quality import MeasurementNoise, noise_information_fraction
 from src.motor import PMSMParameters
-from src.rotating_identification import RotatingExcitationConfig, RotatingMeasurements, simulate_driven_rotor_measurements
+from src.rotating_identification import RotatingExcitationConfig, RotatingMeasurements, estimate_flux_linkage, simulate_driven_rotor_measurements
 from src.speed_foc_simulation import run_speed_foc_simulation
 
 
@@ -150,3 +150,51 @@ def test_standstill_covariance_matches_independent_numerical_sensitivity():
         jacobians.append(jacobian)
     expected = 0.01**2 * sum(j @ j.T for j in jacobians)
     np.testing.assert_allclose(fit.diagnostics.parameter_covariance, expected, rtol=1e-4, atol=1e-14)
+
+
+def test_flux_covariance_matches_sample_and_prior_numerical_sensitivity(good_data):
+    electrical = estimate_standstill_parameters(good_data[0])
+    original = good_data[1]
+    fields = ("current_d_a", "current_q_a", "speed_rad_s", "voltage_q_v")
+    data = replace(original, time_s=original.time_s[:201],
+                   voltage_d_v=original.voltage_d_v[:200],
+                   **{name: getattr(original, name)[:200 if name == "voltage_q_v" else 201]
+                      for name in fields})
+    fit = estimate_flux_linkage(data, electrical, 4)
+    constants = np.array([electrical.Rs, electrical.Ld, electrical.Lq])
+    samples = [getattr(data, name).copy() for name in fields]
+    dt = data.time_s[1] - data.time_s[0]
+
+    def scalar_fit(arrays, parameters):
+        d, q, speed, voltage = arrays
+        rs, ld, lq = parameters
+        x, y = [], []
+        for a in range(0, 200, 10):
+            b = a + 10
+
+            def area(signal):
+                return dt * np.sum((signal[a:b] + signal[a+1:b+1]) / 2)
+
+            x.append(area(4 * speed))
+            y.append(dt * np.sum(voltage[a:b]) - rs * area(q)
+                     - lq * (q[b] - q[a]) - ld * area(4 * speed * d))
+        return np.dot(x, y) / np.dot(x, x)
+
+    variance = 0.0
+    for axis, std in enumerate((data.noise.current_std_a, data.noise.current_std_a,
+                                data.noise.speed_std_rad_s, data.noise.voltage_std_v)):
+        derivative = []
+        for k in range(len(samples[axis])):
+            plus, minus = [s.copy() for s in samples], [s.copy() for s in samples]
+            plus[axis][k] += 1e-5
+            minus[axis][k] -= 1e-5
+            derivative.append((scalar_fit(plus, constants) - scalar_fit(minus, constants)) / 2e-5)
+        variance += std**2 * np.dot(derivative, derivative)
+    gradient = []
+    for k in range(3):
+        plus, minus = constants.copy(), constants.copy()
+        plus[k] += 1e-7
+        minus[k] -= 1e-7
+        gradient.append((scalar_fit(samples, plus) - scalar_fit(samples, minus)) / 2e-7)
+    variance += np.asarray(gradient) @ electrical.diagnostics.parameter_covariance @ gradient
+    assert fit.diagnostics.parameter_covariance[0, 0] == pytest.approx(variance, rel=1e-5)

@@ -1,0 +1,438 @@
+{
+  "total_cases": 73,
+  "completed_cases": 21,
+  "estimator_failure_count": 19,
+  "success_count": 17,
+  "success_rate": 0.2328767123287671,
+  "accurate_estimate_count": 27,
+  "status_counts": {
+    "estimator_failed": 19,
+    "quality_rejected": 33,
+    "completed": 21
+  },
+  "failure_reasons": {
+    "Rotating excitation requires at least 100 rpm": 18,
+    "standstill.noise_information": 8,
+    "standstill.noise_information; standstill.relative_uncertainty; standstill.inconsistent_halves; rotating.excessive_residual": 13,
+    "standstill.noise_information; standstill.relative_uncertainty; standstill.inconsistent_halves; rotating.relative_uncertainty; rotating.excessive_residual": 5,
+    "standstill.noise_information; standstill.relative_uncertainty; rotating.weak_back_emf": 1,
+    "standstill.noise_information; standstill.relative_uncertainty; standstill.inconsistent_halves; rotating.weak_back_emf": 2,
+    "standstill.noise_information; standstill.relative_uncertainty; standstill.inconsistent_halves": 2,
+    "standstill.noise_information; standstill.relative_uncertainty": 2,
+    "Excitation does not identify all three parameters": 1
+  },
+  "voltage_infeasible_count": 22,
+  "unrecovered_commissioned_count": 4,
+  "metrics": {
+    "absolute_error_Rs_percent": {
+      "n_available": 54,
+      "n_missing": 19,
+      "median": 0.31950854002059104,
+      "p95": 47.003022054801335,
+      "worst": 58.73156630651799
+    },
+    "absolute_error_Ld_percent": {
+      "n_available": 54,
+      "n_missing": 19,
+      "median": 15.081564426250388,
+      "p95": 99.17519619706897,
+      "worst": 99.58135472934248
+    },
+    "absolute_error_Lq_percent": {
+      "n_available": 54,
+      "n_missing": 19,
+      "median": 13.341841811049783,
+      "p95": 98.67261935937303,
+      "worst": 99.49594014053987
+    },
+    "absolute_error_psi_f_percent": {
+      "n_available": 54,
+      "n_missing": 19,
+      "median": 1.4398473434736103,
+      "p95": 47.904065477837165,
+      "worst": 138.33613074606737
+    },
+    "mismatched_speed_rmse_rpm": {
+      "n_available": 73,
+      "n_missing": 0,
+      "median": 9.498639687438805,
+      "p95": 452.56355045972515,
+      "worst": 547.7221901822006
+    },
+    "mismatched_iq_tracking_rmse_a": {
+      "n_available": 73,
+      "n_missing": 0,
+      "median": 0.011954937675922844,
+      "p95": 4.707656121599838,
+      "worst": 4.747970097564838
+    },
+    "mismatched_recovery_time_s": {
+      "n_available": 51,
+      "n_missing": 22,
+      "median": 0.051080000000000014,
+      "p95": 0.07002000000000005,
+      "worst": 0.07204000000000005
+    },
+    "mismatched_saturation_fraction": {
+      "n_available": 73,
+      "n_missing": 0,
+      "median": 0.0,
+      "p95": 0.9826400000000001,
+      "worst": 0.9889333333333333
+    },
+    "commissioned_speed_rmse_rpm": {
+      "n_available": 21,
+      "n_missing": 52,
+      "median": 4.41427619102238,
+      "p95": 459.27588942527103,
+      "worst": 469.18397674865395
+    },
+    "commissioned_iq_tracking_rmse_a": {
+      "n_available": 21,
+      "n_missing": 52,
+      "median": 0.0031471023838523376,
+      "p95": 4.69412202487616,
+      "worst": 4.701372497556886
+    },
+    "commissioned_recovery_time_s": {
+      "n_available": 17,
+      "n_missing": 56,
+      "median": 0.03228000000000003,
+      "p95": 0.032440000000000024,
+      "worst": 0.032440000000000024
+    },
+    "commissioned_saturation_fraction": {
+      "n_available": 21,
+      "n_missing": 52,
+      "median": 0.0,
+      "p95": 0.9824666666666667,
+      "worst": 0.986
+    }
+  },
+  "paired_metrics": {
+    "speed_rmse_rpm": {
+      "n_pairs": 21,
+      "n_unpaired": 52,
+      "mismatched": {
+        "n_available": 21,
+        "n_missing": 0,
+        "median": 7.514147639519643,
+        "p95": 459.2700478874761,
+        "worst": 469.1878338303
+      },
+      "commissioned": {
+        "n_available": 21,
+        "n_missing": 0,
+        "median": 4.41427619102238,
+        "p95": 459.27588942527103,
+        "worst": 469.18397674865395
+      },
+      "improved_count": 17,
+      "worsened_count": 4
+    },
+    "iq_tracking_rmse_a": {
+      "n_pairs": 21,
+      "n_unpaired": 52,
+      "mismatched": {
+        "n_available": 21,
+        "n_missing": 0,
+        "median": 0.00794393386997938,
+        "p95": 4.6941195377001845,
+        "worst": 4.701371796934201
+      },
+      "commissioned": {
+        "n_available": 21,
+        "n_missing": 0,
+        "median": 0.0031471023838523376,
+        "p95": 4.69412202487616,
+        "worst": 4.701372497556886
+      },
+      "improved_count": 17,
+      "worsened_count": 4
+    },
+    "recovery_time_s": {
+      "n_pairs": 17,
+      "n_unpaired": 56,
+      "mismatched": {
+        "n_available": 17,
+        "n_missing": 0,
+        "median": 0.04932000000000003,
+        "p95": 0.06976800000000004,
+        "worst": 0.07204000000000005
+      },
+      "commissioned": {
+        "n_available": 17,
+        "n_missing": 0,
+        "median": 0.03228000000000003,
+        "p95": 0.032440000000000024,
+        "worst": 0.032440000000000024
+      },
+      "improved_count": 16,
+      "worsened_count": 1
+    },
+    "saturation_fraction": {
+      "n_pairs": 21,
+      "n_unpaired": 52,
+      "mismatched": {
+        "n_available": 21,
+        "n_missing": 0,
+        "median": 0.0,
+        "p95": 0.9824,
+        "worst": 0.9846666666666667
+      },
+      "commissioned": {
+        "n_available": 21,
+        "n_missing": 0,
+        "median": 0.0,
+        "p95": 0.9824666666666667,
+        "worst": 0.986
+      },
+      "improved_count": 2,
+      "worsened_count": 4
+    }
+  },
+  "condition_rates": {
+    "noise": [
+      {
+        "value": "low",
+        "n": 24,
+        "estimator_failures": 6,
+        "accurate_estimates": 18,
+        "voltage_infeasible": 8,
+        "successes": 10,
+        "success_rate": 0.4166666666666667
+      },
+      {
+        "value": "medium",
+        "n": 24,
+        "estimator_failures": 6,
+        "accurate_estimates": 9,
+        "voltage_infeasible": 8,
+        "successes": 7,
+        "success_rate": 0.2916666666666667
+      },
+      {
+        "value": "high",
+        "n": 24,
+        "estimator_failures": 6,
+        "accurate_estimates": 0,
+        "voltage_infeasible": 6,
+        "successes": 0,
+        "success_rate": 0.0
+      },
+      {
+        "value": "none",
+        "n": 1,
+        "estimator_failures": 1,
+        "accurate_estimates": 0,
+        "voltage_infeasible": 0,
+        "successes": 0,
+        "success_rate": 0.0
+      }
+    ],
+    "commissioning_speed_rpm": [
+      {
+        "value": 0.0,
+        "n": 18,
+        "estimator_failures": 18,
+        "accurate_estimates": 0,
+        "voltage_infeasible": 9,
+        "successes": 0,
+        "success_rate": 0.0
+      },
+      {
+        "value": 150.0,
+        "n": 18,
+        "estimator_failures": 0,
+        "accurate_estimates": 9,
+        "voltage_infeasible": 5,
+        "successes": 6,
+        "success_rate": 0.3333333333333333
+      },
+      {
+        "value": 600.0,
+        "n": 19,
+        "estimator_failures": 1,
+        "accurate_estimates": 9,
+        "voltage_infeasible": 4,
+        "successes": 6,
+        "success_rate": 0.3157894736842105
+      },
+      {
+        "value": 1200.0,
+        "n": 18,
+        "estimator_failures": 0,
+        "accurate_estimates": 9,
+        "voltage_infeasible": 4,
+        "successes": 5,
+        "success_rate": 0.2777777777777778
+      }
+    ],
+    "dc_bus_voltage_v": [
+      {
+        "value": 12.0,
+        "n": 24,
+        "estimator_failures": 6,
+        "accurate_estimates": 9,
+        "voltage_infeasible": 18,
+        "successes": 2,
+        "success_rate": 0.08333333333333333
+      },
+      {
+        "value": 24.0,
+        "n": 25,
+        "estimator_failures": 7,
+        "accurate_estimates": 9,
+        "voltage_infeasible": 4,
+        "successes": 6,
+        "success_rate": 0.24
+      },
+      {
+        "value": 48.0,
+        "n": 24,
+        "estimator_failures": 6,
+        "accurate_estimates": 9,
+        "voltage_infeasible": 0,
+        "successes": 9,
+        "success_rate": 0.375
+      }
+    ]
+  },
+  "quality_gate": {
+    "accepted_count": 21,
+    "rejected_count_including_failures": 52,
+    "quality_rejected_count": 33,
+    "estimator_failure_count": 19,
+    "scorable_estimates": 54,
+    "coverage": 0.2876712328767123,
+    "false_acceptance_count": 0,
+    "false_rejection_count": 6,
+    "inaccurate_fraction_of_accepted": 0.0,
+    "acceptance_fraction_of_inaccurate_estimates": 0.0,
+    "rejection_fraction_of_accurate_estimates": 0.2222222222222222,
+    "accepted_parameter_reliability": 1.0,
+    "ungated_parameter_reliability": 0.5,
+    "closed_loop_success_rate_among_accepted": 0.8095238095238095,
+    "absolute_error_percent": {
+      "accepted": {
+        "Rs": {
+          "n_available": 21,
+          "n_missing": 0,
+          "median": 0.06441290691505674,
+          "p95": 0.20038184192532338,
+          "worst": 0.3310060403644344
+        },
+        "Ld": {
+          "n_available": 21,
+          "n_missing": 0,
+          "median": 1.2541129687876684,
+          "p95": 4.559159725319361,
+          "worst": 4.6200791294310095
+        },
+        "Lq": {
+          "n_available": 21,
+          "n_missing": 0,
+          "median": 1.065735666594636,
+          "p95": 3.7185149887235758,
+          "worst": 5.066456858542412
+        },
+        "psi_f": {
+          "n_available": 21,
+          "n_missing": 0,
+          "median": 0.07522054024252656,
+          "p95": 1.2176361053174434,
+          "worst": 1.6620585816297773
+        }
+      },
+      "quality_rejected": {
+        "Rs": {
+          "n_available": 33,
+          "n_missing": 0,
+          "median": 2.077925009662651,
+          "p95": 52.13879754380235,
+          "worst": 58.73156630651799
+        },
+        "Ld": {
+          "n_available": 33,
+          "n_missing": 0,
+          "median": 77.83488011828247,
+          "p95": 99.31610762723544,
+          "worst": 99.58135472934248
+        },
+        "Lq": {
+          "n_available": 33,
+          "n_missing": 0,
+          "median": 62.63436922309425,
+          "p95": 98.9996432050512,
+          "worst": 99.49594014053987
+        },
+        "psi_f": {
+          "n_available": 33,
+          "n_missing": 0,
+          "median": 8.92857096128048,
+          "p95": 62.04502094952397,
+          "worst": 138.33613074606737
+        }
+      }
+    }
+  },
+  "methodology": {
+    "population": "evaluation",
+    "config": {
+      "seed": 20261002,
+      "repeats": 1,
+      "noise_conditions": [
+        {
+          "name": "low",
+          "current_std_a": 0.01,
+          "voltage_std_v": 0.01,
+          "speed_std_rad_s": 0.02
+        },
+        {
+          "name": "medium",
+          "current_std_a": 0.08,
+          "voltage_std_v": 0.05,
+          "speed_std_rad_s": 0.05
+        },
+        {
+          "name": "high",
+          "current_std_a": 0.4,
+          "voltage_std_v": 0.2,
+          "speed_std_rad_s": 0.1
+        }
+      ],
+      "commissioning_speeds_rpm": [
+        0.0,
+        150.0,
+        600.0,
+        1200.0
+      ],
+      "dc_bus_voltages_v": [
+        12.0,
+        24.0,
+        48.0
+      ],
+      "include_weak_excitation": true,
+      "control_dt_s": 4e-05,
+      "excitation_scales": [
+        0.08,
+        1.0
+      ]
+    },
+    "policy": {
+      "max_scaled_condition": 100.0,
+      "max_noise_information_fraction": 0.05,
+      "max_relative_standard_error": 0.03333333333333333,
+      "max_split_relative_difference": 0.1,
+      "residual_noise_multiplier": 3.0,
+      "relative_model_residual_allowance": 0.01,
+      "max_back_emf_noise_ratio": 0.1,
+      "min_windows": 10,
+      "min_mechanical_speed_rad_s": 10.0
+    },
+    "development_seed": 20261001,
+    "evaluation_seed": 20261002,
+    "threshold_source": "Pre-specified engineering budgets; no optimization against hidden errors",
+    "uncertainty": "First-order sensor-noise sensitivity; excludes EIV bias, no calibrated confidence intervals"
+  }
+}
