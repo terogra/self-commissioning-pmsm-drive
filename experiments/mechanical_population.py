@@ -142,6 +142,14 @@ def save_results(rows, population, output_dir=None):
         writer.writeheader()
         writer.writerows(rows)
     (output_dir / "summary.json").write_text(json.dumps(summary, indent=2, allow_nan=False), encoding="utf-8")
+    plot_results(rows, population, output_dir / "population.png")
+    return summary
+
+
+def plot_results(rows, population, path):
+    """Render saved outcomes without rerunning experiments or changing decisions."""
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
     fig, axes = plt.subplots(1, 3, figsize=(14, 4))
     for accepted, label, color in ((True, "accepted", "tab:green"), (False, "rejected", "tab:orange")):
         subset = [r for r in rows if r["full_accepted"] == accepted and r["estimate_J"] is not None]
@@ -151,8 +159,12 @@ def save_results(rows, population, output_dir=None):
     accepted = [r for r in rows if r["full_accepted"]]
     for name in ("electrical-only", "oracle"):
         axes[1].scatter([r[f"{name}_post_step_speed_rmse_rpm"] for r in accepted],
-                        [r["full commissioned_post_step_speed_rmse_rpm"] for r in accepted], label=name)
-    axes[1].set(xlabel="Reference speed RMSE [rpm]", ylabel="Full commissioned speed RMSE [rpm]")
+                        [r["full commissioned_post_step_speed_rmse_rpm"] for r in accepted],
+                        label=name, marker="x" if name == "oracle" else "o")
+    upper = max([r["full commissioned_post_step_speed_rmse_rpm"] for r in accepted] + [1])*1.1
+    axes[1].plot([0, upper], [0, upper], "k:", linewidth=1)
+    axes[1].set(xlabel="Reference speed RMSE [rpm]", ylabel="Full commissioned speed RMSE [rpm]",
+                xscale="symlog", yscale="symlog")
     axes[1].legend()
     for noise in dict.fromkeys(r["noise"] for r in rows):
         subset = [r for r in rows if r["noise"] == noise]
@@ -162,9 +174,8 @@ def save_results(rows, population, output_dir=None):
         ax.grid(alpha=0.3)
     fig.suptitle(f"{population}: n={len(rows)}, accepted={len(accepted)}; all failures retained in CSV")
     fig.tight_layout()
-    fig.savefig(output_dir / "population.png", dpi=160)
+    fig.savefig(path, dpi=160)
     plt.close(fig)
-    return summary
 
 
 if __name__ == "__main__":

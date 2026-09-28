@@ -465,3 +465,60 @@ Thresholds are explicit engineering tolerances with a small development sample, 
 ### Next Decision
 
 Add an operating-point feasibility and excitation-safety stage using available measurements/accepted estimates, then validate sensor bias and model mismatch on a fresh population. These are future work; this milestone implements measured-data acceptance and offline fallback only.
+
+## Milestone 13 — Mechanical J/B identification and full self-commissioning
+
+### Problem / Motivation
+
+The electrical commissioning loop still assumed controller inertia J and friction B were known. The speed PI could therefore remain incorrectly tuned even when Rs/Ld/Lq/psi_f were accurately identified. This milestone follows the requested mechanical-identification priority; the earlier proposed voltage-feasibility stage remains future work.
+
+### Engineering Decision
+
+Use known-zero-external-load, freely rotating current excitation, reconstruct electromagnetic torque from measured id/iq and commissioned Ld/Lq/psi_f, and fit `integral(Te - Tload) = J delta(omega) + B integral(omega)`. Avoid pointwise differentiation of noisy speed. Keep the electrical result/API intact and compose it with a separately assessed mechanical result. Full retuning requires both gates; rejection preserves the prior controller.
+
+### Implementation
+
+[`mechanical_excitation.py`](../src/mechanical_excitation.py) runs two repetitions of `[0.8, 0, 0.4, -0.4, 0] A` current plateaus, 0.25 s each, through the existing FOC/voltage limit with ordinary PMSM dynamics. It samples currents and speed at 1 ms with configurable measurement noise. [`mechanical_identification.py`](../src/mechanical_identification.py) performs 50 ms integrated regression, scaled rank/SVD/conditioning, physical/conditional information, residual and half-fit checks, shared-sample sensor covariance, and a conservative electrical-uncertainty sensitivity bound. It has no plant import or hidden-torque input. [`full_commissioning.py`](../src/full_commissioning.py) composes structured electrical and mechanical results and supplies all six identified constants to the unchanged controller constructors. The [comparison](../experiments/full_commissioning_recovery.py) evaluates oracle, fully mismatched, electrical-only, and full commissioning. The [small population extension](../experiments/mechanical_population.py) reuses the existing electrical plant generator and independently randomizes J/B.
+
+### Problems / Unexpected Results
+
+The first comparison estimated J/B accurately but had higher current tracking RMSE after full commissioning than after electrical-only tuning; the speed response was substantially better. Early cumulative B error exceeded 10% before sufficient motion was collected. A development population case also had slightly lower speed RMSE with the mismatched mechanical tuning than with full/oracle tuning. These observations show that intended pole placement does not optimize every metric for every plant.
+
+Review caught fixed electrical-noise seeds inherited by the first population pilot from the comparison experiment. Those artifacts were retained under `pilot_shared_electrical_noise`, excluded from the reported development/final comparison, and development was rerun with independent per-case streams. No thresholds changed. The final held-out population then accepted five accurate mechanical fits, but only one achieved the control criterion; the other four were voltage infeasible even with oracle parameters. All cases remain in the data.
+
+### Resolution
+
+Report speed and current metrics together, including startup/full-run quantities and zero-recovery-band semantics. Use the complete excitation record and temporal quality checks, not a favorable convergence prefix. The mechanical gate retains the electrical policy's engineering budgets and adds a three-noise-unit conditional physical-contribution check. Electrical uncertainty uses a triangle-inequality bound rather than assuming flux and inductance errors independent. Policy/protocol were frozen in commit **`30f9c7c`** before held-out evaluation; [rationale](mechanical_policy_freeze.md) explicitly disclaims calibrated confidence. No oracle/error/control label influences acceptance.
+
+### Validation / Results
+
+The updated-main baseline was **53 passing tests**. The completed suite has **74 passing tests**. New tests cover two additional mechanical plants, noisy data, weak J and B information, unknown load, rank failure, missing uncertainty, temporal bias changes, finite diagnostics, deterministic excitation/populations, independent numerical sensitivity verification, hidden-torque denial, accepted speed PI gains, and unchanged rejected-controller parameters/trajectories. All original electrical-only, quality, saturation, and recovery tests remain passing.
+
+For the primary plant, true J is **5e-4 kg m²**, B **3e-4 N m s/rad**; prior J/B are **2e-4 / 1e-4**. Estimated J is **4.992267860e-4 (0.154643% absolute error)** and B **2.996960067e-4 (0.101331%)**. Both gates accept. Mechanical condition number is **1.04690**, information-noise fraction **0.000354884**, largest relative local SD bound **0.21659%**, and minimum physical component SNR **14.0876**.
+
+| Metric | Mismatched | Electrical-only | Full | Oracle |
+| --- | ---: | ---: | ---: | ---: |
+| Post-load speed RMSE [rpm] | 18.46145 | 4.42862 | 1.76792 | 1.76507 |
+| Maximum post-load deviation [rpm] | 41.38503 | 11.87565 | 5.73125 | 5.72361 |
+| Recovery to ±10 rpm [s] | 0.08928 | 0.04340 | 0 | 0 |
+| Post-load iq RMSE [A] | 0.0125682 | 0.00322238 | 0.00460608 | 0.00460877 |
+| Startup overshoot [rpm] | 125.07555 | 35.79090 | 6.56738 | 6.53785 |
+| Voltage saturation fraction | 0 | 0 | 0 | 0 |
+
+The same 24 V plant/test is used for all controllers. Full commissioning improves speed RMSE about **60.1% beyond electrical-only**, while iq RMSE increases. Zero recovery means speed stays inside the band throughout the load response. The mismatched startup transient has not fully settled at load application. [Full metrics](../results/mechanical_commissioning/performance.csv), [parameter estimates](../results/mechanical_commissioning/parameters.csv), [diagnostics](../results/mechanical_commissioning/diagnostics.json), [sampled record](../results/mechanical_commissioning/measurements.csv), [identification](../results/mechanical_commissioning/mechanical_identification.png), and [comparison plot](../results/mechanical_commissioning/full_commissioning_recovery.png) preserve these details.
+
+Corrected development seed **20261011**: **5 cases**, **3 accepted**, **1 quality rejection**, **1 rank failure**, zero observed false acceptances/rejections, **3/3 accepted control successes**. Held-out seed **20261012**: **13 cases**, **5 accepted (38.46%)**, **7 quality rejections**, **1 rank failure**. False acceptance **0/5 accepted**, also **0/5 inaccurate complete estimates**; false rejection **2/7 accurate complete estimates (28.57%)**. Accepted J median/p95/worst error is **0.1565/0.2759/0.2968%**; B is **0.5374/0.9847/0.9995%**. Rejected complete estimates reach **96.8905% J** and **31.5074% B** error.
+
+Only **1/5 accepted final cases (20%)** meets the control criterion. Four accepted cases are voltage infeasible and unrecovered even with the oracle; median full speed RMSE is **85.1385 rpm**, worst **463.7074 rpm**. The one feasible accepted case improves speed RMSE **4.4151 → 3.2769 rpm**, oracle **3.2718 rpm**, and recovery **0.03598 → 0.02130 s**, oracle **0.02120 s**. Development also retains a case with electrical-only speed RMSE **4.3876 rpm**, full **4.9548 rpm**, and oracle **4.8824 rpm**. [Development](../results/mechanical_population/development/summary.json), [final summary](../results/mechanical_population/evaluation/summary.json), [all final cases](../results/mechanical_population/evaluation/cases.csv), and [population plot](../results/mechanical_population/evaluation/population.png) include failures and missing metrics explicitly.
+
+### What We Learned
+
+Sampled current/speed data and a trustworthy electrical model can close the remaining J/B tuning gap under a known load condition. Motion must separate acceleration torque from friction torque; column normalization is not physical excitation. Torque reconstruction error propagates into both mechanical estimates. Accurate mechanics restore the designed speed loop but do not guarantee every metric improves or create voltage headroom.
+
+### Remaining Limitations
+
+Known zero external load is essential to the experiment; unknown load can be confounded with B. Coulomb/static friction, stiction, sensor bias/correlation, angle and inverter errors, temperature dependence, and changing attached loads are not modeled. J is effective assembly inertia, not necessarily bare-rotor inertia. Very small B and weak speed signals may be unresolvable. First-order sensitivity bounds are not confidence intervals or systematic-bias bounds. The small stratified population is exploratory, with only one feasible accepted held-out control case. Current references and voltage limiting in an ideal simulation are not physical safety guarantees; no hardware procedure is provided.
+
+### Next Decision
+
+Add a measured/estimated operating-feasibility assessment and excitation-safety design, then evaluate unknown-load/model bias and sensor nonidealities on a fresh independent population. Do not retune the frozen mechanical gate to the current held-out labels. These are future tasks, not completed parts of this milestone.

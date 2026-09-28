@@ -5,10 +5,12 @@ stage includes a dq-axis plant, Clarke/Park transforms, cascaded speed and dq
 current PI control, a DC-bus voltage constraint, parameter mismatch studies,
 and a two-stage electrical commissioning workflow. Locked-rotor excitation
 estimates `Rs`, `Ld`, and `Lq`; driven-rotor excitation estimates `psi_f`.
-Measured-data quality checks now decide whether those parameters may retune
-the current and speed PI loops. Rejected commissioning preserves the original
-controller assumptions. Independent development and evaluation populations
-measure this gate's coverage, estimation accuracy, and control outcomes.
+Measured-data quality checks decide whether those parameters may retune the
+controllers. A third, free-rotor stage now reconstructs torque from measured
+currents and electrical estimates to identify inertia `J` and viscous friction
+`B`. Accepted full commissioning uses all six identified parameters; rejected
+full commissioning preserves the original controller assumptions. Independent
+development and evaluation populations measure coverage, accuracy, and outcomes.
 
 ## Current simulation
 
@@ -57,6 +59,9 @@ python -m experiments.commissioning_recovery
 python -m experiments.commissioning_monte_carlo
 python -m experiments.commissioning_quality_validation --population development
 python -m experiments.commissioning_quality_validation --population evaluation
+python -m experiments.full_commissioning_recovery
+python -m experiments.mechanical_population --population development
+python -m experiments.mechanical_population --population evaluation
 ```
 
 The experiment commands write CSV tables and comparison plots to `results/`.
@@ -533,7 +538,8 @@ finite-difference checks of standstill and flux covariance, including shared
 samples and propagated prior covariance. A deterministic population test
 preserves all outcome categories and verifies post-hoc scoring cannot change
 recorded decisions. The gate operates with estimate/diagnostic-only objects.
-The full local suite passes: **53 tests** (`python -m pytest -q -p no:cacheprovider`).
+At the electrical-quality milestone the full local suite passed **53 tests**;
+the mechanical milestone below adds to that baseline.
 
 Critical review found no true-parameter input to the gate or retuning decision:
 true constants are used by physical simulation and post-hoc error/feasibility
@@ -554,3 +560,320 @@ voltage feasibility. Rejected cases use the prior controller; their hypothetical
 retuned performance is deliberately unavailable. Future policy revisions need
 fresh held-out evaluation, and hardware deployment needs a separate operating
 feasibility and excitation-safety stage.
+
+## Mechanical J/B identification and full commissioning
+
+The electrical-only API remains available and preserves prior `J/B`. The new
+normal full-commissioning path identifies both mechanical constants before
+retuning the outer speed loop. Known pole-pair count is still required; no true
+electrical or mechanical motor constants are needed by the estimator or full
+retuning path. An oracle controller exists only in evaluation experiments.
+
+### Integrated model, reconstructed torque, and known load
+
+The existing plant obeys `J d(omega_m)/dt = Te - Tload - B omega_m`.
+Integrating between sampled endpoints `ta` and `tb` gives
+
+```text
+integral(Te - Tload) dt = J [omega_m(tb) - omega_m(ta)] + B integral(omega_m) dt
+y_k = X_k theta,  X_k = [delta(omega_m), integral(omega_m)], theta = [J, B]
+Te_hat = 1.5 p [psi_f_hat iq_measured + (Ld_hat - Lq_hat) id_measured iq_measured]
+```
+
+`src.mechanical_identification` receives `MechanicalMeasurements`, electrical
+estimates, flux estimate, and known pole count. It imports no plant model and
+has no input for hidden torque, `J`, or `B`. It integrates sampled reconstructed
+torque and speed using trapezoids, then fits column-scaled least squares. Speed
+differences occur only at window endpoints; there is no pointwise numerical
+speed differentiation. `y` has units N m s; the two columns have units rad/s
+and rad, respectively, yielding J in kg m² and B in N m s/rad (radian treated
+as dimensionless).
+
+**The experiment explicitly has zero external load.** The measurement record
+must declare `known_load_torque_nm=0.0`; unknown (`None`) load is rejected. The
+estimator can subtract an explicitly known constant load, but its measurement
+uncertainty is not modeled. This does not estimate an arbitrary unknown load.
+Unknown load can be absorbed into the inferred friction, especially over a
+narrow operating region, and can yield a biased estimate with small residual.
+
+### Mechanical excitation
+
+`src.mechanical_excitation` simulates the existing freely rotating PMSM plant
+with the existing current FOC, using accepted electrical estimates for its
+controller. It does not impose speed or use a speed PI during identification.
+The q-current reference is `[0.8, 0, 0.4, -0.4, 0] A`, repeated twice, each
+plateau lasting 0.25 s. The d-current reference is zero. Acceleration,
+deceleration, and zero-current coast intervals separate inertia and viscous
+torque; the repeated pattern supplies both temporal halves with useful motion.
+Default runtime is 2.5 s, control/RK4 step 40 µs, and sampled record period 1 ms.
+Fifty nonoverlapping 50 ms windows form the default regression. Shared endpoints
+are retained when propagating noise.
+
+The simulation enforces a configured 1 A reference limit and the existing
+`Vdc/sqrt(3)` voltage circle with anti-windup (48 V default commissioning rig).
+These are simulation constraints, **not physical hardware safety guarantees**.
+Current and speed feedback to the excitation FOC are ideal; independent
+zero-mean noise is added to the recorded measurements. Default measurement
+standard deviations are 0.01 A and 0.05 rad/s; seed 701. The main comparison
+reaches approximately 52 rad/s during commissioning. The electrical test stages
+keep their previous locked-rotor and externally driven-rotor assumptions.
+
+### Mechanical diagnostics and uncertainty
+
+The estimator records rank, singular values and condition number of the
+column-normalized design, physical column norms/energies, residual RMS,
+first/second-half fit consistency, and local sensitivity. A column's conditional
+norm is the norm remaining after projecting out the other column: this captures
+information unique to J or B. Normalizing columns cannot manufacture physical
+information from weak acceleration or tiny speed signals.
+
+Using the earlier notation `G = X+` in physical parameter units,
+
+```text
+d(theta_hat) = G (dy - dX theta_hat) + (G G^T) dX^T r
+C_sensor = sigma_speed² Js Js^T + sigma_current² (Jd Jd^T + Jq Jq^T)
+N = m sigma_speed² diag(2, dt² (w - 1/2))
+rho = max_a (a^T N a)/(a^T X^T X a)
+```
+
+The speed-noise Jacobian includes both endpoint differences and integrals;
+current Jacobians differentiate the reconstructed torque. Sample contributions
+shared by adjacent windows are summed before covariance is formed. The
+expected conditional sensor residual variance in a window is
+
+```text
+sigma_speed² ||J b + B a||²
+  + sigma_current² (||a * dTe/did||² + ||a * dTe/diq||²)
+```
+
+Here `a` is the trapezoid-weight vector, `b=[-1,0,...,1]`, and `*` means
+elementwise multiplication. This is a local noise diagnostic, not a residual
+chi-square statistic. It excludes model bias and electrical-parameter error
+from the residual budget.
+
+Torque also inherits electrical error. For `q=[Ld,Lq,psi_f]`, let
+`A = G d(y)/d(q)`, with window derivatives
+`1.5p [integral(id iq), -integral(id iq), integral(iq)]`. The mechanical
+diagnostics expose `A` and use each supplied marginal electrical standard error
+`s_q` to form
+
+```text
+electrical_SD_bound_j = sum_l abs(A[j,l]) s_q[l]
+total_local_SD_bound_j = sqrt(C_sensor[j,j]) + electrical_SD_bound_j
+```
+
+This triangle-inequality bound does not assume that flux and inductance errors
+are independent: the flux estimate already depends on the electrical fit.
+It is conservative for first-order random perturbations under the supplied
+marginal noise model. It does not bound systematic error, errors-in-variables
+bias, current-product higher-order terms, or noise-model uncertainty. No
+probabilistic confidence interval or coverage is claimed. Missing upstream
+uncertainty information prevents acceptance.
+
+### Mechanical quality and full retuning
+
+All checks below must pass; each failure has a named `mechanical.*` reason.
+The existing electrical gate is unchanged. Full rank alone never implies
+acceptance.
+
+| Mechanical check | Budget and rationale |
+| --- | --- |
+| Rank and windows | Rank 2, at least 10 windows: identifiable full fit and redundant temporal halves. |
+| Scaled condition | ≤100, preserving the electrical gate's numerical amplification budget. |
+| Design-noise fraction `rho` | ≤5%, preserving the electrical information-contamination budget; not a bias bound. |
+| Relative local SD bound | ≤0.10/3 for each parameter; three sensitivity units within a 10% precision budget. |
+| Conditional component SNR | ≥3 for both `abs(theta_j) norm(X_j projected away from other column)/sqrt(m) / sensor_residual_RMS`; each physical contribution must exceed three sensor-noise units. |
+| Temporal half-fit difference | ≤10% of the full estimate, requiring consistency within the precision budget. |
+| Residual RMS | ≤3 predicted sensor RMS + 1% target RMS, matching the explicit engineering noise/model allowance. |
+
+Unknown load, rank-deficient records, nonpositive estimates, and malformed
+measurements are explicit estimator failures. Weak acceleration harms J
+information; too little speed makes friction torque hard to resolve. Constant
+nonzero speed can inform B if torque/load are known, but gives no J information;
+speed range alone is not a universal identifiability test. The analytical
+fixtures test these distinct limitations.
+
+`src.full_commissioning.FullCommissioningResult` nests the existing electrical
+`CommissioningResult` and a `MechanicalCommissioningResult` containing its
+estimate and quality decision. `complete_commissioning(electrical_result, data)`
+requires accepted electrical commissioning before attempting mechanics.
+The full result's `.quality` combines both decisions. Its
+`retuned_controller_parameters(prior)` returns new assumptions for all six
+parameters only when both stages accept. An explicit exception prevents direct
+retuning on rejection; passing a rejected full result to the speed simulation
+preserves the entire prior controller, logs rejection, and changes no J/B.
+The accepted electrical-only result remains separately usable by explicit choice.
+
+Current PI remains `Kp_d=Ld omega_c`, `Kp_q=Lq omega_c`, `Ki=Rs omega_c`, with
+identified electrical decoupling/feedforward. Speed PI uses **identified**
+`Kt=1.5 p psi_f`, `Kp=(2 zeta omega_n J - B)/Kt`, and `Ki=omega_n² J/Kt`.
+Existing controller constructors do this calculation without modification.
+Offline retuning resets controller state; online bumpless transfer remains absent.
+
+### Four-controller comparison
+
+`python -m experiments.full_commissioning_recovery` uses the earlier electrical
+mismatch and a modest attached-inertia/friction scenario: true J=5e-4 kg m²,
+B=3e-4 N m s/rad, versus prior J=2e-4 and B=1e-4. True electrical parameters
+are `0.56 ohm, 1.4 mH, 0.8 mH, 15 mWb`; prior values are
+`0.24 ohm, 0.6 mH, 1.4 mH, 35 mWb`. These values were specified before the
+first mechanical run and were not selected by searching outcomes. All four
+controllers use the same plant, 24 V bus, 1000 rpm command, 0.05 N m load at
+0.30 s, 20 µs step, and 0.6 s duration. The voltage limit is active in the
+model but does not saturate this comparison; voltage shortage is explored in
+the population study. The commissioning tests themselves have zero load.
+
+| Mechanical parameter | Estimate | Absolute error |
+| --- | ---: | ---: |
+| J [kg m²] | 4.992267860e-4 | 0.154643% |
+| B [N m s/rad] | 2.996960067e-4 | 0.101331% |
+
+Both gates accept. Mechanical scaled condition is 1.04690, information-noise
+fraction 0.000354884, largest relative local SD bound 0.21659%, minimum
+conditional component SNR 14.0876, half-fit discrepancy 0.92313%, and residual
+RMS 3.30048e-5 N m s (predicted sensor RMS 3.58645e-5).
+
+| Metric | Mismatched | Electrical-only | Full commissioned | Oracle |
+| --- | ---: | ---: | ---: | ---: |
+| Post-load speed RMSE [rpm] | 18.46145 | 4.42862 | 1.76792 | 1.76507 |
+| Maximum post-load speed deviation [rpm] | 41.38503 | 11.87565 | 5.73125 | 5.72361 |
+| Recovery within ±10 rpm [s] | 0.08928 | 0.04340 | 0 | 0 |
+| Post-load iq RMSE [A] | 0.0125682 | 0.00322238 | 0.00460608 | 0.00460877 |
+| Startup overshoot [rpm] | 125.07555 | 35.79090 | 6.56738 | 6.53785 |
+| Full-run speed RMSE [rpm] | 260.35132 | 258.44776 | 258.18496 | 258.18466 |
+| Full-run iq RMSE [A] | 0.123706 | 0.102715 | 0.104162 | 0.104195 |
+| Voltage saturation fraction | 0 | 0 | 0 | 0 |
+
+Full commissioning lowers speed RMSE by about **60.1% relative to electrical-only**
+commissioning, approaching the oracle. Zero recovery time means the response
+never leaves the ±10 rpm band, not instantaneous settling. The mismatched
+controller still has a startup transient at the load time; its metric is
+honestly reported as post-load tracking error, not isolated disturbance rejection.
+Full commissioning has **higher iq RMSE than electrical-only tuning**, both
+post-load and full-run. The faster speed loop demands a different current
+trajectory; this tradeoff is retained. Early cumulative B error exceeds 10%
+before enough motion is collected; acceptance uses the complete record and
+its temporal checks, not the most favorable prefix.
+
+Artifacts: [parameter estimates](results/mechanical_commissioning/parameters.csv),
+[all performance metrics](results/mechanical_commissioning/performance.csv),
+[diagnostics and check values](results/mechanical_commissioning/diagnostics.json),
+[sampled measurements](results/mechanical_commissioning/measurements.csv),
+[mechanical identification plot](results/mechanical_commissioning/mechanical_identification.png),
+and [four-controller recovery plot](results/mechanical_commissioning/full_commissioning_recovery.png).
+
+### Small J/B population study
+
+The core implementation was completed before this optional extension. The
+existing electrical plant generator is reused unchanged; a separate seeded
+stream draws J uniformly over [1.5e-4, 9e-4] kg m² and B over
+[0.5e-4, 5e-4] N m s/rad. These are chosen test envelopes, not a manufacturing
+distribution. Mechanical current/speed noise levels are low (0.01 A, 0.05 rad/s),
+medium (0.04 A, 0.2 rad/s), and high (0.2 A, 1 rad/s). Plateau references are
+scaled to 8% or 100%. Electrical commissioning remains at low noise
+(0.01 A, 0.01 V, 0.02 rad/s) on its existing 48 V rig; mechanical excitation and
+control use the per-case bus. Every case compares all four controllers.
+
+Development seed **20261011** has five cases (low/high noise, two excitation
+scales, 24 V, plus an unexcited sentinel). Evaluation seed **20261012** has
+13 cases (three noise levels, two scales, 12/24 V, plus sentinel). Each cell
+has one independently drawn plant; seeds for all three measurement stages are
+disjoint across populations. The gate and protocol were frozen in **`30f9c7c`**
+before final evaluation, with no threshold changes afterward. The
+[freeze record](docs/mechanical_policy_freeze.md) documents the budgets and the
+initial shared-electrical-noise pilot, which is retained separately and excluded
+from the corrected development/evaluation comparison.
+
+| Outcome | Corrected development | Held-out evaluation |
+| --- | ---: | ---: |
+| Total cases | 5 | 13 |
+| Electrical gate accepted | 5 | 13 |
+| Mechanical estimator failures | 1 | 1 |
+| Mechanical quality rejections | 1 | 7 |
+| Full accepted / coverage | 3 / 60% | 5 / 38.46% |
+| Inaccurate J/B among accepted | 0/3 | 0/5 |
+| Accepted among inaccurate complete J/B estimates | 0/1 | 0/5 |
+| Rejected among accurate complete J/B estimates | 0/3 | 2/7 (28.57%) |
+| Accepted control successes | 3/3 | 1/5 (20%) |
+
+Post-hoc mechanical accuracy means both errors ≤10%. Accepted control success
+also requires post-load speed RMSE ≤10 rpm, iq RMSE ≤0.05 A, and recovery
+within 0.10 s. This study's criterion does not require every metric to improve
+over electrical-only control. The truth labels, oracle response, and any
+voltage-feasibility analysis are absent from gate inputs. Rejected full results
+run the prior-controller fallback; those metrics are labeled by acceptance and
+never counted as full-commissioning successes.
+
+| Final absolute error [%] | Accepted median / p95 / worst (n=5) | Rejected with estimates median / p95 / worst (n=7) |
+| --- | ---: | ---: |
+| J | 0.1565 / 0.2759 / 0.2968 | 12.9797 / 92.6496 / 96.8905 |
+| B | 0.5374 / 0.9847 / 0.9995 | 11.2040 / 28.1876 / 31.5074 |
+
+The final accepted median speed RMSE is **85.1385 rpm** for electrical-only,
+full, and oracle control (rounded). Their corresponding median iq RMSE is
+**4.53575 A**. This poor aggregate is retained: **four accepted plants are
+voltage infeasible** at the target speed/load, and even the oracle fails. A
+post-hoc steady-state check gives required magnitudes **11.9191, 7.0892,
+12.7736 V** for three 12 V-bus cases (limit 6.9282 V), and **15.1284 V** for
+one 24 V-bus case (limit 13.8564 V). These are case IDs 0, 1, 5, and 7.
+Worst full speed RMSE is **463.7074 rpm**, and all four have unavailable
+recovery times. Among accepted cases full saturation fraction has median
+**91.2733%**, p95 **98.264%**, and worst **98.29%**.
+
+The one voltage-feasible accepted case improves speed RMSE
+**4.4151 → 3.2769 rpm**, versus oracle **3.2718 rpm**. Its recovery time improves
+**0.03598 → 0.02130 s**, versus oracle **0.02120 s**. This is only one held-out
+feasible success, not evidence of broad control reliability. Development also
+contains an accepted case where electrical-only speed RMSE is **4.3876 rpm**,
+full is **4.9548 rpm**, and oracle **4.8824 rpm**: recovering the intended tuning
+does not guarantee lower disturbance RMSE than every mismatched tuning.
+
+The two final false rejections are a low-noise weak-excitation case and a
+high-noise full-excitation case. The latter has J/B errors 6.31%/2.39% in this
+realization but fails information/sensitivity checks. High-noise weak excitation
+produces positive J estimates with up to **96.89%** error; the gate rejects them.
+Both populations retain the rank-deficient unexcited case. No failed/rejected
+case is discarded, and no thresholds were relaxed using final error labels.
+
+Data and plots: [development cases](results/mechanical_population/development/cases.csv),
+[development summary](results/mechanical_population/development/summary.json),
+[evaluation cases](results/mechanical_population/evaluation/cases.csv),
+[evaluation summary](results/mechanical_population/evaluation/summary.json), and
+[evaluation plot](results/mechanical_population/evaluation/population.png).
+Summaries include finite-value medians, p95, worst, and missing counts. The
+population is deliberately small and stratified: zero observed false acceptances
+in five accepted final cases does not establish a low population failure risk.
+
+### Mechanical limitations and review
+
+- Unknown external load can be confounded with viscous friction; load metadata
+  must describe an actually known condition. The estimator cannot verify it.
+- Coulomb/static friction and stiction are absent from `B omega`. A real attached
+  load changes effective J; these estimates describe the assembled simulated
+  system, not an invariant unloaded rotor inertia.
+- Weak acceleration, small speed signals, correlated regressors, or a temporal
+  half lacking excitation can prevent useful J/B estimation. Zero or nearly
+  zero viscous friction may be unresolvable and rejected by this positive-B fit.
+- Torque reconstruction inherits electrical error. A multiplicative torque
+  error can scale both J and B with a good residual; uncertainty propagation
+  cannot detect unmodeled common bias.
+- Sensor bias is not zero-mean noise. Correlation, calibration drift, inverter
+  torque errors, angle error, and load-model errors can produce precise-looking
+  biased fits. First-order sensitivity bounds do not cover these effects.
+- Sampled trapezoid integration has discretization/aliasing error, especially
+  around fast current transitions. This study does not identify mechanics from
+  ordinary arbitrary closed-loop records or implement online adaptation.
+- No claim of hardware commissioning safety follows from current references
+  and voltage limits in this ideal simulation. Additional feasibility and
+  excitation-safety design is still needed.
+
+Review verified that estimator/gate modules have no plant dependency, hidden
+torque input, true J/B, outcome labels, or pointwise speed differentiation.
+Tests disable the plant torque method after data generation and still estimate
+mechanics successfully; scaling commissioned electrical torque scales the fit,
+demonstrating inherited electrical error. Finite-difference tests verify sensor
+covariance and electrical sensitivity in physical units. Other tests cover
+multiple J/B plants, noisy/weak/rank-deficient records, unknown load, both gate
+outcomes, unchanged rejected-controller trajectories, accepted speed PI gains,
+electrical-only compatibility, deterministic populations, and oracle recovery.
+The full local suite passes **74 tests**, versus the **53-test baseline**.

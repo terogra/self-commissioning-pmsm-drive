@@ -1,0 +1,252 @@
+{
+  "total_cases": 13,
+  "status_counts": {
+    "accepted": 5,
+    "estimator_failed": 1,
+    "quality_rejected": 7
+  },
+  "accepted_count": 5,
+  "coverage": 0.38461538461538464,
+  "false_acceptance_count": 0,
+  "inaccurate_fraction_of_accepted": 0.0,
+  "acceptance_fraction_of_inaccurate": 0.0,
+  "false_rejection_count": 2,
+  "rejection_fraction_of_accurate": 0.2857142857142857,
+  "accepted_control_successes": 1,
+  "accepted_control_success_rate": 0.2,
+  "parameter_errors": {
+    "all": {
+      "J": {
+        "n_available": 12,
+        "n_missing": 1,
+        "median": 4.7056164846629835,
+        "p95": 89.11559597656418,
+        "worst": 96.89045744668117
+      },
+      "B": {
+        "n_available": 12,
+        "n_missing": 1,
+        "median": 1.9092794339779506,
+        "p95": 25.42099207511845,
+        "worst": 31.507429427637312
+      }
+    },
+    "accepted": {
+      "J": {
+        "n_available": 5,
+        "n_missing": 0,
+        "median": 0.15652268049975993,
+        "p95": 0.27585253537438126,
+        "worst": 0.2967578183120989
+      },
+      "B": {
+        "n_available": 5,
+        "n_missing": 0,
+        "median": 0.537403630193245,
+        "p95": 0.9847297266062793,
+        "worst": 0.9995450650654991
+      }
+    },
+    "rejected_with_estimates": {
+      "J": {
+        "n_available": 7,
+        "n_missing": 0,
+        "median": 12.979668426254342,
+        "p95": 92.64962391752644,
+        "worst": 96.89045744668117
+      },
+      "B": {
+        "n_available": 7,
+        "n_missing": 0,
+        "median": 11.203994838664212,
+        "p95": 28.187554508081565,
+        "worst": 31.507429427637312
+      }
+    }
+  },
+  "accepted_performance": {
+    "mismatched": {
+      "post_step_speed_rmse_rpm": {
+        "n_available": 5,
+        "n_missing": 0,
+        "median": 85.13285223099454,
+        "p95": 456.1359424644873,
+        "worst": 463.7016723878264
+      },
+      "post_step_iq_tracking_rmse_a": {
+        "n_available": 5,
+        "n_missing": 0,
+        "median": 4.535746982314278,
+        "p95": 4.646944825611938,
+        "worst": 4.663101101214175
+      },
+      "disturbance_recovery_time_s": {
+        "n_available": 1,
+        "n_missing": 4,
+        "median": 0.053580000000000017,
+        "p95": 0.053580000000000017,
+        "worst": 0.053580000000000017
+      },
+      "saturation_fraction": {
+        "n_available": 5,
+        "n_missing": 0,
+        "median": 0.9448333333333333,
+        "p95": 0.9813000000000001,
+        "worst": 0.9815
+      }
+    },
+    "electrical-only": {
+      "post_step_speed_rmse_rpm": {
+        "n_available": 5,
+        "n_missing": 0,
+        "median": 85.13848093163071,
+        "p95": 456.14133071728304,
+        "worst": 463.7074420448
+      },
+      "post_step_iq_tracking_rmse_a": {
+        "n_available": 5,
+        "n_missing": 0,
+        "median": 4.535747780727905,
+        "p95": 4.6469476652820285,
+        "worst": 4.663104018982613
+      },
+      "disturbance_recovery_time_s": {
+        "n_available": 1,
+        "n_missing": 4,
+        "median": 0.03598000000000001,
+        "p95": 0.03598000000000001,
+        "worst": 0.03598000000000001
+      },
+      "saturation_fraction": {
+        "n_available": 5,
+        "n_missing": 0,
+        "median": 0.9061,
+        "p95": 0.98264,
+        "worst": 0.9829
+      }
+    },
+    "full commissioned": {
+      "post_step_speed_rmse_rpm": {
+        "n_available": 5,
+        "n_missing": 0,
+        "median": 85.1384809316306,
+        "p95": 456.14133071728304,
+        "worst": 463.7074420448
+      },
+      "post_step_iq_tracking_rmse_a": {
+        "n_available": 5,
+        "n_missing": 0,
+        "median": 4.535747780727905,
+        "p95": 4.646947665282031,
+        "worst": 4.663104018982613
+      },
+      "disturbance_recovery_time_s": {
+        "n_available": 1,
+        "n_missing": 4,
+        "median": 0.02130000000000004,
+        "p95": 0.02130000000000004,
+        "worst": 0.02130000000000004
+      },
+      "saturation_fraction": {
+        "n_available": 5,
+        "n_missing": 0,
+        "median": 0.9127333333333333,
+        "p95": 0.98264,
+        "worst": 0.9829
+      }
+    },
+    "oracle": {
+      "post_step_speed_rmse_rpm": {
+        "n_available": 5,
+        "n_missing": 0,
+        "median": 85.13847121216281,
+        "p95": 456.1413268006178,
+        "worst": 463.707437303558
+      },
+      "post_step_iq_tracking_rmse_a": {
+        "n_available": 5,
+        "n_missing": 0,
+        "median": 4.535747780411776,
+        "p95": 4.646947662650628,
+        "worst": 4.663104016646747
+      },
+      "disturbance_recovery_time_s": {
+        "n_available": 1,
+        "n_missing": 4,
+        "median": 0.021200000000000052,
+        "p95": 0.021200000000000052,
+        "worst": 0.021200000000000052
+      },
+      "saturation_fraction": {
+        "n_available": 5,
+        "n_missing": 0,
+        "median": 0.9127333333333333,
+        "p95": 0.98264,
+        "worst": 0.9829
+      }
+    }
+  },
+  "methodology": {
+    "config": {
+      "seed": 20261012,
+      "repeats": 1,
+      "noise_conditions": [
+        {
+          "name": "low",
+          "current_std_a": 0.01,
+          "voltage_std_v": 0,
+          "speed_std_rad_s": 0.05
+        },
+        {
+          "name": "medium",
+          "current_std_a": 0.04,
+          "voltage_std_v": 0,
+          "speed_std_rad_s": 0.2
+        },
+        {
+          "name": "high",
+          "current_std_a": 0.2,
+          "voltage_std_v": 0,
+          "speed_std_rad_s": 1.0
+        }
+      ],
+      "commissioning_speeds_rpm": [
+        600.0
+      ],
+      "dc_bus_voltages_v": [
+        12.0,
+        24.0
+      ],
+      "include_weak_excitation": true,
+      "control_dt_s": 4e-05,
+      "excitation_scales": [
+        0.08,
+        1.0
+      ]
+    },
+    "mechanical_policy": {
+      "min_windows": 10,
+      "max_scaled_condition": 100.0,
+      "max_noise_information_fraction": 0.05,
+      "max_relative_standard_error": 0.03333333333333333,
+      "max_split_relative_difference": 0.1,
+      "min_component_snr": 3.0,
+      "residual_noise_multiplier": 3.0,
+      "relative_model_residual_allowance": 0.01
+    },
+    "J_range": [
+      0.00015,
+      0.0009
+    ],
+    "B_range": [
+      5e-05,
+      0.0005
+    ],
+    "electrical_sensor_noise": [
+      0.01,
+      0.01,
+      0.02
+    ],
+    "thresholds": "Pre-specified engineering budgets; no truth-label fitting"
+  }
+}
