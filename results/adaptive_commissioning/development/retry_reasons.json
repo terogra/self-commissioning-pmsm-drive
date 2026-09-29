@@ -1,0 +1,8 @@
+{
+  "standstill.noise_information": 2,
+  "mechanical.noise_information": 2,
+  "mechanical.insufficient_excitation": 5,
+  "rotating.weak_back_emf": 1,
+  "standstill.estimator_failure: Locked-rotor identification requires near-zero measured speed": 1,
+  "standstill.estimator_failure: Electrical estimates must be positive": 1
+}

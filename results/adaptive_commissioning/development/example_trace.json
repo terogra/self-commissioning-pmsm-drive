@@ -1,0 +1,63 @@
+{
+  "case": "combined_weak",
+  "final_state": "operating_feasible",
+  "attempts": [
+    {
+      "stage": "standstill",
+      "number": 1,
+      "reasons": [
+        "standstill.noise_information"
+      ],
+      "decision": "retry",
+      "action": "increase_standstill_voltage"
+    },
+    {
+      "stage": "standstill",
+      "number": 2,
+      "reasons": [],
+      "decision": "accepted",
+      "action": null
+    },
+    {
+      "stage": "rotating",
+      "number": 1,
+      "reasons": [
+        "rotating.weak_back_emf"
+      ],
+      "decision": "retry",
+      "action": "increase_rotating_speed"
+    },
+    {
+      "stage": "rotating",
+      "number": 2,
+      "reasons": [],
+      "decision": "accepted",
+      "action": null
+    },
+    {
+      "stage": "mechanical",
+      "number": 1,
+      "reasons": [
+        "mechanical.insufficient_excitation"
+      ],
+      "decision": "retry",
+      "action": "extend_mechanical_plateaus_for_B"
+    },
+    {
+      "stage": "mechanical",
+      "number": 2,
+      "reasons": [
+        "mechanical.insufficient_excitation"
+      ],
+      "decision": "retry",
+      "action": "increase_mechanical_plateaus_for_J"
+    },
+    {
+      "stage": "mechanical",
+      "number": 3,
+      "reasons": [],
+      "decision": "accepted",
+      "action": null
+    }
+  ]
+}
