@@ -6,7 +6,7 @@ receives a plant, true parameter, hidden torque, or closed-loop outcome.
 
 from dataclasses import dataclass, replace
 from enum import Enum
-from math import hypot, isfinite, sqrt
+from math import copysign, hypot, isfinite, sqrt
 from typing import Callable
 
 import numpy as np
@@ -205,8 +205,9 @@ def _rotating_retry(config, reasons, policy):
         duration = min(policy.max_rotating_duration_s, config.duration_s * policy.duration_multiplier)
         if duration > config.duration_s:
             return replace(config, duration_s=duration, seed=config.seed + 1), "extend_rotating_record"
-    speed = min(policy.max_rotating_speed_rpm, config.speed_rpm * policy.speed_multiplier)
-    if speed > config.speed_rpm:
+    speed = copysign(min(policy.max_rotating_speed_rpm,
+                        abs(config.speed_rpm) * policy.speed_multiplier), config.speed_rpm)
+    if abs(speed) > abs(config.speed_rpm):
         return replace(config, speed_rpm=speed, seed=config.seed + 1), "increase_rotating_speed"
     duration = min(policy.max_rotating_duration_s, config.duration_s * policy.duration_multiplier)
     if duration > config.duration_s:
@@ -256,9 +257,10 @@ def _validate_initial(standstill, rotating, mechanical, policy):
     if (not mechanical.iq_plateaus_a
             or hypot(standstill.d_voltage_v, standstill.q_voltage_v) > policy.max_standstill_voltage_magnitude_v
             or standstill.duration_s > policy.max_standstill_duration_s
-            or rotating.speed_rpm > policy.max_rotating_speed_rpm
+            or abs(rotating.speed_rpm) > policy.max_rotating_speed_rpm
             or rotating.duration_s > policy.max_rotating_duration_s
             or max(abs(v) for v in mechanical.iq_plateaus_a) > policy.max_mechanical_reference_a
+            or mechanical.current_reference_limit_a > policy.max_mechanical_reference_a
             or mechanical.plateau_duration_s > policy.max_mechanical_plateau_duration_s):
         raise ValueError("supervisor.initial_configuration_exceeds_design_limit")
 

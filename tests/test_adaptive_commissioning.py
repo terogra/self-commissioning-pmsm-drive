@@ -136,6 +136,10 @@ def test_retry_bounds_and_initial_design_limits():
         RetryPolicy(max_electrical_attempts=0)
     with pytest.raises(ValueError, match="initial_configuration_exceeds_design_limit"):
         run(standstill=replace(STANDSTILL, d_voltage_v=4))
+    with pytest.raises(ValueError, match="initial_configuration_exceeds_design_limit"):
+        run(mechanical=replace(MECHANICAL, current_reference_limit_a=2))
+    with pytest.raises(ValueError, match="initial_configuration_exceeds_design_limit"):
+        run(rotating=replace(ROTATING, speed_rpm=-1500))
 
 
 def test_retry_sequence_is_deterministic_and_one_shot_api_still_works():
