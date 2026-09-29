@@ -1,0 +1,3978 @@
+[
+  {
+    "case": "normal_low",
+    "stage": "standstill",
+    "attempt": 1,
+    "configuration": {
+      "duration_s": 0.4,
+      "integration_dt_s": 2e-05,
+      "sample_dt_s": 0.0001,
+      "d_hold_samples": 23,
+      "q_hold_samples": 31,
+      "d_voltage_v": 1.2,
+      "q_voltage_v": 1.4,
+      "dc_bus_voltage_v": 24.0,
+      "current_noise_std_a": 0.01,
+      "voltage_noise_std_v": 0.01,
+      "speed_noise_std_rad_s": 0.02,
+      "seed": 962508897
+    },
+    "estimator_succeeded": true,
+    "quality_accepted": true,
+    "reasons": [],
+    "checks": [
+      {
+        "name": "standstill.rank_deficiency",
+        "value": 0,
+        "limit": 0,
+        "passed": true
+      },
+      {
+        "name": "standstill.insufficient_windows",
+        "value": -390,
+        "limit": 0,
+        "passed": true
+      },
+      {
+        "name": "standstill.conditioning",
+        "value": 1.003198126700044,
+        "limit": 100.0,
+        "passed": true
+      },
+      {
+        "name": "standstill.noise_information",
+        "value": 0.000324452293820499,
+        "limit": 0.05,
+        "passed": true
+      },
+      {
+        "name": "standstill.relative_uncertainty",
+        "value": 0.0006704188645093666,
+        "limit": 0.03333333333333333,
+        "passed": true
+      },
+      {
+        "name": "standstill.inconsistent_halves",
+        "value": 0.0005568405539027691,
+        "limit": 0.1,
+        "passed": true
+      },
+      {
+        "name": "standstill.excessive_residual",
+        "value": 0.2671076495496265,
+        "limit": 1.0,
+        "passed": true
+      }
+    ],
+    "diagnostics": {
+      "effective_rank": 3,
+      "scaled_condition_number": 1.003198126700044,
+      "noise_information_fraction": 0.000324452293820499,
+      "split_relative_difference": 0.0005568405539027691,
+      "residual_rmse": 1.496853275048271e-05,
+      "relative_sensitivity": [
+        0.0002424682455025547,
+        0.0006704188645093666,
+        0.0005554529926851927
+      ],
+      "component_snr": null
+    },
+    "retry_decision": "accepted",
+    "retry_action": null,
+    "next_configuration": null
+  },
+  {
+    "case": "normal_low",
+    "stage": "rotating",
+    "attempt": 1,
+    "configuration": {
+      "duration_s": 0.3,
+      "integration_dt_s": 2e-05,
+      "sample_dt_s": 0.0001,
+      "speed_rpm": 600,
+      "d_hold_samples": 19,
+      "q_hold_samples": 29,
+      "d_voltage_v": 0.7,
+      "q_voltage_base_v": 5.0,
+      "q_voltage_perturb_v": 0.7,
+      "dc_bus_voltage_v": 24.0,
+      "current_noise_std_a": 0.01,
+      "voltage_noise_std_v": 0.01,
+      "speed_noise_std_rad_s": 0.02,
+      "seed": 962508898
+    },
+    "estimator_succeeded": true,
+    "quality_accepted": true,
+    "reasons": [],
+    "checks": [
+      {
+        "name": "standstill.rank_deficiency",
+        "value": 0,
+        "limit": 0,
+        "passed": true
+      },
+      {
+        "name": "standstill.insufficient_windows",
+        "value": -390,
+        "limit": 0,
+        "passed": true
+      },
+      {
+        "name": "standstill.conditioning",
+        "value": 1.003198126700044,
+        "limit": 100.0,
+        "passed": true
+      },
+      {
+        "name": "standstill.noise_information",
+        "value": 0.000324452293820499,
+        "limit": 0.05,
+        "passed": true
+      },
+      {
+        "name": "standstill.relative_uncertainty",
+        "value": 0.0006704188645093666,
+        "limit": 0.03333333333333333,
+        "passed": true
+      },
+      {
+        "name": "standstill.inconsistent_halves",
+        "value": 0.0005568405539027691,
+        "limit": 0.1,
+        "passed": true
+      },
+      {
+        "name": "standstill.excessive_residual",
+        "value": 0.2671076495496265,
+        "limit": 1.0,
+        "passed": true
+      },
+      {
+        "name": "rotating.rank_deficiency",
+        "value": 0,
+        "limit": 0,
+        "passed": true
+      },
+      {
+        "name": "rotating.insufficient_windows",
+        "value": -290,
+        "limit": 0,
+        "passed": true
+      },
+      {
+        "name": "rotating.conditioning",
+        "value": 1.0,
+        "limit": 100.0,
+        "passed": true
+      },
+      {
+        "name": "rotating.noise_information",
+        "value": 9.625662826886738e-09,
+        "limit": 0.05,
+        "passed": true
+      },
+      {
+        "name": "rotating.relative_uncertainty",
+        "value": 7.387339415337858e-05,
+        "limit": 0.03333333333333333,
+        "passed": true
+      },
+      {
+        "name": "rotating.inconsistent_halves",
+        "value": 6.228048123124049e-06,
+        "limit": 0.1,
+        "passed": true
+      },
+      {
+        "name": "rotating.excessive_residual",
+        "value": 0.12203623959178968,
+        "limit": 1.0,
+        "passed": true
+      },
+      {
+        "name": "rotating.insufficient_speed",
+        "value": -211.07424245110226,
+        "limit": 0,
+        "passed": true
+      },
+      {
+        "name": "rotating.weak_back_emf",
+        "value": 0.0020697148498952907,
+        "limit": 0.1,
+        "passed": true
+      }
+    ],
+    "diagnostics": {
+      "effective_rank": 1,
+      "scaled_condition_number": 1.0,
+      "noise_information_fraction": 9.625662826886738e-09,
+      "split_relative_difference": 6.228048123124049e-06,
+      "residual_rmse": 1.3833698364112558e-05,
+      "relative_sensitivity": [
+        7.387339415337858e-05
+      ],
+      "component_snr": null
+    },
+    "retry_decision": "accepted",
+    "retry_action": null,
+    "next_configuration": null
+  },
+  {
+    "case": "normal_low",
+    "stage": "mechanical",
+    "attempt": 1,
+    "configuration": {
+      "iq_plateaus_a": [
+        0.8,
+        0.0,
+        0.4,
+        -0.4,
+        0.0,
+        0.8,
+        0.0,
+        0.4,
+        -0.4,
+        0.0
+      ],
+      "plateau_duration_s": 0.25,
+      "control_dt_s": 4e-05,
+      "sample_dt_s": 0.001,
+      "dc_bus_voltage_v": 24.0,
+      "current_reference_limit_a": 1.0,
+      "current_noise_std_a": 0.01,
+      "speed_noise_std_rad_s": 0.05,
+      "seed": 962508899
+    },
+    "estimator_succeeded": true,
+    "quality_accepted": true,
+    "reasons": [],
+    "checks": [
+      {
+        "name": "mechanical.rank_deficiency",
+        "value": 0,
+        "limit": 0,
+        "passed": true
+      },
+      {
+        "name": "mechanical.insufficient_windows",
+        "value": -40,
+        "limit": 0,
+        "passed": true
+      },
+      {
+        "name": "mechanical.conditioning",
+        "value": 1.0591531829481893,
+        "limit": 100.0,
+        "passed": true
+      },
+      {
+        "name": "mechanical.noise_information",
+        "value": 6.504335615694434e-05,
+        "limit": 0.05,
+        "passed": true
+      },
+      {
+        "name": "mechanical.relative_uncertainty",
+        "value": 0.00452138080975284,
+        "limit": 0.03333333333333333,
+        "passed": true
+      },
+      {
+        "name": "mechanical.insufficient_excitation",
+        "value": -10.480912670742487,
+        "limit": 0,
+        "passed": true
+      },
+      {
+        "name": "mechanical.inconsistent_halves",
+        "value": 0.01597632767943567,
+        "limit": 0.1,
+        "passed": true
+      },
+      {
+        "name": "mechanical.excessive_residual",
+        "value": 0.24765219526145277,
+        "limit": 1.0,
+        "passed": true
+      }
+    ],
+    "diagnostics": {
+      "effective_rank": 2,
+      "scaled_condition_number": 1.0591531829481893,
+      "noise_information_fraction": 6.504335615694434e-05,
+      "split_relative_difference": 0.01597632767943567,
+      "residual_rmse": 2.9281912566107776e-05,
+      "relative_sensitivity": [
+        0.0008450545008441955,
+        0.00452138080975284
+      ],
+      "component_snr": [
+        112.97922004469329,
+        13.480912670742487
+      ]
+    },
+    "retry_decision": "accepted",
+    "retry_action": null,
+    "next_configuration": null
+  },
+  {
+    "case": "weak_electrical",
+    "stage": "standstill",
+    "attempt": 1,
+    "configuration": {
+      "duration_s": 0.4,
+      "integration_dt_s": 2e-05,
+      "sample_dt_s": 0.0001,
+      "d_hold_samples": 23,
+      "q_hold_samples": 31,
+      "d_voltage_v": 0.096,
+      "q_voltage_v": 0.11199999999999999,
+      "dc_bus_voltage_v": 24.0,
+      "current_noise_std_a": 0.01,
+      "voltage_noise_std_v": 0.01,
+      "speed_noise_std_rad_s": 0.02,
+      "seed": 1113047829
+    },
+    "estimator_succeeded": true,
+    "quality_accepted": true,
+    "reasons": [],
+    "checks": [
+      {
+        "name": "standstill.rank_deficiency",
+        "value": 0,
+        "limit": 0,
+        "passed": true
+      },
+      {
+        "name": "standstill.insufficient_windows",
+        "value": -390,
+        "limit": 0,
+        "passed": true
+      },
+      {
+        "name": "standstill.conditioning",
+        "value": 1.0066021627408268,
+        "limit": 100.0,
+        "passed": true
+      },
+      {
+        "name": "standstill.noise_information",
+        "value": 0.04653971155570997,
+        "limit": 0.05,
+        "passed": true
+      },
+      {
+        "name": "standstill.relative_uncertainty",
+        "value": 0.009521796139438014,
+        "limit": 0.03333333333333333,
+        "passed": true
+      },
+      {
+        "name": "standstill.inconsistent_halves",
+        "value": 0.012988188062407875,
+        "limit": 0.1,
+        "passed": true
+      },
+      {
+        "name": "standstill.excessive_residual",
+        "value": 0.31866106830379254,
+        "limit": 1.0,
+        "passed": true
+      }
+    ],
+    "diagnostics": {
+      "effective_rank": 3,
+      "scaled_condition_number": 1.0066021627408268,
+      "noise_information_fraction": 0.04653971155570997,
+      "split_relative_difference": 0.012988188062407875,
+      "residual_rmse": 1.3904142109154528e-05,
+      "relative_sensitivity": [
+        0.0031247146587700687,
+        0.009521796139438014,
+        0.006844292195522956
+      ],
+      "component_snr": null
+    },
+    "retry_decision": "accepted",
+    "retry_action": null,
+    "next_configuration": null
+  },
+  {
+    "case": "weak_electrical",
+    "stage": "rotating",
+    "attempt": 1,
+    "configuration": {
+      "duration_s": 0.3,
+      "integration_dt_s": 2e-05,
+      "sample_dt_s": 0.0001,
+      "speed_rpm": 600,
+      "d_hold_samples": 19,
+      "q_hold_samples": 29,
+      "d_voltage_v": 0.7,
+      "q_voltage_base_v": 5.0,
+      "q_voltage_perturb_v": 0.7,
+      "dc_bus_voltage_v": 24.0,
+      "current_noise_std_a": 0.01,
+      "voltage_noise_std_v": 0.01,
+      "speed_noise_std_rad_s": 0.02,
+      "seed": 1113047830
+    },
+    "estimator_succeeded": true,
+    "quality_accepted": true,
+    "reasons": [],
+    "checks": [
+      {
+        "name": "standstill.rank_deficiency",
+        "value": 0,
+        "limit": 0,
+        "passed": true
+      },
+      {
+        "name": "standstill.insufficient_windows",
+        "value": -390,
+        "limit": 0,
+        "passed": true
+      },
+      {
+        "name": "standstill.conditioning",
+        "value": 1.0066021627408268,
+        "limit": 100.0,
+        "passed": true
+      },
+      {
+        "name": "standstill.noise_information",
+        "value": 0.04653971155570997,
+        "limit": 0.05,
+        "passed": true
+      },
+      {
+        "name": "standstill.relative_uncertainty",
+        "value": 0.009521796139438014,
+        "limit": 0.03333333333333333,
+        "passed": true
+      },
+      {
+        "name": "standstill.inconsistent_halves",
+        "value": 0.012988188062407875,
+        "limit": 0.1,
+        "passed": true
+      },
+      {
+        "name": "standstill.excessive_residual",
+        "value": 0.31866106830379254,
+        "limit": 1.0,
+        "passed": true
+      },
+      {
+        "name": "rotating.rank_deficiency",
+        "value": 0,
+        "limit": 0,
+        "passed": true
+      },
+      {
+        "name": "rotating.insufficient_windows",
+        "value": -290,
+        "limit": 0,
+        "passed": true
+      },
+      {
+        "name": "rotating.conditioning",
+        "value": 1.0,
+        "limit": 100.0,
+        "passed": true
+      },
+      {
+        "name": "rotating.noise_information",
+        "value": 9.625331780083966e-09,
+        "limit": 0.05,
+        "passed": true
+      },
+      {
+        "name": "rotating.relative_uncertainty",
+        "value": 0.0003169056986694173,
+        "limit": 0.03333333333333333,
+        "passed": true
+      },
+      {
+        "name": "rotating.inconsistent_halves",
+        "value": 0.00017808805085461733,
+        "limit": 0.1,
+        "passed": true
+      },
+      {
+        "name": "rotating.excessive_residual",
+        "value": 0.24569716139185743,
+        "limit": 1.0,
+        "passed": true
+      },
+      {
+        "name": "rotating.insufficient_speed",
+        "value": -211.0748671564276,
+        "limit": 0,
+        "passed": true
+      },
+      {
+        "name": "rotating.weak_back_emf",
+        "value": 0.002960939378121386,
+        "limit": 0.1,
+        "passed": true
+      }
+    ],
+    "diagnostics": {
+      "effective_rank": 1,
+      "scaled_condition_number": 1.0,
+      "noise_information_fraction": 9.625331780083966e-09,
+      "split_relative_difference": 0.00017808805085461733,
+      "residual_rmse": 2.1301055706634036e-05,
+      "relative_sensitivity": [
+        0.0003169056986694173
+      ],
+      "component_snr": null
+    },
+    "retry_decision": "accepted",
+    "retry_action": null,
+    "next_configuration": null
+  },
+  {
+    "case": "weak_electrical",
+    "stage": "mechanical",
+    "attempt": 1,
+    "configuration": {
+      "iq_plateaus_a": [
+        0.8,
+        0.0,
+        0.4,
+        -0.4,
+        0.0,
+        0.8,
+        0.0,
+        0.4,
+        -0.4,
+        0.0
+      ],
+      "plateau_duration_s": 0.25,
+      "control_dt_s": 4e-05,
+      "sample_dt_s": 0.001,
+      "dc_bus_voltage_v": 24.0,
+      "current_reference_limit_a": 1.0,
+      "current_noise_std_a": 0.01,
+      "speed_noise_std_rad_s": 0.05,
+      "seed": 1113047831
+    },
+    "estimator_succeeded": true,
+    "quality_accepted": true,
+    "reasons": [],
+    "checks": [
+      {
+        "name": "mechanical.rank_deficiency",
+        "value": 0,
+        "limit": 0,
+        "passed": true
+      },
+      {
+        "name": "mechanical.insufficient_windows",
+        "value": -40,
+        "limit": 0,
+        "passed": true
+      },
+      {
+        "name": "mechanical.conditioning",
+        "value": 1.1112407787849252,
+        "limit": 100.0,
+        "passed": true
+      },
+      {
+        "name": "mechanical.noise_information",
+        "value": 0.00019040091382974052,
+        "limit": 0.05,
+        "passed": true
+      },
+      {
+        "name": "mechanical.relative_uncertainty",
+        "value": 0.0034939682873874637,
+        "limit": 0.03333333333333333,
+        "passed": true
+      },
+      {
+        "name": "mechanical.insufficient_excitation",
+        "value": -8.87025835962209,
+        "limit": 0,
+        "passed": true
+      },
+      {
+        "name": "mechanical.inconsistent_halves",
+        "value": 0.009904763246963703,
+        "limit": 0.1,
+        "passed": true
+      },
+      {
+        "name": "mechanical.excessive_residual",
+        "value": 0.2226007454855653,
+        "limit": 1.0,
+        "passed": true
+      }
+    ],
+    "diagnostics": {
+      "effective_rank": 2,
+      "scaled_condition_number": 1.1112407787849252,
+      "noise_information_fraction": 0.00019040091382974052,
+      "split_relative_difference": 0.009904763246963703,
+      "residual_rmse": 2.7214801915317262e-05,
+      "relative_sensitivity": [
+        0.001402205403175578,
+        0.0034939682873874637
+      ],
+      "component_snr": [
+        70.43618966894454,
+        11.87025835962209
+      ]
+    },
+    "retry_decision": "accepted",
+    "retry_action": null,
+    "next_configuration": null
+  },
+  {
+    "case": "weak_flux",
+    "stage": "standstill",
+    "attempt": 1,
+    "configuration": {
+      "duration_s": 0.4,
+      "integration_dt_s": 2e-05,
+      "sample_dt_s": 0.0001,
+      "d_hold_samples": 23,
+      "q_hold_samples": 31,
+      "d_voltage_v": 1.2,
+      "q_voltage_v": 1.4,
+      "dc_bus_voltage_v": 24.0,
+      "current_noise_std_a": 0.01,
+      "voltage_noise_std_v": 0.01,
+      "speed_noise_std_rad_s": 0.02,
+      "seed": 540111624
+    },
+    "estimator_succeeded": true,
+    "quality_accepted": true,
+    "reasons": [],
+    "checks": [
+      {
+        "name": "standstill.rank_deficiency",
+        "value": 0,
+        "limit": 0,
+        "passed": true
+      },
+      {
+        "name": "standstill.insufficient_windows",
+        "value": -390,
+        "limit": 0,
+        "passed": true
+      },
+      {
+        "name": "standstill.conditioning",
+        "value": 1.001623872641621,
+        "limit": 100.0,
+        "passed": true
+      },
+      {
+        "name": "standstill.noise_information",
+        "value": 0.00045429005280916946,
+        "limit": 0.05,
+        "passed": true
+      },
+      {
+        "name": "standstill.relative_uncertainty",
+        "value": 0.0007788896263531001,
+        "limit": 0.03333333333333333,
+        "passed": true
+      },
+      {
+        "name": "standstill.inconsistent_halves",
+        "value": 0.0007687994185449668,
+        "limit": 0.1,
+        "passed": true
+      },
+      {
+        "name": "standstill.excessive_residual",
+        "value": 0.2771730925450036,
+        "limit": 1.0,
+        "passed": true
+      }
+    ],
+    "diagnostics": {
+      "effective_rank": 3,
+      "scaled_condition_number": 1.001623872641621,
+      "noise_information_fraction": 0.00045429005280916946,
+      "split_relative_difference": 0.0007687994185449668,
+      "residual_rmse": 1.7892031187221765e-05,
+      "relative_sensitivity": [
+        0.00029086692066165805,
+        0.0007788896263531001,
+        0.0005704995443375351
+      ],
+      "component_snr": null
+    },
+    "retry_decision": "accepted",
+    "retry_action": null,
+    "next_configuration": null
+  },
+  {
+    "case": "weak_flux",
+    "stage": "rotating",
+    "attempt": 1,
+    "configuration": {
+      "duration_s": 0.3,
+      "integration_dt_s": 2e-05,
+      "sample_dt_s": 0.0001,
+      "speed_rpm": 120,
+      "d_hold_samples": 19,
+      "q_hold_samples": 29,
+      "d_voltage_v": 0.7,
+      "q_voltage_base_v": 5.0,
+      "q_voltage_perturb_v": 0.7,
+      "dc_bus_voltage_v": 24.0,
+      "current_noise_std_a": 0.1,
+      "voltage_noise_std_v": 0.1,
+      "speed_noise_std_rad_s": 0.5,
+      "seed": 540111625
+    },
+    "estimator_succeeded": true,
+    "quality_accepted": false,
+    "reasons": [
+      "rotating.weak_back_emf"
+    ],
+    "checks": [
+      {
+        "name": "standstill.rank_deficiency",
+        "value": 0,
+        "limit": 0,
+        "passed": true
+      },
+      {
+        "name": "standstill.insufficient_windows",
+        "value": -390,
+        "limit": 0,
+        "passed": true
+      },
+      {
+        "name": "standstill.conditioning",
+        "value": 1.001623872641621,
+        "limit": 100.0,
+        "passed": true
+      },
+      {
+        "name": "standstill.noise_information",
+        "value": 0.00045429005280916946,
+        "limit": 0.05,
+        "passed": true
+      },
+      {
+        "name": "standstill.relative_uncertainty",
+        "value": 0.0007788896263531001,
+        "limit": 0.03333333333333333,
+        "passed": true
+      },
+      {
+        "name": "standstill.inconsistent_halves",
+        "value": 0.0007687994185449668,
+        "limit": 0.1,
+        "passed": true
+      },
+      {
+        "name": "standstill.excessive_residual",
+        "value": 0.2771730925450036,
+        "limit": 1.0,
+        "passed": true
+      },
+      {
+        "name": "rotating.rank_deficiency",
+        "value": 0,
+        "limit": 0,
+        "passed": true
+      },
+      {
+        "name": "rotating.insufficient_windows",
+        "value": -290,
+        "limit": 0,
+        "passed": true
+      },
+      {
+        "name": "rotating.conditioning",
+        "value": 1.0,
+        "limit": 100.0,
+        "passed": true
+      },
+      {
+        "name": "rotating.noise_information",
+        "value": 0.00015015026488363197,
+        "limit": 0.05,
+        "passed": true
+      },
+      {
+        "name": "rotating.relative_uncertainty",
+        "value": 0.0020013756048597744,
+        "limit": 0.03333333333333333,
+        "passed": true
+      },
+      {
+        "name": "rotating.inconsistent_halves",
+        "value": 0.0061749600947387,
+        "limit": 0.1,
+        "passed": true
+      },
+      {
+        "name": "rotating.excessive_residual",
+        "value": 0.2922774572758129,
+        "limit": 1.0,
+        "passed": true
+      },
+      {
+        "name": "rotating.insufficient_speed",
+        "value": -3.5898812623391336,
+        "limit": 0,
+        "passed": true
+      },
+      {
+        "name": "rotating.weak_back_emf",
+        "value": 0.12100314513655083,
+        "limit": 0.1,
+        "passed": false
+      }
+    ],
+    "diagnostics": {
+      "effective_rank": 1,
+      "scaled_condition_number": 1.0,
+      "noise_information_fraction": 0.00015015026488363197,
+      "split_relative_difference": 0.0061749600947387,
+      "residual_rmse": 0.00014021209255101114,
+      "relative_sensitivity": [
+        0.0020013756048597744
+      ],
+      "component_snr": null
+    },
+    "retry_decision": "retry",
+    "retry_action": "increase_rotating_speed",
+    "next_configuration": {
+      "duration_s": 0.3,
+      "integration_dt_s": 2e-05,
+      "sample_dt_s": 0.0001,
+      "speed_rpm": 240.0,
+      "d_hold_samples": 19,
+      "q_hold_samples": 29,
+      "d_voltage_v": 0.7,
+      "q_voltage_base_v": 5.0,
+      "q_voltage_perturb_v": 0.7,
+      "dc_bus_voltage_v": 24.0,
+      "current_noise_std_a": 0.1,
+      "voltage_noise_std_v": 0.1,
+      "speed_noise_std_rad_s": 0.5,
+      "seed": 540111626
+    }
+  },
+  {
+    "case": "weak_flux",
+    "stage": "rotating",
+    "attempt": 2,
+    "configuration": {
+      "duration_s": 0.3,
+      "integration_dt_s": 2e-05,
+      "sample_dt_s": 0.0001,
+      "speed_rpm": 240.0,
+      "d_hold_samples": 19,
+      "q_hold_samples": 29,
+      "d_voltage_v": 0.7,
+      "q_voltage_base_v": 5.0,
+      "q_voltage_perturb_v": 0.7,
+      "dc_bus_voltage_v": 24.0,
+      "current_noise_std_a": 0.1,
+      "voltage_noise_std_v": 0.1,
+      "speed_noise_std_rad_s": 0.5,
+      "seed": 540111626
+    },
+    "estimator_succeeded": true,
+    "quality_accepted": true,
+    "reasons": [],
+    "checks": [
+      {
+        "name": "standstill.rank_deficiency",
+        "value": 0,
+        "limit": 0,
+        "passed": true
+      },
+      {
+        "name": "standstill.insufficient_windows",
+        "value": -390,
+        "limit": 0,
+        "passed": true
+      },
+      {
+        "name": "standstill.conditioning",
+        "value": 1.001623872641621,
+        "limit": 100.0,
+        "passed": true
+      },
+      {
+        "name": "standstill.noise_information",
+        "value": 0.00045429005280916946,
+        "limit": 0.05,
+        "passed": true
+      },
+      {
+        "name": "standstill.relative_uncertainty",
+        "value": 0.0007788896263531001,
+        "limit": 0.03333333333333333,
+        "passed": true
+      },
+      {
+        "name": "standstill.inconsistent_halves",
+        "value": 0.0007687994185449668,
+        "limit": 0.1,
+        "passed": true
+      },
+      {
+        "name": "standstill.excessive_residual",
+        "value": 0.2771730925450036,
+        "limit": 1.0,
+        "passed": true
+      },
+      {
+        "name": "rotating.rank_deficiency",
+        "value": 0,
+        "limit": 0,
+        "passed": true
+      },
+      {
+        "name": "rotating.insufficient_windows",
+        "value": -290,
+        "limit": 0,
+        "passed": true
+      },
+      {
+        "name": "rotating.conditioning",
+        "value": 1.0,
+        "limit": 100.0,
+        "passed": true
+      },
+      {
+        "name": "rotating.noise_information",
+        "value": 3.765039950536289e-05,
+        "limit": 0.05,
+        "passed": true
+      },
+      {
+        "name": "rotating.relative_uncertainty",
+        "value": 0.0009527363064514844,
+        "limit": 0.03333333333333333,
+        "passed": true
+      },
+      {
+        "name": "rotating.inconsistent_halves",
+        "value": 0.001024613656498286,
+        "limit": 0.1,
+        "passed": true
+      },
+      {
+        "name": "rotating.excessive_residual",
+        "value": 0.3164752506215538,
+        "limit": 1.0,
+        "passed": true
+      },
+      {
+        "name": "rotating.insufficient_speed",
+        "value": -53.69737348165356,
+        "limit": 0,
+        "passed": true
+      },
+      {
+        "name": "rotating.weak_back_emf",
+        "value": 0.06062009625582649,
+        "limit": 0.1,
+        "passed": true
+      }
+    ],
+    "diagnostics": {
+      "effective_rank": 1,
+      "scaled_condition_number": 1.0,
+      "noise_information_fraction": 3.765039950536289e-05,
+      "split_relative_difference": 0.001024613656498286,
+      "residual_rmse": 0.00015591895458177737,
+      "relative_sensitivity": [
+        0.0009527363064514844
+      ],
+      "component_snr": null
+    },
+    "retry_decision": "accepted",
+    "retry_action": null,
+    "next_configuration": null
+  },
+  {
+    "case": "weak_flux",
+    "stage": "mechanical",
+    "attempt": 1,
+    "configuration": {
+      "iq_plateaus_a": [
+        0.8,
+        0.0,
+        0.4,
+        -0.4,
+        0.0,
+        0.8,
+        0.0,
+        0.4,
+        -0.4,
+        0.0
+      ],
+      "plateau_duration_s": 0.25,
+      "control_dt_s": 4e-05,
+      "sample_dt_s": 0.001,
+      "dc_bus_voltage_v": 24.0,
+      "current_reference_limit_a": 1.0,
+      "current_noise_std_a": 0.01,
+      "speed_noise_std_rad_s": 0.05,
+      "seed": 540111626
+    },
+    "estimator_succeeded": true,
+    "quality_accepted": true,
+    "reasons": [],
+    "checks": [
+      {
+        "name": "mechanical.rank_deficiency",
+        "value": 0,
+        "limit": 0,
+        "passed": true
+      },
+      {
+        "name": "mechanical.insufficient_windows",
+        "value": -40,
+        "limit": 0,
+        "passed": true
+      },
+      {
+        "name": "mechanical.conditioning",
+        "value": 1.0547641456307482,
+        "limit": 100.0,
+        "passed": true
+      },
+      {
+        "name": "mechanical.noise_information",
+        "value": 6.151347776063112e-05,
+        "limit": 0.05,
+        "passed": true
+      },
+      {
+        "name": "mechanical.relative_uncertainty",
+        "value": 0.002891607874270414,
+        "limit": 0.03333333333333333,
+        "passed": true
+      },
+      {
+        "name": "mechanical.insufficient_excitation",
+        "value": -26.826867374585717,
+        "limit": 0,
+        "passed": true
+      },
+      {
+        "name": "mechanical.inconsistent_halves",
+        "value": 0.004359438265055404,
+        "limit": 0.1,
+        "passed": true
+      },
+      {
+        "name": "mechanical.excessive_residual",
+        "value": 0.19504552168339356,
+        "limit": 1.0,
+        "passed": true
+      }
+    ],
+    "diagnostics": {
+      "effective_rank": 2,
+      "scaled_condition_number": 1.0547641456307482,
+      "noise_information_fraction": 6.151347776063112e-05,
+      "split_relative_difference": 0.004359438265055404,
+      "residual_rmse": 2.25408075955566e-05,
+      "relative_sensitivity": [
+        0.001687163204063825,
+        0.002891607874270414
+      ],
+      "component_snr": [
+        117.15826486136095,
+        29.826867374585717
+      ]
+    },
+    "retry_decision": "accepted",
+    "retry_action": null,
+    "next_configuration": null
+  },
+  {
+    "case": "weak_mechanical",
+    "stage": "standstill",
+    "attempt": 1,
+    "configuration": {
+      "duration_s": 0.4,
+      "integration_dt_s": 2e-05,
+      "sample_dt_s": 0.0001,
+      "d_hold_samples": 23,
+      "q_hold_samples": 31,
+      "d_voltage_v": 1.2,
+      "q_voltage_v": 1.4,
+      "dc_bus_voltage_v": 24.0,
+      "current_noise_std_a": 0.01,
+      "voltage_noise_std_v": 0.01,
+      "speed_noise_std_rad_s": 0.02,
+      "seed": 1709608644
+    },
+    "estimator_succeeded": true,
+    "quality_accepted": true,
+    "reasons": [],
+    "checks": [
+      {
+        "name": "standstill.rank_deficiency",
+        "value": 0,
+        "limit": 0,
+        "passed": true
+      },
+      {
+        "name": "standstill.insufficient_windows",
+        "value": -390,
+        "limit": 0,
+        "passed": true
+      },
+      {
+        "name": "standstill.conditioning",
+        "value": 1.0027181731772303,
+        "limit": 100.0,
+        "passed": true
+      },
+      {
+        "name": "standstill.noise_information",
+        "value": 0.0004186620700815249,
+        "limit": 0.05,
+        "passed": true
+      },
+      {
+        "name": "standstill.relative_uncertainty",
+        "value": 0.000763823792785126,
+        "limit": 0.03333333333333333,
+        "passed": true
+      },
+      {
+        "name": "standstill.inconsistent_halves",
+        "value": 0.002741986981537681,
+        "limit": 0.1,
+        "passed": true
+      },
+      {
+        "name": "standstill.excessive_residual",
+        "value": 0.27848057446895386,
+        "limit": 1.0,
+        "passed": true
+      }
+    ],
+    "diagnostics": {
+      "effective_rank": 3,
+      "scaled_condition_number": 1.0027181731772303,
+      "noise_information_fraction": 0.0004186620700815249,
+      "split_relative_difference": 0.002741986981537681,
+      "residual_rmse": 1.7027472078144762e-05,
+      "relative_sensitivity": [
+        0.0002458407104383099,
+        0.000763823792785126,
+        0.0005747803432224353
+      ],
+      "component_snr": null
+    },
+    "retry_decision": "accepted",
+    "retry_action": null,
+    "next_configuration": null
+  },
+  {
+    "case": "weak_mechanical",
+    "stage": "rotating",
+    "attempt": 1,
+    "configuration": {
+      "duration_s": 0.3,
+      "integration_dt_s": 2e-05,
+      "sample_dt_s": 0.0001,
+      "speed_rpm": 600,
+      "d_hold_samples": 19,
+      "q_hold_samples": 29,
+      "d_voltage_v": 0.7,
+      "q_voltage_base_v": 5.0,
+      "q_voltage_perturb_v": 0.7,
+      "dc_bus_voltage_v": 24.0,
+      "current_noise_std_a": 0.01,
+      "voltage_noise_std_v": 0.01,
+      "speed_noise_std_rad_s": 0.02,
+      "seed": 1709608645
+    },
+    "estimator_succeeded": true,
+    "quality_accepted": true,
+    "reasons": [],
+    "checks": [
+      {
+        "name": "standstill.rank_deficiency",
+        "value": 0,
+        "limit": 0,
+        "passed": true
+      },
+      {
+        "name": "standstill.insufficient_windows",
+        "value": -390,
+        "limit": 0,
+        "passed": true
+      },
+      {
+        "name": "standstill.conditioning",
+        "value": 1.0027181731772303,
+        "limit": 100.0,
+        "passed": true
+      },
+      {
+        "name": "standstill.noise_information",
+        "value": 0.0004186620700815249,
+        "limit": 0.05,
+        "passed": true
+      },
+      {
+        "name": "standstill.relative_uncertainty",
+        "value": 0.000763823792785126,
+        "limit": 0.03333333333333333,
+        "passed": true
+      },
+      {
+        "name": "standstill.inconsistent_halves",
+        "value": 0.002741986981537681,
+        "limit": 0.1,
+        "passed": true
+      },
+      {
+        "name": "standstill.excessive_residual",
+        "value": 0.27848057446895386,
+        "limit": 1.0,
+        "passed": true
+      },
+      {
+        "name": "rotating.rank_deficiency",
+        "value": 0,
+        "limit": 0,
+        "passed": true
+      },
+      {
+        "name": "rotating.insufficient_windows",
+        "value": -290,
+        "limit": 0,
+        "passed": true
+      },
+      {
+        "name": "rotating.conditioning",
+        "value": 1.0,
+        "limit": 100.0,
+        "passed": true
+      },
+      {
+        "name": "rotating.noise_information",
+        "value": 9.625490013874336e-09,
+        "limit": 0.05,
+        "passed": true
+      },
+      {
+        "name": "rotating.relative_uncertainty",
+        "value": 6.551579543397011e-05,
+        "limit": 0.03333333333333333,
+        "passed": true
+      },
+      {
+        "name": "rotating.inconsistent_halves",
+        "value": 2.597992089760427e-06,
+        "limit": 0.1,
+        "passed": true
+      },
+      {
+        "name": "rotating.excessive_residual",
+        "value": 0.15939236992380273,
+        "limit": 1.0,
+        "passed": true
+      },
+      {
+        "name": "rotating.insufficient_speed",
+        "value": -211.01307005565104,
+        "limit": 0,
+        "passed": true
+      },
+      {
+        "name": "rotating.weak_back_emf",
+        "value": 0.003358003831000509,
+        "limit": 0.1,
+        "passed": true
+      }
+    ],
+    "diagnostics": {
+      "effective_rank": 1,
+      "scaled_condition_number": 1.0,
+      "noise_information_fraction": 9.625490013874336e-09,
+      "split_relative_difference": 2.597992089760427e-06,
+      "residual_rmse": 1.3996657013003062e-05,
+      "relative_sensitivity": [
+        6.551579543397011e-05
+      ],
+      "component_snr": null
+    },
+    "retry_decision": "accepted",
+    "retry_action": null,
+    "next_configuration": null
+  },
+  {
+    "case": "weak_mechanical",
+    "stage": "mechanical",
+    "attempt": 1,
+    "configuration": {
+      "iq_plateaus_a": [
+        0.064,
+        0.0,
+        0.032,
+        -0.032,
+        0.0,
+        0.064,
+        0.0,
+        0.032,
+        -0.032,
+        0.0
+      ],
+      "plateau_duration_s": 0.25,
+      "control_dt_s": 4e-05,
+      "sample_dt_s": 0.001,
+      "dc_bus_voltage_v": 24.0,
+      "current_reference_limit_a": 1.0,
+      "current_noise_std_a": 0.01,
+      "speed_noise_std_rad_s": 0.05,
+      "seed": 1709608646
+    },
+    "estimator_succeeded": true,
+    "quality_accepted": false,
+    "reasons": [
+      "mechanical.noise_information",
+      "mechanical.relative_uncertainty",
+      "mechanical.insufficient_excitation"
+    ],
+    "checks": [
+      {
+        "name": "mechanical.rank_deficiency",
+        "value": 0,
+        "limit": 0,
+        "passed": true
+      },
+      {
+        "name": "mechanical.insufficient_windows",
+        "value": -40,
+        "limit": 0,
+        "passed": true
+      },
+      {
+        "name": "mechanical.conditioning",
+        "value": 1.1354209424400297,
+        "limit": 100.0,
+        "passed": true
+      },
+      {
+        "name": "mechanical.noise_information",
+        "value": 0.06840086176383023,
+        "limit": 0.05,
+        "passed": false
+      },
+      {
+        "name": "mechanical.relative_uncertainty",
+        "value": 0.05661537614708944,
+        "limit": 0.03333333333333333,
+        "passed": false
+      },
+      {
+        "name": "mechanical.insufficient_excitation",
+        "value": 2.458325711397175,
+        "limit": 0,
+        "passed": false
+      },
+      {
+        "name": "mechanical.inconsistent_halves",
+        "value": 0.06598875551228726,
+        "limit": 0.1,
+        "passed": true
+      },
+      {
+        "name": "mechanical.excessive_residual",
+        "value": 0.3028097216273659,
+        "limit": 1.0,
+        "passed": true
+      }
+    ],
+    "diagnostics": {
+      "effective_rank": 2,
+      "scaled_condition_number": 1.1354209424400297,
+      "noise_information_fraction": 0.06840086176383023,
+      "split_relative_difference": 0.06598875551228726,
+      "residual_rmse": 4.171055087156759e-05,
+      "relative_sensitivity": [
+        0.028616968550582957,
+        0.05661537614708944
+      ],
+      "component_snr": [
+        3.772960819810486,
+        0.5416742886028253
+      ]
+    },
+    "retry_decision": "retry",
+    "retry_action": "extend_mechanical_plateaus_for_B",
+    "next_configuration": {
+      "iq_plateaus_a": [
+        0.064,
+        0.0,
+        0.032,
+        -0.032,
+        0.0,
+        0.064,
+        0.0,
+        0.032,
+        -0.032,
+        0.0
+      ],
+      "plateau_duration_s": 0.5,
+      "control_dt_s": 4e-05,
+      "sample_dt_s": 0.001,
+      "dc_bus_voltage_v": 24.0,
+      "current_reference_limit_a": 1.0,
+      "current_noise_std_a": 0.01,
+      "speed_noise_std_rad_s": 0.05,
+      "seed": 1709608647
+    }
+  },
+  {
+    "case": "weak_mechanical",
+    "stage": "mechanical",
+    "attempt": 2,
+    "configuration": {
+      "iq_plateaus_a": [
+        0.064,
+        0.0,
+        0.032,
+        -0.032,
+        0.0,
+        0.064,
+        0.0,
+        0.032,
+        -0.032,
+        0.0
+      ],
+      "plateau_duration_s": 0.5,
+      "control_dt_s": 4e-05,
+      "sample_dt_s": 0.001,
+      "dc_bus_voltage_v": 24.0,
+      "current_reference_limit_a": 1.0,
+      "current_noise_std_a": 0.01,
+      "speed_noise_std_rad_s": 0.05,
+      "seed": 1709608647
+    },
+    "estimator_succeeded": true,
+    "quality_accepted": false,
+    "reasons": [
+      "mechanical.noise_information",
+      "mechanical.insufficient_excitation"
+    ],
+    "checks": [
+      {
+        "name": "mechanical.rank_deficiency",
+        "value": 0,
+        "limit": 0,
+        "passed": true
+      },
+      {
+        "name": "mechanical.insufficient_windows",
+        "value": -90,
+        "limit": 0,
+        "passed": true
+      },
+      {
+        "name": "mechanical.conditioning",
+        "value": 1.0660590944249781,
+        "limit": 100.0,
+        "passed": true
+      },
+      {
+        "name": "mechanical.noise_information",
+        "value": 0.06680280140387485,
+        "limit": 0.05,
+        "passed": false
+      },
+      {
+        "name": "mechanical.relative_uncertainty",
+        "value": 0.019544259730945215,
+        "limit": 0.03333333333333333,
+        "passed": true
+      },
+      {
+        "name": "mechanical.insufficient_excitation",
+        "value": 2.060815506523145,
+        "limit": 0,
+        "passed": false
+      },
+      {
+        "name": "mechanical.inconsistent_halves",
+        "value": 0.041426024082808564,
+        "limit": 0.1,
+        "passed": true
+      },
+      {
+        "name": "mechanical.excessive_residual",
+        "value": 0.3289656065336973,
+        "limit": 1.0,
+        "passed": true
+      }
+    ],
+    "diagnostics": {
+      "effective_rank": 2,
+      "scaled_condition_number": 1.0660590944249781,
+      "noise_information_fraction": 0.06680280140387485,
+      "split_relative_difference": 0.041426024082808564,
+      "residual_rmse": 4.473695838670231e-05,
+      "relative_sensitivity": [
+        0.018944077411176385,
+        0.019544259730945215
+      ],
+      "component_snr": [
+        3.816447292776577,
+        0.9391844934768551
+      ]
+    },
+    "retry_decision": "retry",
+    "retry_action": "increase_mechanical_plateaus_for_J",
+    "next_configuration": {
+      "iq_plateaus_a": [
+        0.128,
+        0.0,
+        0.064,
+        -0.064,
+        0.0,
+        0.128,
+        0.0,
+        0.064,
+        -0.064,
+        0.0
+      ],
+      "plateau_duration_s": 0.5,
+      "control_dt_s": 4e-05,
+      "sample_dt_s": 0.001,
+      "dc_bus_voltage_v": 24.0,
+      "current_reference_limit_a": 1.0,
+      "current_noise_std_a": 0.01,
+      "speed_noise_std_rad_s": 0.05,
+      "seed": 1709608648
+    }
+  },
+  {
+    "case": "weak_mechanical",
+    "stage": "mechanical",
+    "attempt": 3,
+    "configuration": {
+      "iq_plateaus_a": [
+        0.128,
+        0.0,
+        0.064,
+        -0.064,
+        0.0,
+        0.128,
+        0.0,
+        0.064,
+        -0.064,
+        0.0
+      ],
+      "plateau_duration_s": 0.5,
+      "control_dt_s": 4e-05,
+      "sample_dt_s": 0.001,
+      "dc_bus_voltage_v": 24.0,
+      "current_reference_limit_a": 1.0,
+      "current_noise_std_a": 0.01,
+      "speed_noise_std_rad_s": 0.05,
+      "seed": 1709608648
+    },
+    "estimator_succeeded": true,
+    "quality_accepted": false,
+    "reasons": [
+      "mechanical.insufficient_excitation"
+    ],
+    "checks": [
+      {
+        "name": "mechanical.rank_deficiency",
+        "value": 0,
+        "limit": 0,
+        "passed": true
+      },
+      {
+        "name": "mechanical.insufficient_windows",
+        "value": -90,
+        "limit": 0,
+        "passed": true
+      },
+      {
+        "name": "mechanical.conditioning",
+        "value": 1.066494517236301,
+        "limit": 100.0,
+        "passed": true
+      },
+      {
+        "name": "mechanical.noise_information",
+        "value": 0.017912555304826924,
+        "limit": 0.05,
+        "passed": true
+      },
+      {
+        "name": "mechanical.relative_uncertainty",
+        "value": 0.01008046807714823,
+        "limit": 0.03333333333333333,
+        "passed": true
+      },
+      {
+        "name": "mechanical.insufficient_excitation",
+        "value": 1.2787693651900107,
+        "limit": 0,
+        "passed": false
+      },
+      {
+        "name": "mechanical.inconsistent_halves",
+        "value": 0.007869479394715963,
+        "limit": 0.1,
+        "passed": true
+      },
+      {
+        "name": "mechanical.excessive_residual",
+        "value": 0.28886733737111653,
+        "limit": 1.0,
+        "passed": true
+      }
+    ],
+    "diagnostics": {
+      "effective_rank": 2,
+      "scaled_condition_number": 1.066494517236301,
+      "noise_information_fraction": 0.017912555304826924,
+      "split_relative_difference": 0.007869479394715963,
+      "residual_rmse": 4.19364322149584e-05,
+      "relative_sensitivity": [
+        0.006428555650002387,
+        0.01008046807714823
+      ],
+      "component_snr": [
+        7.380538600848474,
+        1.7212306348099893
+      ]
+    },
+    "retry_decision": "retry",
+    "retry_action": "increase_mechanical_plateaus_for_J",
+    "next_configuration": {
+      "iq_plateaus_a": [
+        0.256,
+        0.0,
+        0.128,
+        -0.128,
+        0.0,
+        0.256,
+        0.0,
+        0.128,
+        -0.128,
+        0.0
+      ],
+      "plateau_duration_s": 0.5,
+      "control_dt_s": 4e-05,
+      "sample_dt_s": 0.001,
+      "dc_bus_voltage_v": 24.0,
+      "current_reference_limit_a": 1.0,
+      "current_noise_std_a": 0.01,
+      "speed_noise_std_rad_s": 0.05,
+      "seed": 1709608649
+    }
+  },
+  {
+    "case": "weak_mechanical",
+    "stage": "mechanical",
+    "attempt": 4,
+    "configuration": {
+      "iq_plateaus_a": [
+        0.256,
+        0.0,
+        0.128,
+        -0.128,
+        0.0,
+        0.256,
+        0.0,
+        0.128,
+        -0.128,
+        0.0
+      ],
+      "plateau_duration_s": 0.5,
+      "control_dt_s": 4e-05,
+      "sample_dt_s": 0.001,
+      "dc_bus_voltage_v": 24.0,
+      "current_reference_limit_a": 1.0,
+      "current_noise_std_a": 0.01,
+      "speed_noise_std_rad_s": 0.05,
+      "seed": 1709608649
+    },
+    "estimator_succeeded": true,
+    "quality_accepted": true,
+    "reasons": [],
+    "checks": [
+      {
+        "name": "mechanical.rank_deficiency",
+        "value": 0,
+        "limit": 0,
+        "passed": true
+      },
+      {
+        "name": "mechanical.insufficient_windows",
+        "value": -90,
+        "limit": 0,
+        "passed": true
+      },
+      {
+        "name": "mechanical.conditioning",
+        "value": 1.0671360460080406,
+        "limit": 100.0,
+        "passed": true
+      },
+      {
+        "name": "mechanical.noise_information",
+        "value": 0.004524478609994061,
+        "limit": 0.05,
+        "passed": true
+      },
+      {
+        "name": "mechanical.relative_uncertainty",
+        "value": 0.00503348896558346,
+        "limit": 0.03333333333333333,
+        "passed": true
+      },
+      {
+        "name": "mechanical.insufficient_excitation",
+        "value": -0.4345726345384051,
+        "limit": 0,
+        "passed": true
+      },
+      {
+        "name": "mechanical.inconsistent_halves",
+        "value": 0.010601843624737288,
+        "limit": 0.1,
+        "passed": true
+      },
+      {
+        "name": "mechanical.excessive_residual",
+        "value": 0.28897968292708703,
+        "limit": 1.0,
+        "passed": true
+      }
+    ],
+    "diagnostics": {
+      "effective_rank": 2,
+      "scaled_condition_number": 1.0671360460080406,
+      "noise_information_fraction": 0.004524478609994061,
+      "split_relative_difference": 0.010601843624737288,
+      "residual_rmse": 4.340483328239547e-05,
+      "relative_sensitivity": [
+        0.0027935511530352264,
+        0.00503348896558346
+      ],
+      "component_snr": [
+        14.688764915091072,
+        3.434572634538405
+      ]
+    },
+    "retry_decision": "accepted",
+    "retry_action": null,
+    "next_configuration": null
+  },
+  {
+    "case": "combined_weak",
+    "stage": "standstill",
+    "attempt": 1,
+    "configuration": {
+      "duration_s": 0.4,
+      "integration_dt_s": 2e-05,
+      "sample_dt_s": 0.0001,
+      "d_hold_samples": 23,
+      "q_hold_samples": 31,
+      "d_voltage_v": 0.096,
+      "q_voltage_v": 0.11199999999999999,
+      "dc_bus_voltage_v": 24.0,
+      "current_noise_std_a": 0.01,
+      "voltage_noise_std_v": 0.01,
+      "speed_noise_std_rad_s": 0.02,
+      "seed": 1058421569
+    },
+    "estimator_succeeded": true,
+    "quality_accepted": false,
+    "reasons": [
+      "standstill.noise_information"
+    ],
+    "checks": [
+      {
+        "name": "standstill.rank_deficiency",
+        "value": 0,
+        "limit": 0,
+        "passed": true
+      },
+      {
+        "name": "standstill.insufficient_windows",
+        "value": -390,
+        "limit": 0,
+        "passed": true
+      },
+      {
+        "name": "standstill.conditioning",
+        "value": 1.0029187857733726,
+        "limit": 100.0,
+        "passed": true
+      },
+      {
+        "name": "standstill.noise_information",
+        "value": 0.05077885559434771,
+        "limit": 0.05,
+        "passed": false
+      },
+      {
+        "name": "standstill.relative_uncertainty",
+        "value": 0.01027339341321296,
+        "limit": 0.03333333333333333,
+        "passed": true
+      },
+      {
+        "name": "standstill.inconsistent_halves",
+        "value": 0.02513931428393751,
+        "limit": 0.1,
+        "passed": true
+      },
+      {
+        "name": "standstill.excessive_residual",
+        "value": 0.33241041333805327,
+        "limit": 1.0,
+        "passed": true
+      }
+    ],
+    "diagnostics": {
+      "effective_rank": 3,
+      "scaled_condition_number": 1.0029187857733726,
+      "noise_information_fraction": 0.05077885559434771,
+      "split_relative_difference": 0.02513931428393751,
+      "residual_rmse": 1.600227906521462e-05,
+      "relative_sensitivity": [
+        0.00380566605765748,
+        0.01027339341321296,
+        0.009139849687388622
+      ],
+      "component_snr": null
+    },
+    "retry_decision": "retry",
+    "retry_action": "increase_standstill_voltage",
+    "next_configuration": {
+      "duration_s": 0.4,
+      "integration_dt_s": 2e-05,
+      "sample_dt_s": 0.0001,
+      "d_hold_samples": 23,
+      "q_hold_samples": 31,
+      "d_voltage_v": 0.192,
+      "q_voltage_v": 0.22399999999999998,
+      "dc_bus_voltage_v": 24.0,
+      "current_noise_std_a": 0.01,
+      "voltage_noise_std_v": 0.01,
+      "speed_noise_std_rad_s": 0.02,
+      "seed": 1058421570
+    }
+  },
+  {
+    "case": "combined_weak",
+    "stage": "standstill",
+    "attempt": 2,
+    "configuration": {
+      "duration_s": 0.4,
+      "integration_dt_s": 2e-05,
+      "sample_dt_s": 0.0001,
+      "d_hold_samples": 23,
+      "q_hold_samples": 31,
+      "d_voltage_v": 0.192,
+      "q_voltage_v": 0.22399999999999998,
+      "dc_bus_voltage_v": 24.0,
+      "current_noise_std_a": 0.01,
+      "voltage_noise_std_v": 0.01,
+      "speed_noise_std_rad_s": 0.02,
+      "seed": 1058421570
+    },
+    "estimator_succeeded": true,
+    "quality_accepted": true,
+    "reasons": [],
+    "checks": [
+      {
+        "name": "standstill.rank_deficiency",
+        "value": 0,
+        "limit": 0,
+        "passed": true
+      },
+      {
+        "name": "standstill.insufficient_windows",
+        "value": -390,
+        "limit": 0,
+        "passed": true
+      },
+      {
+        "name": "standstill.conditioning",
+        "value": 1.0027838572208672,
+        "limit": 100.0,
+        "passed": true
+      },
+      {
+        "name": "standstill.noise_information",
+        "value": 0.01380692149296641,
+        "limit": 0.05,
+        "passed": true
+      },
+      {
+        "name": "standstill.relative_uncertainty",
+        "value": 0.0046475689617120515,
+        "limit": 0.03333333333333333,
+        "passed": true
+      },
+      {
+        "name": "standstill.inconsistent_halves",
+        "value": 0.0046654303146713375,
+        "limit": 0.1,
+        "passed": true
+      },
+      {
+        "name": "standstill.excessive_residual",
+        "value": 0.32959345227227743,
+        "limit": 1.0,
+        "passed": true
+      }
+    ],
+    "diagnostics": {
+      "effective_rank": 3,
+      "scaled_condition_number": 1.0027838572208672,
+      "noise_information_fraction": 0.01380692149296641,
+      "split_relative_difference": 0.0046654303146713375,
+      "residual_rmse": 1.6481610219980158e-05,
+      "relative_sensitivity": [
+        0.0016496308983359727,
+        0.0046475689617120515,
+        0.004355456008610067
+      ],
+      "component_snr": null
+    },
+    "retry_decision": "accepted",
+    "retry_action": null,
+    "next_configuration": null
+  },
+  {
+    "case": "combined_weak",
+    "stage": "rotating",
+    "attempt": 1,
+    "configuration": {
+      "duration_s": 0.3,
+      "integration_dt_s": 2e-05,
+      "sample_dt_s": 0.0001,
+      "speed_rpm": 120,
+      "d_hold_samples": 19,
+      "q_hold_samples": 29,
+      "d_voltage_v": 0.7,
+      "q_voltage_base_v": 5.0,
+      "q_voltage_perturb_v": 0.7,
+      "dc_bus_voltage_v": 24.0,
+      "current_noise_std_a": 0.1,
+      "voltage_noise_std_v": 0.1,
+      "speed_noise_std_rad_s": 0.5,
+      "seed": 1058421570
+    },
+    "estimator_succeeded": true,
+    "quality_accepted": false,
+    "reasons": [
+      "rotating.weak_back_emf"
+    ],
+    "checks": [
+      {
+        "name": "standstill.rank_deficiency",
+        "value": 0,
+        "limit": 0,
+        "passed": true
+      },
+      {
+        "name": "standstill.insufficient_windows",
+        "value": -390,
+        "limit": 0,
+        "passed": true
+      },
+      {
+        "name": "standstill.conditioning",
+        "value": 1.0027838572208672,
+        "limit": 100.0,
+        "passed": true
+      },
+      {
+        "name": "standstill.noise_information",
+        "value": 0.01380692149296641,
+        "limit": 0.05,
+        "passed": true
+      },
+      {
+        "name": "standstill.relative_uncertainty",
+        "value": 0.0046475689617120515,
+        "limit": 0.03333333333333333,
+        "passed": true
+      },
+      {
+        "name": "standstill.inconsistent_halves",
+        "value": 0.0046654303146713375,
+        "limit": 0.1,
+        "passed": true
+      },
+      {
+        "name": "standstill.excessive_residual",
+        "value": 0.32959345227227743,
+        "limit": 1.0,
+        "passed": true
+      },
+      {
+        "name": "rotating.rank_deficiency",
+        "value": 0,
+        "limit": 0,
+        "passed": true
+      },
+      {
+        "name": "rotating.insufficient_windows",
+        "value": -290,
+        "limit": 0,
+        "passed": true
+      },
+      {
+        "name": "rotating.conditioning",
+        "value": 1.0,
+        "limit": 100.0,
+        "passed": true
+      },
+      {
+        "name": "rotating.noise_information",
+        "value": 0.00015043962818360023,
+        "limit": 0.05,
+        "passed": true
+      },
+      {
+        "name": "rotating.relative_uncertainty",
+        "value": 0.007227809717417233,
+        "limit": 0.03333333333333333,
+        "passed": true
+      },
+      {
+        "name": "rotating.inconsistent_halves",
+        "value": 0.004242331780067611,
+        "limit": 0.1,
+        "passed": true
+      },
+      {
+        "name": "rotating.excessive_residual",
+        "value": 0.3171544594199794,
+        "limit": 1.0,
+        "passed": true
+      },
+      {
+        "name": "rotating.insufficient_speed",
+        "value": -3.298640154726378,
+        "limit": 0,
+        "passed": true
+      },
+      {
+        "name": "rotating.weak_back_emf",
+        "value": 0.1789020147256131,
+        "limit": 0.1,
+        "passed": false
+      }
+    ],
+    "diagnostics": {
+      "effective_rank": 1,
+      "scaled_condition_number": 1.0,
+      "noise_information_fraction": 0.00015043962818360023,
+      "split_relative_difference": 0.004242331780067611,
+      "residual_rmse": 0.0001665985286167857,
+      "relative_sensitivity": [
+        0.007227809717417233
+      ],
+      "component_snr": null
+    },
+    "retry_decision": "retry",
+    "retry_action": "increase_rotating_speed",
+    "next_configuration": {
+      "duration_s": 0.3,
+      "integration_dt_s": 2e-05,
+      "sample_dt_s": 0.0001,
+      "speed_rpm": 240.0,
+      "d_hold_samples": 19,
+      "q_hold_samples": 29,
+      "d_voltage_v": 0.7,
+      "q_voltage_base_v": 5.0,
+      "q_voltage_perturb_v": 0.7,
+      "dc_bus_voltage_v": 24.0,
+      "current_noise_std_a": 0.1,
+      "voltage_noise_std_v": 0.1,
+      "speed_noise_std_rad_s": 0.5,
+      "seed": 1058421571
+    }
+  },
+  {
+    "case": "combined_weak",
+    "stage": "rotating",
+    "attempt": 2,
+    "configuration": {
+      "duration_s": 0.3,
+      "integration_dt_s": 2e-05,
+      "sample_dt_s": 0.0001,
+      "speed_rpm": 240.0,
+      "d_hold_samples": 19,
+      "q_hold_samples": 29,
+      "d_voltage_v": 0.7,
+      "q_voltage_base_v": 5.0,
+      "q_voltage_perturb_v": 0.7,
+      "dc_bus_voltage_v": 24.0,
+      "current_noise_std_a": 0.1,
+      "voltage_noise_std_v": 0.1,
+      "speed_noise_std_rad_s": 0.5,
+      "seed": 1058421571
+    },
+    "estimator_succeeded": true,
+    "quality_accepted": true,
+    "reasons": [],
+    "checks": [
+      {
+        "name": "standstill.rank_deficiency",
+        "value": 0,
+        "limit": 0,
+        "passed": true
+      },
+      {
+        "name": "standstill.insufficient_windows",
+        "value": -390,
+        "limit": 0,
+        "passed": true
+      },
+      {
+        "name": "standstill.conditioning",
+        "value": 1.0027838572208672,
+        "limit": 100.0,
+        "passed": true
+      },
+      {
+        "name": "standstill.noise_information",
+        "value": 0.01380692149296641,
+        "limit": 0.05,
+        "passed": true
+      },
+      {
+        "name": "standstill.relative_uncertainty",
+        "value": 0.0046475689617120515,
+        "limit": 0.03333333333333333,
+        "passed": true
+      },
+      {
+        "name": "standstill.inconsistent_halves",
+        "value": 0.0046654303146713375,
+        "limit": 0.1,
+        "passed": true
+      },
+      {
+        "name": "standstill.excessive_residual",
+        "value": 0.32959345227227743,
+        "limit": 1.0,
+        "passed": true
+      },
+      {
+        "name": "rotating.rank_deficiency",
+        "value": 0,
+        "limit": 0,
+        "passed": true
+      },
+      {
+        "name": "rotating.insufficient_windows",
+        "value": -290,
+        "limit": 0,
+        "passed": true
+      },
+      {
+        "name": "rotating.conditioning",
+        "value": 1.0,
+        "limit": 100.0,
+        "passed": true
+      },
+      {
+        "name": "rotating.noise_information",
+        "value": 3.759713893229244e-05,
+        "limit": 0.05,
+        "passed": true
+      },
+      {
+        "name": "rotating.relative_uncertainty",
+        "value": 0.00284371799802733,
+        "limit": 0.03333333333333333,
+        "passed": true
+      },
+      {
+        "name": "rotating.inconsistent_halves",
+        "value": 0.005335566368699317,
+        "limit": 0.1,
+        "passed": true
+      },
+      {
+        "name": "rotating.excessive_residual",
+        "value": 0.30981922525708233,
+        "limit": 1.0,
+        "passed": true
+      },
+      {
+        "name": "rotating.insufficient_speed",
+        "value": -52.99905419008647,
+        "limit": 0,
+        "passed": true
+      },
+      {
+        "name": "rotating.weak_back_emf",
+        "value": 0.089770917203399,
+        "limit": 0.1,
+        "passed": true
+      }
+    ],
+    "diagnostics": {
+      "effective_rank": 1,
+      "scaled_condition_number": 1.0,
+      "noise_information_fraction": 3.759713893229244e-05,
+      "split_relative_difference": 0.005335566368699317,
+      "residual_rmse": 0.00016570915021854834,
+      "relative_sensitivity": [
+        0.00284371799802733
+      ],
+      "component_snr": null
+    },
+    "retry_decision": "accepted",
+    "retry_action": null,
+    "next_configuration": null
+  },
+  {
+    "case": "combined_weak",
+    "stage": "mechanical",
+    "attempt": 1,
+    "configuration": {
+      "iq_plateaus_a": [
+        0.064,
+        0.0,
+        0.032,
+        -0.032,
+        0.0,
+        0.064,
+        0.0,
+        0.032,
+        -0.032,
+        0.0
+      ],
+      "plateau_duration_s": 0.25,
+      "control_dt_s": 4e-05,
+      "sample_dt_s": 0.001,
+      "dc_bus_voltage_v": 24.0,
+      "current_reference_limit_a": 1.0,
+      "current_noise_std_a": 0.01,
+      "speed_noise_std_rad_s": 0.05,
+      "seed": 1058421571
+    },
+    "estimator_succeeded": true,
+    "quality_accepted": false,
+    "reasons": [
+      "mechanical.relative_uncertainty",
+      "mechanical.insufficient_excitation"
+    ],
+    "checks": [
+      {
+        "name": "mechanical.rank_deficiency",
+        "value": 0,
+        "limit": 0,
+        "passed": true
+      },
+      {
+        "name": "mechanical.insufficient_windows",
+        "value": -40,
+        "limit": 0,
+        "passed": true
+      },
+      {
+        "name": "mechanical.conditioning",
+        "value": 1.1185911903629149,
+        "limit": 100.0,
+        "passed": true
+      },
+      {
+        "name": "mechanical.noise_information",
+        "value": 0.04379995645730887,
+        "limit": 0.05,
+        "passed": true
+      },
+      {
+        "name": "mechanical.relative_uncertainty",
+        "value": 0.049972610369007284,
+        "limit": 0.03333333333333333,
+        "passed": false
+      },
+      {
+        "name": "mechanical.insufficient_excitation",
+        "value": 2.263280189612558,
+        "limit": 0,
+        "passed": false
+      },
+      {
+        "name": "mechanical.inconsistent_halves",
+        "value": 0.05140900757910588,
+        "limit": 0.1,
+        "passed": true
+      },
+      {
+        "name": "mechanical.excessive_residual",
+        "value": 0.4159712224661298,
+        "limit": 1.0,
+        "passed": true
+      }
+    ],
+    "diagnostics": {
+      "effective_rank": 2,
+      "scaled_condition_number": 1.1185911903629149,
+      "noise_information_fraction": 0.04379995645730887,
+      "split_relative_difference": 0.05140900757910588,
+      "residual_rmse": 5.057736361078818e-05,
+      "relative_sensitivity": [
+        0.024728108937926836,
+        0.049972610369007284
+      ],
+      "component_snr": [
+        4.68000537326795,
+        0.7367198103874419
+      ]
+    },
+    "retry_decision": "retry",
+    "retry_action": "extend_mechanical_plateaus_for_B",
+    "next_configuration": {
+      "iq_plateaus_a": [
+        0.064,
+        0.0,
+        0.032,
+        -0.032,
+        0.0,
+        0.064,
+        0.0,
+        0.032,
+        -0.032,
+        0.0
+      ],
+      "plateau_duration_s": 0.5,
+      "control_dt_s": 4e-05,
+      "sample_dt_s": 0.001,
+      "dc_bus_voltage_v": 24.0,
+      "current_reference_limit_a": 1.0,
+      "current_noise_std_a": 0.01,
+      "speed_noise_std_rad_s": 0.05,
+      "seed": 1058421572
+    }
+  },
+  {
+    "case": "combined_weak",
+    "stage": "mechanical",
+    "attempt": 2,
+    "configuration": {
+      "iq_plateaus_a": [
+        0.064,
+        0.0,
+        0.032,
+        -0.032,
+        0.0,
+        0.064,
+        0.0,
+        0.032,
+        -0.032,
+        0.0
+      ],
+      "plateau_duration_s": 0.5,
+      "control_dt_s": 4e-05,
+      "sample_dt_s": 0.001,
+      "dc_bus_voltage_v": 24.0,
+      "current_reference_limit_a": 1.0,
+      "current_noise_std_a": 0.01,
+      "speed_noise_std_rad_s": 0.05,
+      "seed": 1058421572
+    },
+    "estimator_succeeded": true,
+    "quality_accepted": false,
+    "reasons": [
+      "mechanical.insufficient_excitation"
+    ],
+    "checks": [
+      {
+        "name": "mechanical.rank_deficiency",
+        "value": 0,
+        "limit": 0,
+        "passed": true
+      },
+      {
+        "name": "mechanical.insufficient_windows",
+        "value": -90,
+        "limit": 0,
+        "passed": true
+      },
+      {
+        "name": "mechanical.conditioning",
+        "value": 1.0533845094949235,
+        "limit": 100.0,
+        "passed": true
+      },
+      {
+        "name": "mechanical.noise_information",
+        "value": 0.04311282084010315,
+        "limit": 0.05,
+        "passed": true
+      },
+      {
+        "name": "mechanical.relative_uncertainty",
+        "value": 0.02076018224139226,
+        "limit": 0.03333333333333333,
+        "passed": true
+      },
+      {
+        "name": "mechanical.insufficient_excitation",
+        "value": 1.8006926701726358,
+        "limit": 0,
+        "passed": false
+      },
+      {
+        "name": "mechanical.inconsistent_halves",
+        "value": 0.010482726574481025,
+        "limit": 0.1,
+        "passed": true
+      },
+      {
+        "name": "mechanical.excessive_residual",
+        "value": 0.32099051597415834,
+        "limit": 1.0,
+        "passed": true
+      }
+    ],
+    "diagnostics": {
+      "effective_rank": 2,
+      "scaled_condition_number": 1.0533845094949235,
+      "noise_information_fraction": 0.04311282084010315,
+      "split_relative_difference": 0.010482726574481025,
+      "residual_rmse": 3.9182139771858115e-05,
+      "relative_sensitivity": [
+        0.015635170602428698,
+        0.02076018224139226
+      ],
+      "component_snr": [
+        4.717919171508163,
+        1.1993073298273642
+      ]
+    },
+    "retry_decision": "retry",
+    "retry_action": "increase_mechanical_plateaus_for_J",
+    "next_configuration": {
+      "iq_plateaus_a": [
+        0.128,
+        0.0,
+        0.064,
+        -0.064,
+        0.0,
+        0.128,
+        0.0,
+        0.064,
+        -0.064,
+        0.0
+      ],
+      "plateau_duration_s": 0.5,
+      "control_dt_s": 4e-05,
+      "sample_dt_s": 0.001,
+      "dc_bus_voltage_v": 24.0,
+      "current_reference_limit_a": 1.0,
+      "current_noise_std_a": 0.01,
+      "speed_noise_std_rad_s": 0.05,
+      "seed": 1058421573
+    }
+  },
+  {
+    "case": "combined_weak",
+    "stage": "mechanical",
+    "attempt": 3,
+    "configuration": {
+      "iq_plateaus_a": [
+        0.128,
+        0.0,
+        0.064,
+        -0.064,
+        0.0,
+        0.128,
+        0.0,
+        0.064,
+        -0.064,
+        0.0
+      ],
+      "plateau_duration_s": 0.5,
+      "control_dt_s": 4e-05,
+      "sample_dt_s": 0.001,
+      "dc_bus_voltage_v": 24.0,
+      "current_reference_limit_a": 1.0,
+      "current_noise_std_a": 0.01,
+      "speed_noise_std_rad_s": 0.05,
+      "seed": 1058421573
+    },
+    "estimator_succeeded": true,
+    "quality_accepted": false,
+    "reasons": [
+      "mechanical.insufficient_excitation"
+    ],
+    "checks": [
+      {
+        "name": "mechanical.rank_deficiency",
+        "value": 0,
+        "limit": 0,
+        "passed": true
+      },
+      {
+        "name": "mechanical.insufficient_windows",
+        "value": -90,
+        "limit": 0,
+        "passed": true
+      },
+      {
+        "name": "mechanical.conditioning",
+        "value": 1.0582986539660642,
+        "limit": 100.0,
+        "passed": true
+      },
+      {
+        "name": "mechanical.noise_information",
+        "value": 0.011180643240574452,
+        "limit": 0.05,
+        "passed": true
+      },
+      {
+        "name": "mechanical.relative_uncertainty",
+        "value": 0.011958166957090016,
+        "limit": 0.03333333333333333,
+        "passed": true
+      },
+      {
+        "name": "mechanical.insufficient_excitation",
+        "value": 0.7169032130158204,
+        "limit": 0,
+        "passed": false
+      },
+      {
+        "name": "mechanical.inconsistent_halves",
+        "value": 0.013003250031753878,
+        "limit": 0.1,
+        "passed": true
+      },
+      {
+        "name": "mechanical.excessive_residual",
+        "value": 0.30046239601863334,
+        "limit": 1.0,
+        "passed": true
+      }
+    ],
+    "diagnostics": {
+      "effective_rank": 2,
+      "scaled_condition_number": 1.0582986539660642,
+      "noise_information_fraction": 0.011180643240574452,
+      "split_relative_difference": 0.013003250031753878,
+      "residual_rmse": 3.826027897891843e-05,
+      "relative_sensitivity": [
+        0.007766517625512633,
+        0.011958166957090016
+      ],
+      "component_snr": [
+        9.274690251206044,
+        2.2830967869841796
+      ]
+    },
+    "retry_decision": "retry",
+    "retry_action": "increase_mechanical_plateaus_for_J",
+    "next_configuration": {
+      "iq_plateaus_a": [
+        0.256,
+        0.0,
+        0.128,
+        -0.128,
+        0.0,
+        0.256,
+        0.0,
+        0.128,
+        -0.128,
+        0.0
+      ],
+      "plateau_duration_s": 0.5,
+      "control_dt_s": 4e-05,
+      "sample_dt_s": 0.001,
+      "dc_bus_voltage_v": 24.0,
+      "current_reference_limit_a": 1.0,
+      "current_noise_std_a": 0.01,
+      "speed_noise_std_rad_s": 0.05,
+      "seed": 1058421574
+    }
+  },
+  {
+    "case": "combined_weak",
+    "stage": "mechanical",
+    "attempt": 4,
+    "configuration": {
+      "iq_plateaus_a": [
+        0.256,
+        0.0,
+        0.128,
+        -0.128,
+        0.0,
+        0.256,
+        0.0,
+        0.128,
+        -0.128,
+        0.0
+      ],
+      "plateau_duration_s": 0.5,
+      "control_dt_s": 4e-05,
+      "sample_dt_s": 0.001,
+      "dc_bus_voltage_v": 24.0,
+      "current_reference_limit_a": 1.0,
+      "current_noise_std_a": 0.01,
+      "speed_noise_std_rad_s": 0.05,
+      "seed": 1058421574
+    },
+    "estimator_succeeded": true,
+    "quality_accepted": true,
+    "reasons": [],
+    "checks": [
+      {
+        "name": "mechanical.rank_deficiency",
+        "value": 0,
+        "limit": 0,
+        "passed": true
+      },
+      {
+        "name": "mechanical.insufficient_windows",
+        "value": -90,
+        "limit": 0,
+        "passed": true
+      },
+      {
+        "name": "mechanical.conditioning",
+        "value": 1.058525450852979,
+        "limit": 100.0,
+        "passed": true
+      },
+      {
+        "name": "mechanical.noise_information",
+        "value": 0.0028508513523963965,
+        "limit": 0.05,
+        "passed": true
+      },
+      {
+        "name": "mechanical.relative_uncertainty",
+        "value": 0.0073526711369703,
+        "limit": 0.03333333333333333,
+        "passed": true
+      },
+      {
+        "name": "mechanical.insufficient_excitation",
+        "value": -1.5666639406282634,
+        "limit": 0,
+        "passed": true
+      },
+      {
+        "name": "mechanical.inconsistent_halves",
+        "value": 0.004830326625352457,
+        "limit": 0.1,
+        "passed": true
+      },
+      {
+        "name": "mechanical.excessive_residual",
+        "value": 0.29996395945866033,
+        "limit": 1.0,
+        "passed": true
+      }
+    ],
+    "diagnostics": {
+      "effective_rank": 2,
+      "scaled_condition_number": 1.058525450852979,
+      "noise_information_fraction": 0.0028508513523963965,
+      "split_relative_difference": 0.004830326625352457,
+      "residual_rmse": 3.9812206221659545e-05,
+      "relative_sensitivity": [
+        0.00503835354207635,
+        0.0073526711369703
+      ],
+      "component_snr": [
+        18.375398179448066,
+        4.566663940628263
+      ]
+    },
+    "retry_decision": "accepted",
+    "retry_action": null,
+    "next_configuration": null
+  },
+  {
+    "case": "medium_noise",
+    "stage": "standstill",
+    "attempt": 1,
+    "configuration": {
+      "duration_s": 0.4,
+      "integration_dt_s": 2e-05,
+      "sample_dt_s": 0.0001,
+      "d_hold_samples": 23,
+      "q_hold_samples": 31,
+      "d_voltage_v": 1.2,
+      "q_voltage_v": 1.4,
+      "dc_bus_voltage_v": 24.0,
+      "current_noise_std_a": 0.04,
+      "voltage_noise_std_v": 0.03,
+      "speed_noise_std_rad_s": 0.1,
+      "seed": 164716633
+    },
+    "estimator_succeeded": true,
+    "quality_accepted": true,
+    "reasons": [],
+    "checks": [
+      {
+        "name": "standstill.rank_deficiency",
+        "value": 0,
+        "limit": 0,
+        "passed": true
+      },
+      {
+        "name": "standstill.insufficient_windows",
+        "value": -390,
+        "limit": 0,
+        "passed": true
+      },
+      {
+        "name": "standstill.conditioning",
+        "value": 1.0041003338849053,
+        "limit": 100.0,
+        "passed": true
+      },
+      {
+        "name": "standstill.noise_information",
+        "value": 0.003910511660806408,
+        "limit": 0.05,
+        "passed": true
+      },
+      {
+        "name": "standstill.relative_uncertainty",
+        "value": 0.0024853802095584653,
+        "limit": 0.03333333333333333,
+        "passed": true
+      },
+      {
+        "name": "standstill.inconsistent_halves",
+        "value": 0.0031506499701083007,
+        "limit": 0.1,
+        "passed": true
+      },
+      {
+        "name": "standstill.excessive_residual",
+        "value": 0.30409474732069564,
+        "limit": 1.0,
+        "passed": true
+      }
+    ],
+    "diagnostics": {
+      "effective_rank": 3,
+      "scaled_condition_number": 1.0041003338849053,
+      "noise_information_fraction": 0.003910511660806408,
+      "split_relative_difference": 0.0031506499701083007,
+      "residual_rmse": 5.13754708519285e-05,
+      "relative_sensitivity": [
+        0.000836725456455167,
+        0.0024853802095584653,
+        0.0021228217572664375
+      ],
+      "component_snr": null
+    },
+    "retry_decision": "accepted",
+    "retry_action": null,
+    "next_configuration": null
+  },
+  {
+    "case": "medium_noise",
+    "stage": "rotating",
+    "attempt": 1,
+    "configuration": {
+      "duration_s": 0.3,
+      "integration_dt_s": 2e-05,
+      "sample_dt_s": 0.0001,
+      "speed_rpm": 600,
+      "d_hold_samples": 19,
+      "q_hold_samples": 29,
+      "d_voltage_v": 0.7,
+      "q_voltage_base_v": 5.0,
+      "q_voltage_perturb_v": 0.7,
+      "dc_bus_voltage_v": 24.0,
+      "current_noise_std_a": 0.04,
+      "voltage_noise_std_v": 0.03,
+      "speed_noise_std_rad_s": 0.1,
+      "seed": 164716634
+    },
+    "estimator_succeeded": true,
+    "quality_accepted": true,
+    "reasons": [],
+    "checks": [
+      {
+        "name": "standstill.rank_deficiency",
+        "value": 0,
+        "limit": 0,
+        "passed": true
+      },
+      {
+        "name": "standstill.insufficient_windows",
+        "value": -390,
+        "limit": 0,
+        "passed": true
+      },
+      {
+        "name": "standstill.conditioning",
+        "value": 1.0041003338849053,
+        "limit": 100.0,
+        "passed": true
+      },
+      {
+        "name": "standstill.noise_information",
+        "value": 0.003910511660806408,
+        "limit": 0.05,
+        "passed": true
+      },
+      {
+        "name": "standstill.relative_uncertainty",
+        "value": 0.0024853802095584653,
+        "limit": 0.03333333333333333,
+        "passed": true
+      },
+      {
+        "name": "standstill.inconsistent_halves",
+        "value": 0.0031506499701083007,
+        "limit": 0.1,
+        "passed": true
+      },
+      {
+        "name": "standstill.excessive_residual",
+        "value": 0.30409474732069564,
+        "limit": 1.0,
+        "passed": true
+      },
+      {
+        "name": "rotating.rank_deficiency",
+        "value": 0,
+        "limit": 0,
+        "passed": true
+      },
+      {
+        "name": "rotating.insufficient_windows",
+        "value": -290,
+        "limit": 0,
+        "passed": true
+      },
+      {
+        "name": "rotating.conditioning",
+        "value": 1.0,
+        "limit": 100.0,
+        "passed": true
+      },
+      {
+        "name": "rotating.noise_information",
+        "value": 2.406576786110772e-07,
+        "limit": 0.05,
+        "passed": true
+      },
+      {
+        "name": "rotating.relative_uncertainty",
+        "value": 0.00014548413828502168,
+        "limit": 0.03333333333333333,
+        "passed": true
+      },
+      {
+        "name": "rotating.inconsistent_halves",
+        "value": 0.00011506100129588693,
+        "limit": 0.1,
+        "passed": true
+      },
+      {
+        "name": "rotating.excessive_residual",
+        "value": 0.27694005051030307,
+        "limit": 1.0,
+        "passed": true
+      },
+      {
+        "name": "rotating.insufficient_speed",
+        "value": -209.8746669625098,
+        "limit": 0,
+        "passed": true
+      },
+      {
+        "name": "rotating.weak_back_emf",
+        "value": 0.011304626610576178,
+        "limit": 0.1,
+        "passed": true
+      }
+    ],
+    "diagnostics": {
+      "effective_rank": 1,
+      "scaled_condition_number": 1.0,
+      "noise_information_fraction": 2.406576786110772e-07,
+      "split_relative_difference": 0.00011506100129588693,
+      "residual_rmse": 6.0279433082263e-05,
+      "relative_sensitivity": [
+        0.00014548413828502168
+      ],
+      "component_snr": null
+    },
+    "retry_decision": "accepted",
+    "retry_action": null,
+    "next_configuration": null
+  },
+  {
+    "case": "medium_noise",
+    "stage": "mechanical",
+    "attempt": 1,
+    "configuration": {
+      "iq_plateaus_a": [
+        0.8,
+        0.0,
+        0.4,
+        -0.4,
+        0.0,
+        0.8,
+        0.0,
+        0.4,
+        -0.4,
+        0.0
+      ],
+      "plateau_duration_s": 0.25,
+      "control_dt_s": 4e-05,
+      "sample_dt_s": 0.001,
+      "dc_bus_voltage_v": 24.0,
+      "current_reference_limit_a": 1.0,
+      "current_noise_std_a": 0.04,
+      "speed_noise_std_rad_s": 0.2,
+      "seed": 164716635
+    },
+    "estimator_succeeded": true,
+    "quality_accepted": false,
+    "reasons": [
+      "mechanical.insufficient_excitation"
+    ],
+    "checks": [
+      {
+        "name": "mechanical.rank_deficiency",
+        "value": 0,
+        "limit": 0,
+        "passed": true
+      },
+      {
+        "name": "mechanical.insufficient_windows",
+        "value": -40,
+        "limit": 0,
+        "passed": true
+      },
+      {
+        "name": "mechanical.conditioning",
+        "value": 1.1715690543008943,
+        "limit": 100.0,
+        "passed": true
+      },
+      {
+        "name": "mechanical.noise_information",
+        "value": 0.007642265292241002,
+        "limit": 0.05,
+        "passed": true
+      },
+      {
+        "name": "mechanical.relative_uncertainty",
+        "value": 0.02765602592547518,
+        "limit": 0.03333333333333333,
+        "passed": true
+      },
+      {
+        "name": "mechanical.insufficient_excitation",
+        "value": 1.9087997872272418,
+        "limit": 0,
+        "passed": false
+      },
+      {
+        "name": "mechanical.inconsistent_halves",
+        "value": 0.09351236830795322,
+        "limit": 0.1,
+        "passed": true
+      },
+      {
+        "name": "mechanical.excessive_residual",
+        "value": 0.31777803976119484,
+        "limit": 1.0,
+        "passed": true
+      }
+    ],
+    "diagnostics": {
+      "effective_rank": 2,
+      "scaled_condition_number": 1.1715690543008943,
+      "noise_information_fraction": 0.007642265292241002,
+      "split_relative_difference": 0.09351236830795322,
+      "residual_rmse": 0.00021863367891204275,
+      "relative_sensitivity": [
+        0.007133292454780586,
+        0.02765602592547518
+      ],
+      "component_snr": [
+        11.308073029380152,
+        1.0912002127727582
+      ]
+    },
+    "retry_decision": "retry",
+    "retry_action": "extend_mechanical_plateaus_for_B",
+    "next_configuration": {
+      "iq_plateaus_a": [
+        0.8,
+        0.0,
+        0.4,
+        -0.4,
+        0.0,
+        0.8,
+        0.0,
+        0.4,
+        -0.4,
+        0.0
+      ],
+      "plateau_duration_s": 0.5,
+      "control_dt_s": 4e-05,
+      "sample_dt_s": 0.001,
+      "dc_bus_voltage_v": 24.0,
+      "current_reference_limit_a": 1.0,
+      "current_noise_std_a": 0.04,
+      "speed_noise_std_rad_s": 0.2,
+      "seed": 164716636
+    }
+  },
+  {
+    "case": "medium_noise",
+    "stage": "mechanical",
+    "attempt": 2,
+    "configuration": {
+      "iq_plateaus_a": [
+        0.8,
+        0.0,
+        0.4,
+        -0.4,
+        0.0,
+        0.8,
+        0.0,
+        0.4,
+        -0.4,
+        0.0
+      ],
+      "plateau_duration_s": 0.5,
+      "control_dt_s": 4e-05,
+      "sample_dt_s": 0.001,
+      "dc_bus_voltage_v": 24.0,
+      "current_reference_limit_a": 1.0,
+      "current_noise_std_a": 0.04,
+      "speed_noise_std_rad_s": 0.2,
+      "seed": 164716636
+    },
+    "estimator_succeeded": true,
+    "quality_accepted": false,
+    "reasons": [
+      "mechanical.insufficient_excitation"
+    ],
+    "checks": [
+      {
+        "name": "mechanical.rank_deficiency",
+        "value": 0,
+        "limit": 0,
+        "passed": true
+      },
+      {
+        "name": "mechanical.insufficient_windows",
+        "value": -90,
+        "limit": 0,
+        "passed": true
+      },
+      {
+        "name": "mechanical.conditioning",
+        "value": 1.1119601934021006,
+        "limit": 100.0,
+        "passed": true
+      },
+      {
+        "name": "mechanical.noise_information",
+        "value": 0.00771946710768893,
+        "limit": 0.05,
+        "passed": true
+      },
+      {
+        "name": "mechanical.relative_uncertainty",
+        "value": 0.00933277250722928,
+        "limit": 0.03333333333333333,
+        "passed": true
+      },
+      {
+        "name": "mechanical.insufficient_excitation",
+        "value": 1.0987373012930928,
+        "limit": 0,
+        "passed": false
+      },
+      {
+        "name": "mechanical.inconsistent_halves",
+        "value": 0.01934572727565905,
+        "limit": 0.1,
+        "passed": true
+      },
+      {
+        "name": "mechanical.excessive_residual",
+        "value": 0.30888633032572993,
+        "limit": 1.0,
+        "passed": true
+      }
+    ],
+    "diagnostics": {
+      "effective_rank": 2,
+      "scaled_condition_number": 1.1119601934021006,
+      "noise_information_fraction": 0.00771946710768893,
+      "split_relative_difference": 0.01934572727565905,
+      "residual_rmse": 0.00021331136949727524,
+      "relative_sensitivity": [
+        0.003949796719643787,
+        0.00933277250722928
+      ],
+      "component_snr": [
+        11.25235585785099,
+        1.9012626987069072
+      ]
+    },
+    "retry_decision": "retry",
+    "retry_action": "increase_mechanical_plateaus_for_J",
+    "next_configuration": {
+      "iq_plateaus_a": [
+        1.0,
+        0.0,
+        0.5,
+        -0.5,
+        0.0,
+        1.0,
+        0.0,
+        0.5,
+        -0.5,
+        0.0
+      ],
+      "plateau_duration_s": 0.5,
+      "control_dt_s": 4e-05,
+      "sample_dt_s": 0.001,
+      "dc_bus_voltage_v": 24.0,
+      "current_reference_limit_a": 1.0,
+      "current_noise_std_a": 0.04,
+      "speed_noise_std_rad_s": 0.2,
+      "seed": 164716637
+    }
+  },
+  {
+    "case": "medium_noise",
+    "stage": "mechanical",
+    "attempt": 3,
+    "configuration": {
+      "iq_plateaus_a": [
+        1.0,
+        0.0,
+        0.5,
+        -0.5,
+        0.0,
+        1.0,
+        0.0,
+        0.5,
+        -0.5,
+        0.0
+      ],
+      "plateau_duration_s": 0.5,
+      "control_dt_s": 4e-05,
+      "sample_dt_s": 0.001,
+      "dc_bus_voltage_v": 24.0,
+      "current_reference_limit_a": 1.0,
+      "current_noise_std_a": 0.04,
+      "speed_noise_std_rad_s": 0.2,
+      "seed": 164716637
+    },
+    "estimator_succeeded": true,
+    "quality_accepted": false,
+    "reasons": [
+      "mechanical.insufficient_excitation"
+    ],
+    "checks": [
+      {
+        "name": "mechanical.rank_deficiency",
+        "value": 0,
+        "limit": 0,
+        "passed": true
+      },
+      {
+        "name": "mechanical.insufficient_windows",
+        "value": -90,
+        "limit": 0,
+        "passed": true
+      },
+      {
+        "name": "mechanical.conditioning",
+        "value": 1.1119253189828977,
+        "limit": 100.0,
+        "passed": true
+      },
+      {
+        "name": "mechanical.noise_information",
+        "value": 0.004922086870309379,
+        "limit": 0.05,
+        "passed": true
+      },
+      {
+        "name": "mechanical.relative_uncertainty",
+        "value": 0.007568316506848424,
+        "limit": 0.03333333333333333,
+        "passed": true
+      },
+      {
+        "name": "mechanical.insufficient_excitation",
+        "value": 0.6499552319595212,
+        "limit": 0,
+        "passed": false
+      },
+      {
+        "name": "mechanical.inconsistent_halves",
+        "value": 0.00310620052933837,
+        "limit": 0.1,
+        "passed": true
+      },
+      {
+        "name": "mechanical.excessive_residual",
+        "value": 0.3056892877936978,
+        "limit": 1.0,
+        "passed": true
+      }
+    ],
+    "diagnostics": {
+      "effective_rank": 2,
+      "scaled_condition_number": 1.1119253189828977,
+      "noise_information_fraction": 0.004922086870309379,
+      "split_relative_difference": 0.00310620052933837,
+      "residual_rmse": 0.00021281941312008995,
+      "relative_sensitivity": [
+        0.0032352658478287007,
+        0.007568316506848424
+      ],
+      "component_snr": [
+        14.091260221379626,
+        2.350044768040479
+      ]
+    },
+    "retry_decision": "terminal",
+    "retry_action": "mechanical_design_limit",
+    "next_configuration": null
+  },
+  {
+    "case": "high_noise",
+    "stage": "standstill",
+    "attempt": 1,
+    "configuration": {
+      "duration_s": 0.4,
+      "integration_dt_s": 2e-05,
+      "sample_dt_s": 0.0001,
+      "d_hold_samples": 23,
+      "q_hold_samples": 31,
+      "d_voltage_v": 1.2,
+      "q_voltage_v": 1.4,
+      "dc_bus_voltage_v": 24.0,
+      "current_noise_std_a": 0.2,
+      "voltage_noise_std_v": 0.1,
+      "speed_noise_std_rad_s": 0.4,
+      "seed": 1334812060
+    },
+    "estimator_succeeded": false,
+    "quality_accepted": false,
+    "reasons": [
+      "standstill.estimator_failure: Locked-rotor identification requires near-zero measured speed"
+    ],
+    "checks": [],
+    "diagnostics": null,
+    "retry_decision": "terminal",
+    "retry_action": "unsupported_diagnostic",
+    "next_configuration": null
+  },
+  {
+    "case": "zero_standstill",
+    "stage": "standstill",
+    "attempt": 1,
+    "configuration": {
+      "duration_s": 0.4,
+      "integration_dt_s": 2e-05,
+      "sample_dt_s": 0.0001,
+      "d_hold_samples": 23,
+      "q_hold_samples": 31,
+      "d_voltage_v": 0.0,
+      "q_voltage_v": 0.0,
+      "dc_bus_voltage_v": 24.0,
+      "current_noise_std_a": 0.01,
+      "voltage_noise_std_v": 0.01,
+      "speed_noise_std_rad_s": 0.02,
+      "seed": 1147046171
+    },
+    "estimator_succeeded": false,
+    "quality_accepted": false,
+    "reasons": [
+      "standstill.estimator_failure: Electrical estimates must be positive"
+    ],
+    "checks": [],
+    "diagnostics": null,
+    "retry_decision": "retry",
+    "retry_action": "add_standstill_excitation",
+    "next_configuration": {
+      "duration_s": 0.4,
+      "integration_dt_s": 2e-05,
+      "sample_dt_s": 0.0001,
+      "d_hold_samples": 23,
+      "q_hold_samples": 31,
+      "d_voltage_v": 0.13,
+      "q_voltage_v": 0.15000000000000002,
+      "dc_bus_voltage_v": 24.0,
+      "current_noise_std_a": 0.01,
+      "voltage_noise_std_v": 0.01,
+      "speed_noise_std_rad_s": 0.02,
+      "seed": 1147046172
+    }
+  },
+  {
+    "case": "zero_standstill",
+    "stage": "standstill",
+    "attempt": 2,
+    "configuration": {
+      "duration_s": 0.4,
+      "integration_dt_s": 2e-05,
+      "sample_dt_s": 0.0001,
+      "d_hold_samples": 23,
+      "q_hold_samples": 31,
+      "d_voltage_v": 0.13,
+      "q_voltage_v": 0.15000000000000002,
+      "dc_bus_voltage_v": 24.0,
+      "current_noise_std_a": 0.01,
+      "voltage_noise_std_v": 0.01,
+      "speed_noise_std_rad_s": 0.02,
+      "seed": 1147046172
+    },
+    "estimator_succeeded": true,
+    "quality_accepted": true,
+    "reasons": [],
+    "checks": [
+      {
+        "name": "standstill.rank_deficiency",
+        "value": 0,
+        "limit": 0,
+        "passed": true
+      },
+      {
+        "name": "standstill.insufficient_windows",
+        "value": -390,
+        "limit": 0,
+        "passed": true
+      },
+      {
+        "name": "standstill.conditioning",
+        "value": 1.0045808112575616,
+        "limit": 100.0,
+        "passed": true
+      },
+      {
+        "name": "standstill.noise_information",
+        "value": 0.029782207008816147,
+        "limit": 0.05,
+        "passed": true
+      },
+      {
+        "name": "standstill.relative_uncertainty",
+        "value": 0.0064938262820039335,
+        "limit": 0.03333333333333333,
+        "passed": true
+      },
+      {
+        "name": "standstill.inconsistent_halves",
+        "value": 0.01661155054024252,
+        "limit": 0.1,
+        "passed": true
+      },
+      {
+        "name": "standstill.excessive_residual",
+        "value": 0.3210544549013252,
+        "limit": 1.0,
+        "passed": true
+      }
+    ],
+    "diagnostics": {
+      "effective_rank": 3,
+      "scaled_condition_number": 1.0045808112575616,
+      "noise_information_fraction": 0.029782207008816147,
+      "split_relative_difference": 0.01661155054024252,
+      "residual_rmse": 1.58004267036857e-05,
+      "relative_sensitivity": [
+        0.002371369861110542,
+        0.0064938262820039335,
+        0.006462556285652473
+      ],
+      "component_snr": null
+    },
+    "retry_decision": "accepted",
+    "retry_action": null,
+    "next_configuration": null
+  },
+  {
+    "case": "zero_standstill",
+    "stage": "rotating",
+    "attempt": 1,
+    "configuration": {
+      "duration_s": 0.3,
+      "integration_dt_s": 2e-05,
+      "sample_dt_s": 0.0001,
+      "speed_rpm": 600,
+      "d_hold_samples": 19,
+      "q_hold_samples": 29,
+      "d_voltage_v": 0.7,
+      "q_voltage_base_v": 5.0,
+      "q_voltage_perturb_v": 0.7,
+      "dc_bus_voltage_v": 24.0,
+      "current_noise_std_a": 0.01,
+      "voltage_noise_std_v": 0.01,
+      "speed_noise_std_rad_s": 0.02,
+      "seed": 1147046172
+    },
+    "estimator_succeeded": true,
+    "quality_accepted": true,
+    "reasons": [],
+    "checks": [
+      {
+        "name": "standstill.rank_deficiency",
+        "value": 0,
+        "limit": 0,
+        "passed": true
+      },
+      {
+        "name": "standstill.insufficient_windows",
+        "value": -390,
+        "limit": 0,
+        "passed": true
+      },
+      {
+        "name": "standstill.conditioning",
+        "value": 1.0045808112575616,
+        "limit": 100.0,
+        "passed": true
+      },
+      {
+        "name": "standstill.noise_information",
+        "value": 0.029782207008816147,
+        "limit": 0.05,
+        "passed": true
+      },
+      {
+        "name": "standstill.relative_uncertainty",
+        "value": 0.0064938262820039335,
+        "limit": 0.03333333333333333,
+        "passed": true
+      },
+      {
+        "name": "standstill.inconsistent_halves",
+        "value": 0.01661155054024252,
+        "limit": 0.1,
+        "passed": true
+      },
+      {
+        "name": "standstill.excessive_residual",
+        "value": 0.3210544549013252,
+        "limit": 1.0,
+        "passed": true
+      },
+      {
+        "name": "rotating.rank_deficiency",
+        "value": 0,
+        "limit": 0,
+        "passed": true
+      },
+      {
+        "name": "rotating.insufficient_windows",
+        "value": -290,
+        "limit": 0,
+        "passed": true
+      },
+      {
+        "name": "rotating.conditioning",
+        "value": 1.0,
+        "limit": 100.0,
+        "passed": true
+      },
+      {
+        "name": "rotating.noise_information",
+        "value": 9.625417797449365e-09,
+        "limit": 0.05,
+        "passed": true
+      },
+      {
+        "name": "rotating.relative_uncertainty",
+        "value": 0.0005020154779390891,
+        "limit": 0.03333333333333333,
+        "passed": true
+      },
+      {
+        "name": "rotating.inconsistent_halves",
+        "value": 5.9734439283160345e-05,
+        "limit": 0.1,
+        "passed": true
+      },
+      {
+        "name": "rotating.excessive_residual",
+        "value": 0.23021460851674377,
+        "limit": 1.0,
+        "passed": true
+      },
+      {
+        "name": "rotating.insufficient_speed",
+        "value": -211.05249700832033,
+        "limit": 0,
+        "passed": true
+      },
+      {
+        "name": "rotating.weak_back_emf",
+        "value": 0.004333761892539578,
+        "limit": 0.1,
+        "passed": true
+      }
+    ],
+    "diagnostics": {
+      "effective_rank": 1,
+      "scaled_condition_number": 1.0,
+      "noise_information_fraction": 9.625417797449365e-09,
+      "split_relative_difference": 5.9734439283160345e-05,
+      "residual_rmse": 2.189668465486654e-05,
+      "relative_sensitivity": [
+        0.0005020154779390891
+      ],
+      "component_snr": null
+    },
+    "retry_decision": "accepted",
+    "retry_action": null,
+    "next_configuration": null
+  },
+  {
+    "case": "zero_standstill",
+    "stage": "mechanical",
+    "attempt": 1,
+    "configuration": {
+      "iq_plateaus_a": [
+        0.8,
+        0.0,
+        0.4,
+        -0.4,
+        0.0,
+        0.8,
+        0.0,
+        0.4,
+        -0.4,
+        0.0
+      ],
+      "plateau_duration_s": 0.25,
+      "control_dt_s": 4e-05,
+      "sample_dt_s": 0.001,
+      "dc_bus_voltage_v": 24.0,
+      "current_reference_limit_a": 1.0,
+      "current_noise_std_a": 0.01,
+      "speed_noise_std_rad_s": 0.05,
+      "seed": 1147046173
+    },
+    "estimator_succeeded": true,
+    "quality_accepted": true,
+    "reasons": [],
+    "checks": [
+      {
+        "name": "mechanical.rank_deficiency",
+        "value": 0,
+        "limit": 0,
+        "passed": true
+      },
+      {
+        "name": "mechanical.insufficient_windows",
+        "value": -40,
+        "limit": 0,
+        "passed": true
+      },
+      {
+        "name": "mechanical.conditioning",
+        "value": 1.1269078580702276,
+        "limit": 100.0,
+        "passed": true
+      },
+      {
+        "name": "mechanical.noise_information",
+        "value": 0.000552212654961026,
+        "limit": 0.05,
+        "passed": true
+      },
+      {
+        "name": "mechanical.relative_uncertainty",
+        "value": 0.004852192475844326,
+        "limit": 0.03333333333333333,
+        "passed": true
+      },
+      {
+        "name": "mechanical.insufficient_excitation",
+        "value": -3.264820125215774,
+        "limit": 0,
+        "passed": true
+      },
+      {
+        "name": "mechanical.inconsistent_halves",
+        "value": 0.024823197327514035,
+        "limit": 0.1,
+        "passed": true
+      },
+      {
+        "name": "mechanical.excessive_residual",
+        "value": 0.30031724550347527,
+        "limit": 1.0,
+        "passed": true
+      }
+    ],
+    "diagnostics": {
+      "effective_rank": 2,
+      "scaled_condition_number": 1.1269078580702276,
+      "noise_information_fraction": 0.000552212654961026,
+      "split_relative_difference": 0.024823197327514035,
+      "residual_rmse": 5.094474185510631e-05,
+      "relative_sensitivity": [
+        0.0022504265494775093,
+        0.004852192475844326
+      ],
+      "component_snr": [
+        42.13126554341097,
+        6.264820125215774
+      ]
+    },
+    "retry_decision": "accepted",
+    "retry_action": null,
+    "next_configuration": null
+  },
+  {
+    "case": "voltage_infeasible",
+    "stage": "standstill",
+    "attempt": 1,
+    "configuration": {
+      "duration_s": 0.4,
+      "integration_dt_s": 2e-05,
+      "sample_dt_s": 0.0001,
+      "d_hold_samples": 23,
+      "q_hold_samples": 31,
+      "d_voltage_v": 1.2,
+      "q_voltage_v": 1.4,
+      "dc_bus_voltage_v": 12.0,
+      "current_noise_std_a": 0.01,
+      "voltage_noise_std_v": 0.01,
+      "speed_noise_std_rad_s": 0.02,
+      "seed": 227120224
+    },
+    "estimator_succeeded": true,
+    "quality_accepted": true,
+    "reasons": [],
+    "checks": [
+      {
+        "name": "standstill.rank_deficiency",
+        "value": 0,
+        "limit": 0,
+        "passed": true
+      },
+      {
+        "name": "standstill.insufficient_windows",
+        "value": -390,
+        "limit": 0,
+        "passed": true
+      },
+      {
+        "name": "standstill.conditioning",
+        "value": 1.0051045216703505,
+        "limit": 100.0,
+        "passed": true
+      },
+      {
+        "name": "standstill.noise_information",
+        "value": 0.000436535990653408,
+        "limit": 0.05,
+        "passed": true
+      },
+      {
+        "name": "standstill.relative_uncertainty",
+        "value": 0.0007169725648673683,
+        "limit": 0.03333333333333333,
+        "passed": true
+      },
+      {
+        "name": "standstill.inconsistent_halves",
+        "value": 0.0026089489280702767,
+        "limit": 0.1,
+        "passed": true
+      },
+      {
+        "name": "standstill.excessive_residual",
+        "value": 0.27743417482104166,
+        "limit": 1.0,
+        "passed": true
+      }
+    ],
+    "diagnostics": {
+      "effective_rank": 3,
+      "scaled_condition_number": 1.0051045216703505,
+      "noise_information_fraction": 0.000436535990653408,
+      "split_relative_difference": 0.0026089489280702767,
+      "residual_rmse": 1.7554459648184516e-05,
+      "relative_sensitivity": [
+        0.0002584964428833496,
+        0.0007169725648673683,
+        0.00047157012630717786
+      ],
+      "component_snr": null
+    },
+    "retry_decision": "accepted",
+    "retry_action": null,
+    "next_configuration": null
+  },
+  {
+    "case": "voltage_infeasible",
+    "stage": "rotating",
+    "attempt": 1,
+    "configuration": {
+      "duration_s": 0.3,
+      "integration_dt_s": 2e-05,
+      "sample_dt_s": 0.0001,
+      "speed_rpm": 600,
+      "d_hold_samples": 19,
+      "q_hold_samples": 29,
+      "d_voltage_v": 0.7,
+      "q_voltage_base_v": 5.0,
+      "q_voltage_perturb_v": 0.7,
+      "dc_bus_voltage_v": 12.0,
+      "current_noise_std_a": 0.01,
+      "voltage_noise_std_v": 0.01,
+      "speed_noise_std_rad_s": 0.02,
+      "seed": 227120225
+    },
+    "estimator_succeeded": true,
+    "quality_accepted": true,
+    "reasons": [],
+    "checks": [
+      {
+        "name": "standstill.rank_deficiency",
+        "value": 0,
+        "limit": 0,
+        "passed": true
+      },
+      {
+        "name": "standstill.insufficient_windows",
+        "value": -390,
+        "limit": 0,
+        "passed": true
+      },
+      {
+        "name": "standstill.conditioning",
+        "value": 1.0051045216703505,
+        "limit": 100.0,
+        "passed": true
+      },
+      {
+        "name": "standstill.noise_information",
+        "value": 0.000436535990653408,
+        "limit": 0.05,
+        "passed": true
+      },
+      {
+        "name": "standstill.relative_uncertainty",
+        "value": 0.0007169725648673683,
+        "limit": 0.03333333333333333,
+        "passed": true
+      },
+      {
+        "name": "standstill.inconsistent_halves",
+        "value": 0.0026089489280702767,
+        "limit": 0.1,
+        "passed": true
+      },
+      {
+        "name": "standstill.excessive_residual",
+        "value": 0.27743417482104166,
+        "limit": 1.0,
+        "passed": true
+      },
+      {
+        "name": "rotating.rank_deficiency",
+        "value": 0,
+        "limit": 0,
+        "passed": true
+      },
+      {
+        "name": "rotating.insufficient_windows",
+        "value": -290,
+        "limit": 0,
+        "passed": true
+      },
+      {
+        "name": "rotating.conditioning",
+        "value": 1.0,
+        "limit": 100.0,
+        "passed": true
+      },
+      {
+        "name": "rotating.noise_information",
+        "value": 9.62552018938823e-09,
+        "limit": 0.05,
+        "passed": true
+      },
+      {
+        "name": "rotating.relative_uncertainty",
+        "value": 5.378263406759216e-05,
+        "limit": 0.03333333333333333,
+        "passed": true
+      },
+      {
+        "name": "rotating.inconsistent_halves",
+        "value": 0.0001459192741533791,
+        "limit": 0.1,
+        "passed": true
+      },
+      {
+        "name": "rotating.excessive_residual",
+        "value": 0.13538516599835398,
+        "limit": 1.0,
+        "passed": true
+      },
+      {
+        "name": "rotating.insufficient_speed",
+        "value": -211.05207620861913,
+        "limit": 0,
+        "passed": true
+      },
+      {
+        "name": "rotating.weak_back_emf",
+        "value": 0.0023151511579626986,
+        "limit": 0.1,
+        "passed": true
+      }
+    ],
+    "diagnostics": {
+      "effective_rank": 1,
+      "scaled_condition_number": 1.0,
+      "noise_information_fraction": 9.62552018938823e-09,
+      "split_relative_difference": 0.0001459192741533791,
+      "residual_rmse": 1.340151524569792e-05,
+      "relative_sensitivity": [
+        5.378263406759216e-05
+      ],
+      "component_snr": null
+    },
+    "retry_decision": "accepted",
+    "retry_action": null,
+    "next_configuration": null
+  },
+  {
+    "case": "voltage_infeasible",
+    "stage": "mechanical",
+    "attempt": 1,
+    "configuration": {
+      "iq_plateaus_a": [
+        0.8,
+        0.0,
+        0.4,
+        -0.4,
+        0.0,
+        0.8,
+        0.0,
+        0.4,
+        -0.4,
+        0.0
+      ],
+      "plateau_duration_s": 0.25,
+      "control_dt_s": 4e-05,
+      "sample_dt_s": 0.001,
+      "dc_bus_voltage_v": 12.0,
+      "current_reference_limit_a": 1.0,
+      "current_noise_std_a": 0.01,
+      "speed_noise_std_rad_s": 0.05,
+      "seed": 227120226
+    },
+    "estimator_succeeded": true,
+    "quality_accepted": true,
+    "reasons": [],
+    "checks": [
+      {
+        "name": "mechanical.rank_deficiency",
+        "value": 0,
+        "limit": 0,
+        "passed": true
+      },
+      {
+        "name": "mechanical.insufficient_windows",
+        "value": -40,
+        "limit": 0,
+        "passed": true
+      },
+      {
+        "name": "mechanical.conditioning",
+        "value": 1.0783393329021695,
+        "limit": 100.0,
+        "passed": true
+      },
+      {
+        "name": "mechanical.noise_information",
+        "value": 0.0002205425892744089,
+        "limit": 0.05,
+        "passed": true
+      },
+      {
+        "name": "mechanical.relative_uncertainty",
+        "value": 0.0036793916246840785,
+        "limit": 0.03333333333333333,
+        "passed": true
+      },
+      {
+        "name": "mechanical.insufficient_excitation",
+        "value": -6.814615552821742,
+        "limit": 0,
+        "passed": true
+      },
+      {
+        "name": "mechanical.inconsistent_halves",
+        "value": 0.00672740678923187,
+        "limit": 0.1,
+        "passed": true
+      },
+      {
+        "name": "mechanical.excessive_residual",
+        "value": 0.25708814774137395,
+        "limit": 1.0,
+        "passed": true
+      }
+    ],
+    "diagnostics": {
+      "effective_rank": 2,
+      "scaled_condition_number": 1.0783393329021695,
+      "noise_information_fraction": 0.0002205425892744089,
+      "split_relative_difference": 0.00672740678923187,
+      "residual_rmse": 4.082500937831818e-05,
+      "relative_sensitivity": [
+        0.0011813554272998715,
+        0.0036793916246840785
+      ],
+      "component_snr": [
+        65.58048270886455,
+        9.814615552821742
+      ]
+    },
+    "retry_decision": "accepted",
+    "retry_action": null,
+    "next_configuration": null
+  }
+]

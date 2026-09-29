@@ -1,0 +1,169 @@
+{
+  "one_shot": {
+    "total": 9,
+    "accepted": 3,
+    "acceptance_coverage": 0.3333333333333333,
+    "accurate_accepted": 3,
+    "false_acceptance_count": 0,
+    "false_acceptance_fraction_of_accepted": 0.0,
+    "false_rejection_count": 2,
+    "false_rejection_fraction_of_accurate_complete": 0.4,
+    "six_parameter_scorable": 5,
+    "six_parameter_unscorable": 4,
+    "inaccurate_complete": 0,
+    "electrical_acceptance": 5,
+    "mechanical_acceptance": 3,
+    "operating_infeasible": 1,
+    "control_evaluated": 2,
+    "control_success": 2,
+    "parameter_errors_percent": {
+      "Rs": {
+        "median": 0.041558449491596594,
+        "worst": 0.16814018295858713,
+        "n": 7
+      },
+      "Ld": {
+        "median": 0.06933396518434831,
+        "worst": 3.6082187398734367,
+        "n": 7
+      },
+      "Lq": {
+        "median": 0.13705728343729184,
+        "worst": 4.454754356593704,
+        "n": 7
+      },
+      "psi_f": {
+        "median": 0.009110367148446041,
+        "worst": 0.7861735147636661,
+        "n": 7
+      },
+      "J": {
+        "median": 0.16498721691173834,
+        "worst": 5.080740510298809,
+        "n": 5
+      },
+      "B": {
+        "median": 0.17342718602242346,
+        "worst": 1.5454156669302943,
+        "n": 5
+      }
+    }
+  },
+  "adaptive": {
+    "total": 9,
+    "accepted": 7,
+    "acceptance_coverage": 0.7777777777777778,
+    "accurate_accepted": 7,
+    "false_acceptance_count": 0,
+    "false_acceptance_fraction_of_accepted": 0.0,
+    "false_rejection_count": 1,
+    "false_rejection_fraction_of_accurate_complete": 0.125,
+    "six_parameter_scorable": 8,
+    "six_parameter_unscorable": 1,
+    "inaccurate_complete": 0,
+    "electrical_acceptance": 8,
+    "mechanical_acceptance": 7,
+    "operating_infeasible": 1,
+    "control_evaluated": 6,
+    "control_success": 6,
+    "parameter_errors_percent": {
+      "Rs": {
+        "median": 0.05828926858180705,
+        "worst": 0.22042735488531084,
+        "n": 8
+      },
+      "Ld": {
+        "median": 0.14777890289058293,
+        "worst": 3.6082187398734367,
+        "n": 8
+      },
+      "Lq": {
+        "median": 0.33636414873532416,
+        "worst": 3.373682121231225,
+        "n": 8
+      },
+      "psi_f": {
+        "median": 0.05714185480137357,
+        "worst": 0.16591572627049356,
+        "n": 8
+      },
+      "J": {
+        "median": 0.1326638744837405,
+        "worst": 0.7924350068489017,
+        "n": 8
+      },
+      "B": {
+        "median": 0.16363336773101977,
+        "worst": 0.48411759075519534,
+        "n": 8
+      }
+    }
+  },
+  "comparison": {
+    "recovered_by_retry": 4,
+    "retries_per_successful_case": [
+      0,
+      0,
+      1,
+      3,
+      5,
+      1,
+      0
+    ],
+    "retry_budget_exhausted": 0,
+    "non_retryable_rejected": 2,
+    "accepted_but_operating_infeasible": 1
+  },
+  "methodology": {
+    "population": "evaluation",
+    "seed": 20261101,
+    "scenarios": [
+      "normal_low",
+      "weak_electrical",
+      "weak_flux",
+      "weak_mechanical",
+      "combined_weak",
+      "medium_noise",
+      "high_noise",
+      "zero_standstill",
+      "voltage_infeasible"
+    ],
+    "retry_policy": {
+      "max_electrical_attempts": 4,
+      "max_mechanical_attempts": 4,
+      "max_standstill_voltage_magnitude_v": 3.0,
+      "max_standstill_duration_s": 0.8,
+      "max_rotating_speed_rpm": 1200.0,
+      "max_rotating_duration_s": 0.6,
+      "max_mechanical_reference_a": 1.0,
+      "max_mechanical_plateau_duration_s": 0.5,
+      "excitation_multiplier": 2.0,
+      "duration_multiplier": 2.0,
+      "speed_multiplier": 2.0
+    },
+    "electrical_quality_policy": {
+      "max_scaled_condition": 100.0,
+      "max_noise_information_fraction": 0.05,
+      "max_relative_standard_error": 0.03333333333333333,
+      "max_split_relative_difference": 0.1,
+      "residual_noise_multiplier": 3.0,
+      "relative_model_residual_allowance": 0.01,
+      "max_back_emf_noise_ratio": 0.1,
+      "min_windows": 10,
+      "min_mechanical_speed_rad_s": 10.0
+    },
+    "mechanical_quality_policy": {
+      "min_windows": 10,
+      "max_scaled_condition": 100.0,
+      "max_noise_information_fraction": 0.05,
+      "max_relative_standard_error": 0.03333333333333333,
+      "max_split_relative_difference": 0.1,
+      "min_component_snr": 3.0,
+      "residual_noise_multiplier": 3.0,
+      "relative_model_residual_allowance": 0.01
+    },
+    "accuracy_label": "All six available parameter errors <= 10%; truth used post-hoc only",
+    "unscorable": "Missing estimates retained; excluded from conditional false-rejection denominator",
+    "control": "Only accepted and predicted feasible cases simulated; unavailable otherwise"
+  }
+}
