@@ -293,14 +293,14 @@ def save_results(rows, histories, truth, population, output_dir):
                       "action": a["retry_action"]} for a in example],
     }, indent=2), encoding="utf-8")
 
-    fig, ax = plt.subplots(figsize=(9, max(3, .4 * len(reasons) + 1)))
+    fig, ax = plt.subplots(figsize=(12, max(3.5, .5 * len(reasons) + 1)))
     ordered = sorted(reasons.items(), key=lambda pair: (-pair[1], pair[0]))
     ax.barh([key for key, _ in ordered][::-1], [value for _, value in ordered][::-1],
             color="tab:orange")
     ax.set_xlabel("Rejected attempt count")
-    ax.set_title("Measured-data rejection reasons; multiple reasons may occur per attempt")
+    ax.set_title("Measured-data rejection reasons", fontsize=11)
     ax.grid(axis="x", alpha=.25)
-    fig.tight_layout()
+    fig.subplots_adjust(left=.58, right=.97, top=.90, bottom=.15)
     fig.savefig(output_dir / "retry_reasons.png", dpi=160)
     plt.close(fig)
 

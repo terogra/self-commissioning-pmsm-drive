@@ -14,6 +14,7 @@ from src.mechanical_excitation import MechanicalExcitationConfig, simulate_mecha
 from src.motor import PMSMParameters
 from src.operating_feasibility import OperatingPointRequest
 from src.rotating_identification import RotatingExcitationConfig, simulate_driven_rotor_measurements
+from src.speed_foc_simulation import run_speed_foc_simulation
 
 
 PLANT = PMSMParameters(Rs=.56, Ld=.0014, Lq=.0008, psi_f=.015, J=.0005, B=.0003)
@@ -113,6 +114,18 @@ def test_operating_infeasibility_does_not_retry_or_reject_identification(nominal
     assert not hasattr(result, "closed_loop_dynamic_success")
 
 
+def test_steady_feasible_state_does_not_imply_dynamic_success():
+    request = OperatingPointRequest(1000, .005, 48, .445)
+    result = run(operating_request=request)
+    assert result.state == SupervisorState.OPERATING_FEASIBLE
+    simulation = run_speed_foc_simulation(plant_params=PLANT,
+        controller_params=result.controller_parameters, dt=40e-6,
+        dc_bus_voltage=48, current_limit_a=.445,
+        speed_ref_rpm=1000, load_step_torque=.005)
+    assert simulation["rpm"][-1] < 900
+    assert not hasattr(result, "closed_loop_dynamic_success")
+
+
 def test_retry_budget_is_explicit_and_rejection_keeps_prior():
     weak = replace(STANDSTILL, d_voltage_v=.096, q_voltage_v=.112)
     policy = RetryPolicy(max_electrical_attempts=1)
@@ -122,6 +135,15 @@ def test_retry_budget_is_explicit_and_rejection_keeps_prior():
     assert result.attempt_counts["standstill"] == 1
     assert result.attempts[0].retry_decision == "budget_exhausted"
     assert result.controller_parameters is PRIOR and not result.controller_parameters_updated
+
+
+def test_rejected_mechanical_stage_cannot_retune_any_controller_field():
+    weak = replace(MECHANICAL, iq_plateaus_a=tuple(.08*v for v in MECHANICAL.iq_plateaus_a))
+    result = run(mechanical=weak, retry_policy=RetryPolicy(max_mechanical_attempts=1))
+    assert result.full_commissioning is not None
+    assert not result.full_commissioning.quality.accepted
+    assert result.controller_parameters is PRIOR and not result.controller_parameters_updated
+    assert result.attempt_counts["mechanical"] == 1
 
 
 def test_persistent_residual_is_nonretryable():
@@ -166,6 +188,27 @@ def test_quality_policies_are_frozen_and_truth_labels_are_not_inputs():
     names = set(signature(run_adaptive_commissioning).parameters)
     assert not names.intersection({"plant", "true_parameters", "parameter_errors", "control_outcome"})
     assert result.accepted
+
+
+def test_hidden_truth_error_and_control_labels_cannot_affect_retry():
+    weak = replace(STANDSTILL, d_voltage_v=.096, q_voltage_v=.112)
+    sampled = simulate_locked_rotor_measurements(PLANT, weak)
+
+    class PoisonPrior:
+        pole_pairs = PRIOR.pole_pairs
+
+        def __getattr__(self, name):
+            raise AssertionError(f"supervisor read hidden input: {name}")
+
+    def unavailable(*_):
+        raise AssertionError("rejected standstill must not enter later stages")
+
+    results = [run_adaptive_commissioning(lambda _: sampled, unavailable, unavailable,
+        PoisonPrior(), standstill_config=weak,
+        retry_policy=RetryPolicy(max_electrical_attempts=1)) for _ in range(2)]
+    assert all(r.state == SupervisorState.RETRY_BUDGET_EXHAUSTED for r in results)
+    assert all(r.attempts[0].retry_action == "increase_standstill_voltage" for r in results)
+    assert results[0].attempts[0].quality == results[1].attempts[0].quality
 
 
 def test_population_design_is_deterministic_and_truth_is_posthoc():

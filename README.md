@@ -14,6 +14,9 @@ development and evaluation populations measure coverage, accuracy, and outcomes.
 An independent operating-point layer now checks accepted estimates against the
 requested steady-state current and voltage envelope, without changing either
 identification-quality decision.
+A bounded commissioning supervisor can now retry a diagnosed weak test within
+configured simulation limits. It records every attempt, updates controllers
+only after full acceptance, and reports operating feasibility separately.
 
 ## Current simulation
 
@@ -66,6 +69,8 @@ python -m experiments.full_commissioning_recovery
 python -m experiments.mechanical_population --population development
 python -m experiments.mechanical_population --population evaluation
 python -m experiments.operating_feasibility
+python -m experiments.adaptive_commissioning --population development
+python -m experiments.adaptive_commissioning --population evaluation
 ```
 
 The experiment commands write CSV tables and comparison plots to `results/`.
@@ -1111,3 +1116,130 @@ categories, zero speed/load, invalid requests, monotonic limits, J independence,
 estimate-only inputs, oracle agreement, PR #8 replay, default trajectory
 preservation, configurable current references, and deterministic envelopes.
 The full local suite passes **99 tests**, versus the **74-test baseline**.
+
+## Bounded adaptive commissioning supervisor
+
+The fixed one-shot sequence could reject informative estimates because its
+initial test was too weak. The supervisor in
+[`src/adaptive_commissioning.py`](src/adaptive_commissioning.py) runs the
+standstill, rotating flux, and known-zero-load mechanical stages in order. It
+uses their **existing, unchanged quality policies**. A failed stage may request
+another sampled experiment only when its measured diagnostics and configured
+test explain a specific bounded action. It does not change an estimator equation
+or acceptance threshold. The simulation plant is held only by measurement
+provider callbacks; the supervisor receives their sampled records, prior
+controller assumptions, and optional operating request.
+
+`SupervisorResult` reports the final state, full commissioning result if
+available, operating result if requested, all `AttemptRecord`s, per-stage
+attempt counts, terminal reason, and whether controller parameters were
+updated. Each attempt preserves its excitation configuration, estimate if
+available, quality checks/reasons, diagnostic snapshot, and retry decision.
+Accepted full commissioning updates all six controller assumptions. A rejected
+stage returns the original controller parameters. An accepted but
+operating-infeasible case keeps accepted identification and reports
+`operating_infeasible` without retrying identification.
+
+### Frozen retry rules and bounds
+
+The [policy and validation protocol](docs/adaptive_commissioning_protocol.md)
+were committed before the independent held-out run. The policy permits at most
+**four attempts per stage**. Its simulation design caps are **3 V** for the
+standstill dq voltage vector (also limited by `Vdc/sqrt(3)`), **0.8 s**
+standstill duration, **1200 rpm** imposed rotating speed, **0.6 s** rotating
+duration, **1 A** mechanical current-reference/plateau magnitude, and **0.5 s**
+per mechanical plateau. Supported increments are at most 2×, except the
+explicit small excitation introduced after a known zero-input failure.
+
+Standstill information/precision failures increase bounded voltage and then
+duration; poor conditioning changes the bipolar switching pattern. Weak
+rotating back-EMF or speed information increases imposed speed, then duration.
+Mechanical component SNR and relative local sensitivity distinguish weak J
+information, which calls for stronger acceleration plateaus, from weak B
+information, which calls first for longer speed/coast plateaus. Temporal
+inconsistency calls for a longer record. An excessive residual stops as a
+model-fit concern. Unsupported estimator failures, including an invalid
+locked-rotor speed record, stop explicitly. A retryable failure on the last
+allowed attempt reports `retry_budget_exhausted`; reaching an excitation cap
+with no useful action reports a terminal design limit. New deterministic
+seeds provide new measurement realizations; a lucky noise draw is not treated
+as proof that excitation improved observability.
+
+The three decisions remain separate: **identification quality**, **steady
+operating feasibility**, and **finite-run control success**. The supervisor
+never reads true parameter errors, hidden torque, oracle performance, or
+closed-loop outcome to accept, retry, or stop. Operating feasibility uses
+accepted estimates only. A steady-feasible result makes no claim about
+acceleration time or transient tracking.
+
+### Paired development and independent evaluation
+
+The [experiment](experiments/adaptive_commissioning.py) uses the same plant and
+cached initial noisy records for one-shot and adaptive methods in each case.
+Nine predefined cells cover normal excitation, weak standstill, weak flux,
+weak mechanical, combined weak, medium/high noise, zero standstill input, and
+an accepted but voltage-infeasible operating request. Different deterministic
+seeds draw independent plants for development (**20261031**) and held-out
+evaluation (**20261101**). Truth is stored separately and used only afterward
+to score absolute parameter errors. All nine cases are retained in each
+population, including failed and unscorable cases.
+
+| Result | Development one-shot | Development adaptive | Held-out one-shot | Held-out adaptive |
+| --- | ---: | ---: | ---: | ---: |
+| Full acceptance | 4/9 | 8/9 | 3/9 | 7/9 |
+| Accurate accepted (all six errors ≤10%) | 4 | 8 | 3 | 7 |
+| False acceptance among accepted | 0/4 | 0/8 | 0/3 | 0/7 |
+| False rejection among accurate complete estimates | 1/5 | 0/8 | 2/5 | 1/8 |
+| Rejections without six estimates | 4 | 1 | 4 | 1 |
+| Operating-infeasible accepted cases | 1 | 1 | 1 | 1 |
+| Control successes among accepted feasible simulated cases | 3/3 | 7/7 | 2/2 | 6/6 |
+
+Adaptive commissioning recovered **four** one-shot rejections in each
+population. Successful adaptive cases required development retry counts
+`[0,1,0,3,4,0,1,0]` and held-out counts `[0,0,1,3,5,1,0]` across all stages.
+**No case exhausted the configured attempt count**; one development case and
+two held-out cases stopped as non-retryable or at a design limit. The held-out
+combined-weak case needed one standstill, one rotating, and three mechanical
+retries before all measured-data checks passed. The initially weak mechanical
+cases gained enough information through longer and stronger plateaus without
+lowering the gate standards.
+
+The held-out **medium-noise** case remained rejected after two mechanical
+retries: component excitation stayed below the frozen threshold after the
+duration and current caps were reached. Post-hoc errors in its final J and B
+estimates were **0.7924%** and **0.0034%**, so it is the one adaptive false
+rejection among eight complete accurate estimates. The high-noise case failed
+the existing locked-rotor measured-speed validity check and was not retried.
+The accepted voltage-infeasible case had an estimated voltage margin of
+**−12.7698 V** at the requested 2000 rpm; identification stayed accepted and
+no control success was imputed. No closed-loop run was used to choose a retry.
+
+Among held-out adaptive cases with six estimates, median absolute errors were
+**0.0583% Rs, 0.1478% Ld, 0.3364% Lq, 0.0571% psi_f, 0.1327% J, and
+0.1636% B**. All seven accepted cases met the post-hoc 10% per-parameter rule.
+Their six operating-feasible control runs met the predeclared post-load speed,
+iq, and recovery criteria. On those held-out feasible accepted subsets,
+one-shot median post-load speed/iq RMSE was **2.1822 rpm / 0.00303 A**
+(`n=2`); adaptive median was **1.7468 rpm / 0.00359 A** (`n=6`). These
+subsets differ because adaptation accepted more cases, so the medians are not
+a paired performance-improvement estimate. These are finite results on nine independently
+drawn scenario plants, not calibrated reliability or safety guarantees.
+
+- [Development case table](results/adaptive_commissioning/development/cases.csv), [attempt history](results/adaptive_commissioning/development/attempts.json), and [summary](results/adaptive_commissioning/development/summary.json).
+- [Held-out case table](results/adaptive_commissioning/evaluation/cases.csv), [attempt history](results/adaptive_commissioning/evaluation/attempts.json), and [summary](results/adaptive_commissioning/evaluation/summary.json).
+- [Held-out example attempt trace](results/adaptive_commissioning/evaluation/example_trace.json), [attempt plot](results/adaptive_commissioning/evaluation/attempts_to_acceptance.png), [retry-reason plot](results/adaptive_commissioning/evaluation/retry_reasons.png), and [accepted/rejected error plot](results/adaptive_commissioning/evaluation/parameter_error_by_decision.png). The [truth audit](results/adaptive_commissioning/evaluation/truth_posthoc.json) is separate from supervisor history.
+
+### Limits of adaptation
+
+Stronger simulated excitation cannot create information beyond the configured
+limits and cannot guarantee gate acceptance. Sensor bias and model mismatch may
+survive noise-based diagnostics; unknown mechanical load remains confounded
+with friction in the current model. Accepted commissioning does not imply an
+achievable requested operating point. Steady-state feasibility does not
+guarantee finite-time tracking. No field weakening, online operation-stage
+adaptation, inverter nonideality, physical protection design, or hardware
+commissioning procedure is included. The excitation caps are simulation
+choices, not hardware-safety prescriptions.
+
+The full local regression suite passes **115 tests**, including the existing
+electrical, mechanical, and operating-feasibility tests.
