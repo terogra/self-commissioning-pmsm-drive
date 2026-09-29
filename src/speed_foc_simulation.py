@@ -25,6 +25,7 @@ def run_speed_foc_simulation(
     load_step_torque=0.05,
     dc_bus_voltage=48.0,
     commissioning_result=None,
+    current_limit_a=5.0,
 ):
     """Run speed/current FOC with independent motor and controller models.
 
@@ -33,6 +34,8 @@ def run_speed_foc_simulation(
     """
     if dt <= 0 or simulation_time <= 0 or not 0 <= load_step_time < simulation_time:
         raise ValueError("Require dt > 0 and 0 <= load_step_time < simulation_time")
+    if not np.isfinite(current_limit_a) or current_limit_a <= 0:
+        raise ValueError("current_limit_a must be positive and finite")
 
     plant_params = plant_params if plant_params is not None else PMSMParameters()
     controller_params = controller_params if controller_params is not None else PMSMParameters()
@@ -52,7 +55,7 @@ def run_speed_foc_simulation(
         controller_params,
         natural_frequency_hz=10.0,
         damping_ratio=1.0,
-        iq_limit=5.0
+        iq_limit=current_limit_a
     )
 
     time = np.arange(
@@ -163,6 +166,7 @@ def run_speed_foc_simulation(
         "voltage_saturated": voltage_saturated_history,
         "dc_bus_voltage": dc_bus_voltage,
         "voltage_limit": current_controller.voltage_limit,
+        "current_limit_a": current_limit_a,
         "speed_ref_rpm": speed_ref_rpm,
         "load_step_time": load_step_time,
         "plant_params": plant_params,

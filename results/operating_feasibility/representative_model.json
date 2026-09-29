@@ -1,0 +1,30 @@
+{
+  "true_evaluation_only": {
+    "Rs": 0.56,
+    "Ld": 0.0014,
+    "Lq": 0.0008,
+    "psi_f": 0.015,
+    "pole_pairs": 4,
+    "J": 0.0005,
+    "B": 0.0003
+  },
+  "identified": {
+    "Rs": 0.5599057017946696,
+    "Ld": 0.0013993492842179838,
+    "Lq": 0.0008006650314875882,
+    "psi_f": 0.015000965291461943,
+    "pole_pairs": 4,
+    "J": 0.0004992267860113657,
+    "B": 0.0002996960067170858
+  },
+  "electrical_accepted": true,
+  "mechanical_accepted": true,
+  "assumptions": [
+    "Forward motoring: nonnegative requested speed and external resisting load.",
+    "Steady state with id=0; no field weakening or MTPA.",
+    "Known requested external load, constant viscous friction, and accepted point estimates.",
+    "Ideal linear SVPWM phase-neutral peak dq voltage limit Vdc/sqrt(3).",
+    "Current limit is a configured simulation/design constraint, not a hardware rating.",
+    "No guarantee of transient tracking, parameter uncertainty coverage, or hardware safety."
+  ]
+}

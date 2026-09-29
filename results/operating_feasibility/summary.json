@@ -1,0 +1,36 @@
+{
+  "evaluation_seed": 20261021,
+  "representative": {
+    "total_cases": 7,
+    "evaluated_cases": 7,
+    "unavailable_cases": 0,
+    "true_positives": 2,
+    "true_negatives": 4,
+    "false_feasible": 1,
+    "false_infeasible": 0,
+    "oracle_prediction_agreement": 7
+  },
+  "pr8_reanalysis": {
+    "total_cases": 13,
+    "evaluated_cases": 5,
+    "unavailable_cases": 8,
+    "true_positives": 1,
+    "true_negatives": 4,
+    "false_feasible": 0,
+    "false_infeasible": 0,
+    "oracle_prediction_agreement": 5
+  },
+  "held_out": {
+    "total_cases": 21,
+    "evaluated_cases": 21,
+    "unavailable_cases": 0,
+    "true_positives": 6,
+    "true_negatives": 9,
+    "false_feasible": 3,
+    "false_infeasible": 3,
+    "oracle_prediction_agreement": 21
+  },
+  "outcome_criterion": "Final 0.1 s max speed error <= max(1 rpm, 1% command), max current <= 1.01 Imax in 0.6 s run",
+  "retrospective_criterion": "Historical post-load speed RMSE <=10 rpm, iq RMSE <=0.05 A, recovery <=0.1 s; no true-parameter error label",
+  "extended_run": "All false-feasible cases rerun for 4 s with unchanged request/controller; not used to relabel 0.6 s outcomes"
+}
