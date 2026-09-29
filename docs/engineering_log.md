@@ -522,3 +522,51 @@ Known zero external load is essential to the experiment; unknown load can be con
 ### Next Decision
 
 Add a measured/estimated operating-feasibility assessment and excitation-safety design, then evaluate unknown-load/model bias and sensor nonidealities on a fresh independent population. Do not retune the frozen mechanical gate to the current held-out labels. These are future tasks, not completed parts of this milestone.
+
+## Milestone 14 — Operating-point feasibility assessment
+
+### Problem / Motivation
+
+PR #8 accepted accurate electrical and mechanical estimates for five held-out plants, yet four requested operating points failed even with oracle tuning. Identification quality did not establish whether the bus/current envelope could sustain the requested speed and load. These decisions needed separate representations.
+
+### Engineering Decision
+
+Assess the existing id=0 control strategy analytically from accepted commissioned parameters. Use `Te_required=Tload+B_hat*omega`, `iq_required=Te_required/(1.5*p*psi_f_hat)`, `vd=-omega_e*Lq_hat*iq`, and `vq=Rs_hat*iq+omega_e*psi_f_hat`. Compare current magnitude with a configured design limit and voltage magnitude with the unchanged `Vdc/sqrt(3)` convention. Include equality with zero reserve; report margins and utilization. J is excluded because it affects acceleration, not steady-state mechanical balance. Keep both identification gates unchanged and evaluate finite-run tracking independently.
+
+### Implementation
+
+[`operating_feasibility.py`](../src/operating_feasibility.py) adds an immutable request/result API, explicit invalid-request/unavailable-commissioning errors, separate current/voltage decisions, named operating-limit reasons, and a deterministic envelope grid. The normal API reads only accepted Rs/Lq/psi_f/B and known pole count. It does not require a plant object or prior defaults. The speed simulation gains a configurable `current_limit_a`, defaulting to the previous 5 A iq-reference limit; existing default trajectories are unchanged. The [experiment](../experiments/operating_feasibility.py) compares predictions against actual signals, generates an envelope, replays accepted PR #8 measurement stages, and evaluates three fresh plants over seven predefined scenarios each. The [protocol](operating_feasibility_protocol.md) and source were committed in **`e55b851` before the new held-out run**; no thresholds were fitted to outcomes.
+
+### Problems / Unexpected Results
+
+Analytical steady feasibility did not imply success within 0.6 s: the representative low-current case reached only **335.499 rpm** for a feasible 1000 rpm request. Three held-out points were also false feasible under the finite-run criterion despite zero voltage saturation. Conversely, three slightly voltage-infeasible held-out points met the allowed ±1% speed tolerance while remaining saturated. Exact operating-point feasibility and tolerance-based tracking success therefore disagree near boundaries. Overloaded simulated trajectories can reverse under the existing constant-sign load torque, and measured current can exceed its reference limit under voltage saturation; neither behavior was filtered out.
+
+### Resolution
+
+Keep `steady_state_feasible` separate from `closed_loop_dynamic_success` and preserve all disagreements. Assess dynamic success from final-window speed/current samples, never from the prediction. Rerun every false-feasible case for a predeclared 4 s with the same controller/request, without replacing its original outcome. The representative then succeeds; the three held-out acceleration cases still fail at 4 s. Retain current/voltage utilization and measured applied-voltage behavior. Reject unsupported negative requests explicitly. Document reference limiting as a simulation constraint rather than physical protection. No field weakening, MTPA, quality-gate adjustment, or automatic supervisor was added.
+
+### Validation / Results
+
+The latest-main baseline passed **74 tests**. The completed full suite passed **99 tests**. New coverage includes low-speed feasibility, voltage/current/both limits, zero speed/load, invalid values, monotonic limits, J independence, estimate-only API inputs, unchanged identification acceptance, default trajectory preservation, configurable iq limits, deterministic envelopes, a dynamic counterexample, and historical accepted-case replay. `git diff --check` passes; original electrical/mechanical estimator and gate sources remain unchanged.
+
+Representative feasible request: **250 rpm, 0.02 N m, 24 V, 3 A**. Required current **0.309380 A**, voltage **1.744314 V**, current margin **+2.690620 A**, voltage margin **+12.112092 V**; achieved terminal mean speed **249.999936 rpm**. Representative voltage-infeasible request: **2000 rpm, 0.05 N m, 12 V, 5 A**. Required voltage **13.295272 V** versus **6.928203 V** available, margin **-6.367069 V**; achieved speed **1009.386 rpm**, full-run saturation **87.16%**, terminal saturation **100%**. [All representative rows](../results/operating_feasibility/representative.csv) retain near-boundary, current-limited, both-limited, and slow-acceleration cases; [dynamics plot](../results/operating_feasibility/representative_dynamics.png).
+
+PR #8 re-analysis retains **13 rows**, evaluates the **five accepted** commissioning results, and marks the other eight unavailable. Because the old CSV omitted electrical estimates, original measurement stages are replayed and J/B fits checked against saved values; hidden electrical columns never supply the normal API. Case **3** is predicted feasible; cases **0, 1, 5, 7** are voltage infeasible with margins **-4.993497, -0.160714, -5.844623, -1.269319 V**, respectively. Predictions agree **5/5** with oracle steady predictions and **5/5** with historical commissioned/oracle control outcomes. All five identification decisions stay accepted. [Re-analysis table](../results/operating_feasibility/pr8_reanalysis.csv).
+
+Fresh held-out seed **20261021**: **21 points on three independently drawn/commissioned plants**, all retained. Under the final-0.1-s speed tolerance `max(1 rpm, 1% command)` and measured-current tolerance `1.01 Imax`, results are **6 true positives, 9 true negatives, 3 false feasible, 3 false infeasible**. Oracle steady predictions agree **21/21**. The false-feasible acceleration cases reach **258.761 / 126.329 / 240.578 rpm** at 0.6 s with current essentially clamped at its reference limit and zero voltage saturation. Their 4 s reruns reach **906.821 / 585.513 / 883.061 rpm**, still below tolerance. A post-hoc ideal id=0 no-friction/no-load acceleration bound using identified J predicts only **357.3 / 165.6 / 324.5 rpm** attainable in 0.6 s, supporting the transient-demand explanation without putting J into the steady classifier.
+
+The three false-infeasible points have voltage margins **-0.03625 / -0.04079 / -0.05640 V** and terminal speeds **992.613 / 991.860 / 993.981 rpm**, all within ±10 rpm of the 1000 rpm target while saturated throughout the terminal window. They satisfy the finite tolerance without reaching the exact requested point. [Held-out table](../results/operating_feasibility/held_out.csv), [plant/estimate audit](../results/operating_feasibility/held_out_plants.json), and [summary](../results/operating_feasibility/summary.json) preserve all counts and investigation runs.
+
+The **24 V, 2 A** commissioned envelope contains **3,111 grid nodes**: **643 feasible, 1,291 current limited, 198 voltage limited, 979 both limited** over 0–3000 rpm and 0–0.50 N m. [Envelope plot](../results/operating_feasibility/envelope.png) and [complete grid](../results/operating_feasibility/envelope.csv). This is an id=0 steady-state map, not a validated dynamic/hardware operating region.
+
+### What We Learned
+
+Trustworthy motor estimates and a feasible requested point are distinct prerequisites. A physically meaningful margin explains previous voltage failures without relabeling good identification as bad. Current headroom sufficient for steady torque may be insufficient for startup on a finite timescale. Classification agreement depends on whether success means the exact target or a tolerance band; both definitions and all disagreements must remain visible.
+
+### Remaining Limitations
+
+Point estimates, constant known load and viscous friction, ideal linear SVPWM, fixed bus, and forward id=0 motoring only. No uncertainty reserve, field weakening, MTPA, bus-sag/thermal limits, regenerative/reverse analysis, or hardware-safety certification. Reference current limiting is not instantaneous physical current protection. The constant-sign external load can reverse failed trajectories. The 21 scenarios share only three motors, so the observed **15/21 dynamic agreement** is a finite-dataset outcome, not universal classification accuracy. Historical PR #8 outcomes use their original simulation-metric criterion and are not pooled with the new terminal-window criterion.
+
+### Next Decision
+
+Evaluate transient acceleration/reserve requirements and uncertainty-aware operating margins with a fresh validation design. A later supervisor could use identification quality and operating feasibility as separate inputs; adaptive excitation and field weakening remain future work. No such supervisor or hardware procedure is part of this milestone.
