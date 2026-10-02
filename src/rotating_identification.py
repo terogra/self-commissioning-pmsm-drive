@@ -59,6 +59,7 @@ class FluxEstimate:
 def simulate_driven_rotor_measurements(
     plant_params: PMSMParameters,
     config: RotatingExcitationConfig = RotatingExcitationConfig(),
+    nonidealities=None,
 ) -> RotatingMeasurements:
     """Simulate sampled electrical data with rotor speed imposed by a drive rig.
 
@@ -110,17 +111,34 @@ def simulate_driven_rotor_measurements(
         return motor.derivatives(state, vd, vq, 0.0)[:2]
 
     dt = config.integration_dt_s
+    active = nonidealities is not None and nonidealities.has_signal_errors
+    if active:
+        from src.drive_nonidealities import apply_voltage, estimator_voltage, measure_current, delayed_samples
+        terminal = np.zeros((samples, 2))
     for k in range(samples):
         current = currents[k].copy()
         vd, vq = voltage_d[k], voltage_q[k]
-        for _ in range(substeps):
-            k1 = electrical_derivative(current, vd, vq)
-            k2 = electrical_derivative(current + 0.5 * dt * k1, vd, vq)
-            k3 = electrical_derivative(current + 0.5 * dt * k2, vd, vq)
-            k4 = electrical_derivative(current + dt * k3, vd, vq)
+        for substep in range(substeps):
+            ad, aq = vd, vq
+            if active:
+                theta = plant_params.pole_pairs*true_speed*(k*config.sample_dt_s+substep*dt)
+                applied = apply_voltage((vd, vq), current, theta,
+                    theta+nonidealities.frame.electrical_angle_bias_rad, config.dc_bus_voltage_v, nonidealities)
+                ad, aq = applied.terminal_d_v, applied.terminal_q_v
+                terminal[k] += np.array((ad, aq))/substeps
+            k1 = electrical_derivative(current, ad, aq)
+            k2 = electrical_derivative(current + 0.5 * dt * k1, ad, aq)
+            k3 = electrical_derivative(current + 0.5 * dt * k2, ad, aq)
+            k4 = electrical_derivative(current + dt * k3, ad, aq)
             current += (dt / 6) * (k1 + 2 * k2 + 2 * k3 + k4)
         currents[k + 1] = current
 
+    if active:
+        theta = plant_params.pole_pairs*true_speed*np.arange(samples+1)*config.sample_dt_s
+        currents = delayed_samples(measure_current(currents, theta, nonidealities),
+                                   nonidealities.timing.record_current_delay_samples)
+        reconstructed = estimator_voltage(np.column_stack((voltage_d, voltage_q)), terminal, nonidealities)
+        voltage_d, voltage_q = reconstructed.T
     return RotatingMeasurements(
         time_s=np.arange(samples + 1) * config.sample_dt_s,
         current_d_a=currents[:, 0] + rng.normal(0, config.current_noise_std_a, samples + 1),
