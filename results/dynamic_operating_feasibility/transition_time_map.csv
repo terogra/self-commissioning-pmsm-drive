@@ -1,4 +1,4 @@
-target_speed_rpm,current_limit_a,optimistic_min_transition_time_s,reachable,integration_converged
+target_speed_rpm,current_limit_a,quasi_steady_transition_time_estimate_s,quasi_steady_band_reachable,integration_converged
 250.0,0.4,0.480431447379057,True,True
 250.0,0.5,0.3596224918851212,True,True
 250.0,0.6000000000000001,0.28748264559237663,True,True

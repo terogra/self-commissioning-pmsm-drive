@@ -1,7 +1,8 @@
 """Forward id=0 transition analysis from accepted commissioning point estimates.
 
-The quasi-steady torque envelope gives an optimistic transition-time estimate,
-not a certified lower bound on arbitrary full-dq transients. A second prediction
+The quasi-steady torque envelope gives a model-specific transition-time estimate.
+Full dq transients can enter the band earlier even on the same parameter model;
+this estimate is not a physical minimum or a universal lower bound. A second prediction
 uses the repository's actual cascaded controller on the commissioned model.
 Neither prediction receives plant truth or changes identification quality.
 """
@@ -20,7 +21,7 @@ from src.speed_foc_simulation import run_speed_foc_simulation
 ASSUMPTIONS = (
     "Forward acceleration, nonnegative speed/load, constant external resisting load.",
     "Accepted identified point estimates; no uncertainty reserve or hardware guarantee.",
-    "Physics envelope assumes id=0 and instantaneous quasi-steady available iq.",
+    "Quasi-steady model assumes id=0 and instantaneous quasi-steady available iq.",
     "Ideal linear SVPWM Vdc/sqrt(3); no field weakening or MTPA.",
     "Controller prediction uses existing 300 Hz current / 10 Hz speed PI tuning.",
     "Initial dq currents and PI integrators are zero; constant load starts at t=0.",
@@ -82,20 +83,27 @@ class CapabilityPoint:
     voltage_limited_iq_a: float
     available_iq_a: float
     available_torque_nm: float
-    maximum_acceleration_rad_s2: float
+    quasi_steady_acceleration_rad_s2: float
     limiting_factor: str
     nonnegative_voltage_domain: bool
 
 
 @dataclass(frozen=True)
-class PhysicalCapability:
-    tolerance_band_reachable: bool
-    optimistic_min_transition_time_s: float | None
-    optimistic_min_completion_time_s: float | None
-    physical_deadline_not_ruled_out: bool | None
+class QuasiSteadyCapability:
+    """Model-specific estimates, not physical reachability or timing certificates.
+
+    quasi_steady_deadline_met is False when this reduced model cannot enter the
+    band or its estimated entry plus hold exceeds the deadline. False does not
+    rule out a full dq transition. None means numerical integration unresolved.
+    """
+
+    quasi_steady_band_reachable: bool
+    quasi_steady_transition_time_estimate_s: float | None
+    quasi_steady_completion_time_estimate_s: float | None
+    quasi_steady_deadline_met: bool | None
     limiting_speed_rpm: float | None
     bottleneck_speed_rpm: float
-    minimum_acceleration_margin_rad_s2: float
+    quasi_steady_minimum_acceleration_margin_rad_s2: float
     integration_converged: bool
     integration_change_s: float | None
     current_limited_on_path: bool
@@ -135,7 +143,7 @@ class DynamicFeasibilityResult:
     request: DynamicOperatingRequest
     exact_target_steady_state: OperatingFeasibility
     tolerance_band_steady_state: OperatingFeasibility
-    physical: PhysicalCapability
+    quasi_steady: QuasiSteadyCapability
     controller: ControllerPrediction
     reasons: tuple[str, ...]
     assumptions: tuple[str, ...] = ASSUMPTIONS
@@ -193,8 +201,11 @@ def _capability_point(model, request, speed_rpm):
     return CapabilityPoint(float(speed_rpm), iq_voltage, iq, torque, acceleration, factor, domain)
 
 
-def assess_physical_capability(commissioning, request, config=DynamicAnalysisConfig()):
-    """Integrate dω/alpha_max to the lower band edge using identified J/B.
+def assess_quasi_steady_capability(commissioning, request, config=DynamicAnalysisConfig()):
+    """Estimate model-specific entry time by integrating dω/alpha_max.
+
+    Full dq transients can enter the band earlier on the same parameter model;
+    neither this time nor the deadline Boolean is a physical impossibility test.
 
     For positive parameters in this forward id=0 model, available current and
     alpha_max are nonincreasing with speed. Endpoint/bisection checks therefore
@@ -203,17 +214,17 @@ def assess_physical_capability(commissioning, request, config=DynamicAnalysisCon
     model = _commissioned_model(commissioning)
     start, end = request.initial_speed_rpm, max(request.initial_speed_rpm, request.lower_band_rpm)
     first, last = (_capability_point(model, request, s) for s in (start, end))
-    reachable = last.nonnegative_voltage_domain and (last.maximum_acceleration_rad_s2 > 0
-                 or (start == end and last.maximum_acceleration_rad_s2 >= 0))
+    reachable = last.nonnegative_voltage_domain and (last.quasi_steady_acceleration_rad_s2 > 0
+                 or (start == end and last.quasi_steady_acceleration_rad_s2 >= 0))
     limiting_speed = None
     reasons = []
     if not reachable:
-        reasons.append("dynamic.nonpositive_acceleration")
+        reasons.append("dynamic.quasi_steady_nonpositive_acceleration")
         lo, hi = start, end
-        if first.maximum_acceleration_rad_s2 > 0:
+        if first.quasi_steady_acceleration_rad_s2 > 0:
             for _ in range(60):
                 mid = .5*(lo+hi)
-                if _capability_point(model, request, mid).maximum_acceleration_rad_s2 > 0:
+                if _capability_point(model, request, mid).quasi_steady_acceleration_rad_s2 > 0:
                     lo = mid
                 else:
                     hi = mid
@@ -221,34 +232,34 @@ def assess_physical_capability(commissioning, request, config=DynamicAnalysisCon
             hi = start
         limiting_speed = hi
     points = config.initial_path_points
-    previous = change = minimum_time = None
+    previous = change = time_estimate = None
     converged = start == end or not reachable
     while True:
         path = tuple(_capability_point(model, request, s) for s in np.linspace(start, end, points))
         if not reachable:
             break
         if start == end:
-            minimum_time = 0.0
+            time_estimate = 0.0
             break
         omega = np.array([p.speed_rpm for p in path]) * 2*pi/60
-        inverse_acceleration = 1/np.array([p.maximum_acceleration_rad_s2 for p in path])
-        minimum_time = float(np.sum(.5*(inverse_acceleration[:-1]+inverse_acceleration[1:])*np.diff(omega)))
+        inverse_acceleration = 1/np.array([p.quasi_steady_acceleration_rad_s2 for p in path])
+        time_estimate = float(np.sum(.5*(inverse_acceleration[:-1]+inverse_acceleration[1:])*np.diff(omega)))
         if previous is not None:
-            change = abs(minimum_time-previous)
-            converged = change <= config.relative_time_tolerance * max(minimum_time, 1e-12)
+            change = abs(time_estimate-previous)
+            converged = change <= config.relative_time_tolerance * max(time_estimate, 1e-12)
         if converged or points >= config.maximum_path_points:
             break
-        previous = minimum_time
+        previous = time_estimate
         points = min(2*points-1, config.maximum_path_points)
-    completion = None if minimum_time is None else minimum_time+request.hold_time_s
-    not_ruled_out = (False if not reachable else None if not converged else completion <= request.deadline_s)
+    completion = None if time_estimate is None else time_estimate+request.hold_time_s
+    deadline_met = (False if not reachable else None if not converged else completion <= request.deadline_s)
     if reachable and not converged:
-        reasons.append("dynamic.integration_resolution")
-    if not_ruled_out is False and reachable:
-        reasons.append("dynamic.deadline_too_short")
+        reasons.append("dynamic.quasi_steady_integration_resolution")
+    if deadline_met is False and reachable:
+        reasons.append("dynamic.quasi_steady_deadline_exceeded")
     factors = {p.limiting_factor for p in path}
-    return PhysicalCapability(reachable, minimum_time, completion, not_ruled_out, limiting_speed,
-        last.speed_rpm, last.maximum_acceleration_rad_s2, converged, change,
+    return QuasiSteadyCapability(reachable, time_estimate, completion, deadline_met, limiting_speed,
+        last.speed_rpm, last.quasi_steady_acceleration_rad_s2, converged, change,
         "current" in factors, "voltage" in factors, "coincident" in factors, path, tuple(reasons))
 
 
@@ -299,9 +310,9 @@ def evaluate_controller_trace(simulation, request, dt, trace_interval_s=1e-3):
 
 def assess_dynamic_operating_point(commissioning, request: DynamicOperatingRequest,
                                    config=DynamicAnalysisConfig()):
-    """Assess physics and existing-controller prediction; accepted estimates only."""
+    """Assess quasi-steady model and existing-controller prediction; accepted estimates only."""
     model = _commissioned_model(commissioning)
-    physical = assess_physical_capability(commissioning, request, config)
+    quasi_steady = assess_quasi_steady_capability(commissioning, request, config)
     exact, band = (assess_operating_point(commissioning, OperatingPointRequest(
         speed, request.load_torque_nm, request.dc_bus_voltage_v, request.current_limit_a))
         for speed in (request.target_speed_rpm, request.lower_band_rpm))
@@ -312,5 +323,5 @@ def assess_dynamic_operating_point(commissioning, request: DynamicOperatingReque
         dc_bus_voltage=request.dc_bus_voltage_v, current_limit_a=request.current_limit_a)
     controller = evaluate_controller_trace(simulation, request, config.simulation_dt_s, config.trace_interval_s)
     reasons = (() if exact.feasible else ("dynamic.exact_target_steady_infeasible",)) + (
-        () if band.feasible else ("dynamic.tolerance_band_steady_infeasible",)) + physical.reasons + controller.reasons
-    return DynamicFeasibilityResult(request, exact, band, physical, controller, reasons)
+        () if band.feasible else ("dynamic.tolerance_band_steady_infeasible",)) + quasi_steady.reasons + controller.reasons
+    return DynamicFeasibilityResult(request, exact, band, quasi_steady, controller, reasons)

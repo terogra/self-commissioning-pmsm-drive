@@ -20,7 +20,7 @@
   "assumptions": [
     "Forward acceleration, nonnegative speed/load, constant external resisting load.",
     "Accepted identified point estimates; no uncertainty reserve or hardware guarantee.",
-    "Physics envelope assumes id=0 and instantaneous quasi-steady available iq.",
+    "Quasi-steady model assumes id=0 and instantaneous quasi-steady available iq.",
     "Ideal linear SVPWM Vdc/sqrt(3); no field weakening or MTPA.",
     "Controller prediction uses existing 300 Hz current / 10 Hz speed PI tuning.",
     "Initial dq currents and PI integrators are zero; constant load starts at t=0.",

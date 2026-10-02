@@ -10,6 +10,7 @@ import csv
 from dataclasses import asdict
 import json
 from pathlib import Path
+from types import SimpleNamespace
 
 import matplotlib
 import numpy as np
@@ -17,7 +18,7 @@ import numpy as np
 from experiments.operating_feasibility import commission_plant, write_csv
 from src.dynamic_feasibility import (
     DynamicAnalysisConfig, DynamicOperatingRequest, _commissioned_model,
-    assess_dynamic_operating_point, assess_physical_capability, evaluate_controller_trace,
+    assess_dynamic_operating_point, assess_quasi_steady_capability, evaluate_controller_trace,
 )
 from src.mechanical_excitation import MechanicalExcitationConfig
 from src.motor import PMSMParameters
@@ -30,6 +31,11 @@ SEEDS = {"development": 20261002, "evaluation": 20261003}
 CONFIG = DynamicAnalysisConfig()
 SCENARIOS = ("fast_easy", "deadline_limited", "longer_deadline", "current_limited",
              "voltage_high_speed", "tolerance_boundary", "unreachable", "moving_start")
+SEMANTICS_CORRECTION = (
+    "Naming corrected after the original held-out finding: full dq transients can enter "
+    "before the quasi-steady estimate even on the same commissioned model. Original "
+    "evaluation evidence, numerical method, seeds and scoring are unchanged."
+)
 
 
 def requests(full, rng=None):
@@ -63,7 +69,7 @@ def compare_case(plant, full, request, **metadata):
         load_step_torque=request.load_torque_nm, dc_bus_voltage=request.dc_bus_voltage_v,
         current_limit_a=request.current_limit_a)
     actual = evaluate_controller_trace(simulation, request, CONFIG.simulation_dt_s, CONFIG.trace_interval_s)
-    p, c = prediction.physical, prediction.controller
+    p, c = prediction.quasi_steady, prediction.controller
     factors = ";".join(name for name, flag in (("current", p.current_limited_on_path),
         ("voltage", p.voltage_limited_on_path), ("coincident", p.coincident_limits_on_path)) if flag)
     row = {**metadata, "status": "evaluated", **asdict(request),
@@ -105,11 +111,11 @@ def summary(rows):
         "actual_successes": sum(r["actual_success"] for r in valid),
         "false_predicted_success": sum(r["prediction_success"] and not r["actual_success"] for r in valid),
         "false_predicted_failure": sum(not r["prediction_success"] and r["actual_success"] for r in valid),
-        "physical_deadline_not_ruled_out": sum(r["physical_deadline_not_ruled_out"] is True for r in valid),
-        "physical_deadline_ruled_out_but_actual_success": sum(r["physical_deadline_not_ruled_out"] is False and r["actual_success"] for r in valid),
-        "actual_entry_before_optimistic_estimate": sum(r["actual_first_entry_s"] is not None
-            and r["optimistic_min_transition_time_s"] is not None
-            and r["actual_first_entry_s"] < r["optimistic_min_transition_time_s"] for r in valid),
+        "quasi_steady_deadline_met": sum(r["quasi_steady_deadline_met"] is True for r in valid),
+        "quasi_steady_deadline_missed_but_actual_success": sum(r["quasi_steady_deadline_met"] is False and r["actual_success"] for r in valid),
+        "actual_entry_before_quasi_steady_estimate": sum(r["actual_first_entry_s"] is not None
+            and r["quasi_steady_transition_time_estimate_s"] is not None
+            and r["actual_first_entry_s"] < r["quasi_steady_transition_time_estimate_s"] for r in valid),
         "both_qualified_count": len(errors),
         "qualified_entry_error_median_s": float(np.median(errors)) if errors else None,
         "qualified_entry_absolute_error_max_s": float(np.max(np.abs(errors))) if errors else None,
@@ -206,10 +212,10 @@ def plot_representative(traces):
                    color="grey", alpha=.2, label="Acceptance band")
         for label, record, style in (("Commissioned prediction", pred.controller, "-"), ("Hidden-plant validation", actual, "--")):
             ax.plot([s.time_s for s in record.trace], [s.speed_rpm for s in record.trace], style, label=label)
-        if pred.physical.optimistic_min_transition_time_s is not None:
-            t = pred.physical.optimistic_min_transition_time_s
+        if pred.quasi_steady.quasi_steady_transition_time_estimate_s is not None:
+            t = pred.quasi_steady.quasi_steady_transition_time_estimate_s
             if t <= req.deadline_s:
-                ax.axvline(t, color="green", linestyle=":", label="Optimistic entry")
+                ax.axvline(t, color="green", linestyle=":", label="Quasi-steady entry estimate")
         ax.set(title=name.replace("_", " "), xlabel="Time [s]", ylabel="Speed [rpm]")
         ax.grid(alpha=.25)
     axes[0, 0].legend(fontsize=7)
@@ -220,29 +226,64 @@ def plot_representative(traces):
 
 
 def plot_capability_map(full):
-    import matplotlib.pyplot as plt
     currents, speeds = np.linspace(.4, 3, 27), np.linspace(250, 2500, 31)
-    rows, values = [], []
+    rows = []
     for speed in speeds:
-        line = []
         for current in currents:
             req = DynamicOperatingRequest(0, float(speed), .005, 24, float(current), 4)
-            p = assess_physical_capability(full, req)
-            line.append(np.nan if not p.tolerance_band_reachable else p.optimistic_min_transition_time_s)
+            p = assess_quasi_steady_capability(full, req)
             rows.append(dict(target_speed_rpm=speed, current_limit_a=current,
-                optimistic_min_transition_time_s=p.optimistic_min_transition_time_s,
-                reachable=p.tolerance_band_reachable, integration_converged=p.integration_converged))
-        values.append(line)
+                quasi_steady_transition_time_estimate_s=p.quasi_steady_transition_time_estimate_s,
+                quasi_steady_band_reachable=p.quasi_steady_band_reachable, integration_converged=p.integration_converged))
     write_csv(OUTPUT/"transition_time_map.csv", rows)
+    plot_capability_map_rows(rows)
+
+
+def plot_capability_map_rows(rows):
+    """Render saved grid values; relabeling does not run identification/control."""
+    import matplotlib.pyplot as plt
+    currents = sorted({r["current_limit_a"] for r in rows})
+    speeds = sorted({r["target_speed_rpm"] for r in rows})
+    grid = {(r["target_speed_rpm"], r["current_limit_a"]): r for r in rows}
+    values = [[(grid[s, i]["quasi_steady_transition_time_estimate_s"]
+                if grid[s, i]["quasi_steady_band_reachable"] else np.nan)
+               for i in currents] for s in speeds]
     fig, ax = plt.subplots(figsize=(9, 5))
     mesh = ax.pcolormesh(currents, speeds, np.ma.masked_invalid(values), shading="nearest", cmap="viridis", vmin=0, vmax=4)
     ax.set_facecolor("#dddddd")
-    fig.colorbar(mesh, ax=ax, label="Optimistic band-entry time [s]; color clipped at 4 s")
+    fig.colorbar(mesh, ax=ax, label="Quasi-steady band-entry estimate [s]; color clipped at 4 s")
     ax.set(xlabel="Current reference design limit [A]", ylabel="Requested speed [rpm]",
-           title="Identified id=0 capability: 24 V, 0.005 N m; grey = unreachable")
+           title="Quasi-steady id=0 model: 24 V, 0.005 N m; grey = model-unreachable")
     fig.tight_layout()
     fig.savefig(OUTPUT/"transition_time_map.png", dpi=160)
     plt.close(fig)
+
+
+def plot_saved_artifacts():
+    """Update labels using original CSV evidence, without rerunning a population."""
+    def read_rows(name):
+        with (OUTPUT/name).open(newline="", encoding="utf-8") as handle:
+            return list(csv.DictReader(handle))
+    saved = read_rows("representative_traces.csv")
+    traces = {}
+    for row in read_rows("representative.csv"):
+        name = row["scenario"]
+        req = DynamicOperatingRequest(**{k: float(row[k]) for k in DynamicOperatingRequest.__dataclass_fields__})
+        def record(model):
+            return SimpleNamespace(trace=tuple(SimpleNamespace(
+                **{k: float(r[k]) for k in ("time_s", "speed_rpm", "iq_reference_a", "voltage_utilization")})
+                for r in saved if r["scenario"] == name and r["model"] == model))
+        estimate = row["quasi_steady_transition_time_estimate_s"]
+        pred = SimpleNamespace(request=req, controller=record("prediction"),
+            quasi_steady=SimpleNamespace(quasi_steady_transition_time_estimate_s=float(estimate) if estimate else None))
+        traces[name] = (pred, record("hidden_plant"))
+    plot_representative(traces)
+    rows = read_rows("transition_time_map.csv")
+    for row in rows:
+        for k in ("target_speed_rpm", "current_limit_a", "quasi_steady_transition_time_estimate_s"):
+            row[k] = float(row[k]) if row[k] else None
+        row["quasi_steady_band_reachable"] = row["quasi_steady_band_reachable"] == "True"
+    plot_capability_map_rows(rows)
 
 
 def save_json(path, data):
@@ -251,9 +292,15 @@ def save_json(path, data):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--population", choices=SEEDS, required=True)
+    mode = parser.add_mutually_exclusive_group(required=True)
+    mode.add_argument("--population", choices=SEEDS)
+    mode.add_argument("--replot-saved", action="store_true", help="Relabel original evidence without rerunning simulations")
     args = parser.parse_args()
     matplotlib.use("Agg")
+    if args.replot_saved:
+        plot_saved_artifacts()
+        print("Replotted original saved evidence; no population or simulation rerun.")
+        return
     OUTPUT.mkdir(parents=True, exist_ok=True)
     rows, audit = run_population(args.population)
     name = "development" if args.population == "development" else "held_out"
@@ -264,11 +311,12 @@ def main():
     if args.population == "evaluation":
         reps, retro = representative(), retrospective()
         save_json(OUTPUT/"summary.json", {"analysis_config": asdict(CONFIG), "seeds": SEEDS,
+            "semantics_correction": SEMANTICS_CORRECTION,
             "development": json.loads((OUTPUT/"development_summary.json").read_text(encoding="utf-8")),
             "representative": summary(reps), "held_out": {"plants": len(audit), **result}, "m14_retrospective": summary(retro),
             "criterion": "Contiguous sampled hold in max(1 rpm, 1% target) for 0.1 s completed before deadline; finite signals and |iq_ref|<=Imax",
             "protocol": "Method fixed after development and before independent seed evaluation; no outcome-based gate or algorithm tuning",
-            "limits": "Small correlated scenario sample; point estimates; quasi-steady optimistic envelope is not a certified full-dq bound; no hardware guarantee"})
+            "limits": "Small correlated scenario sample; point estimates; quasi-steady time estimate is not a physical minimum or universal lower bound; no hardware guarantee"})
     print(json.dumps(result, indent=2))
 
 
