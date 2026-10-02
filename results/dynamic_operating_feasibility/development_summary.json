@@ -1,0 +1,23 @@
+{
+  "seed": 20261002,
+  "plants": 3,
+  "total_cases": 24,
+  "evaluated_cases": 24,
+  "unavailable_or_error_cases": 0,
+  "prediction_agreement": 24,
+  "predicted_successes": 11,
+  "actual_successes": 11,
+  "false_predicted_success": 0,
+  "false_predicted_failure": 0,
+  "physical_deadline_not_ruled_out": 12,
+  "physical_deadline_ruled_out_but_actual_success": 0,
+  "actual_entry_before_optimistic_estimate": 0,
+  "both_qualified_count": 11,
+  "qualified_entry_error_median_s": -3.999999999998449e-05,
+  "qualified_entry_absolute_error_max_s": 0.00028000000000000247,
+  "limiting_factor_distribution": {
+    "current": 15,
+    "current;voltage": 9
+  },
+  "brief_negative_actual_speed_cases": 21
+}
