@@ -676,3 +676,201 @@ Simulation/design analysis with identified point estimates, known constant load,
 ### Next Decision
 
 Milestone 17 should study realistic nonidealities, sensor/model bias and timing effects before broader claims about commissioning and operating predictions. It is not implemented in this PR. A later orchestration layer can combine the three separate decisions without conflating them.
+
+## Milestone 17 — Realistic drive nonidealities and robustness characterization
+
+### Problem / Motivation
+
+The complete commissioning path had been validated primarily with ideal signal
+chains plus zero-mean Gaussian record noise. M16's successful ideal-model dynamic
+predictions did not establish robustness to sensor calibration, coordinate-frame
+misalignment, delayed records, unknown terminal voltage or a stale resistance.
+These effects can violate an estimator's model while leaving its numerical fit
+apparently precise. Characterization was needed before changing the algorithms.
+
+### Engineering Decision
+
+Start from merged M16 main **047d6511b86c34ce571005f8377387eb3674602b** on
+`codex/realistic-drive-nonidealities`. Keep estimators, gates, adaptive retry
+policy/actions, FOC tuning and M16 calculations unchanged. Put deterministic
+nonidealities at the simulation measurement/actuation boundary. Pair one-shot
+and adaptive methods, separate commissioning-only/operation-only/combined
+exposure, and use truth only for post-decision evaluation. Commit the method,
+levels, metrics, protocol and development results before a separate held-out seed.
+Freeze SHA: **4723230167786d8760c8dc801ec32c05b11d330b**.
+
+### Implementation
+
+[`drive_nonidealities.py`](../src/drive_nonidealities.py) adds immutable nested
+current, voltage, frame, timing, actuation and operating-drift configurations.
+Current sensing passes through existing inverse Park/Clarke transforms into abc,
+per-phase gain/offset/nearest-quantum rounding, and measured-angle Clarke/Park.
+Fixed electrical-angle bias rotates both measurement and commanded-voltage frames
+consistently. One-step feedback delays include measured angle; one-sample record
+alignment delays current relative to unchanged voltage, speed and timestamps.
+
+The averaged phase error is `-drop*sign(i_phase)` with sign(0)=0; Clarke removes
+zero sequence. Actual terminal dq voltage is clipped at the sagged bus circle,
+while FOC retains its nominal bus and unchanged anti-windup. Estimator voltage
+is command reconstruction in this matrix, with gain/offset/quantization; optional
+explicit terminal sensing is a separate setting. Post-commissioning Rs drift
+clones only the operating plant, preserving commissioned/controller objects.
+Gaussian record noise is added after this chain; systematic errors are not
+declared as Gaussian `MeasurementNoise` to the existing diagnostics.
+
+Hooks extend four simulation providers; estimator bodies are preserved.
+The [experiment](../experiments/nonideality_robustness.py) draws two development
+and three held-out motors from existing M15 ranges, covers 16 fixed cells and
+retains both methods/all three exposures. Mechanical-record caches include the
+identified electrical controller as well as excitation config. Speed logs
+distinguish command, true-frame command, terminal and reconstructed voltage,
+true/measured/feedback current, rotated true-frame references and actual bus
+clipping. [Protocol](nonideality_robustness_protocol.md) records placements,
+applicability, units, levels, seeds, unchanged success conventions and freeze.
+
+### Problems / Unexpected Results
+
+**Structured bias passes the unchanged gates.** Every strong current, voltage
+and inverter cell is accepted but exceeds the existing post-hoc six-parameter
+<=10% accuracy convention. Held-out current gain yields Rs/Ld/Lq errors
+**12.61–13.46%**, J **14.44–14.70%**, B **15.21–15.61%**, with flux error <.02%.
+Voltage reconstruction scales all six estimates into **11.25–12.23%** error.
+Inverter error mainly biases Rs **15.76–16.12%**, with other estimates <.74%.
+Rank/residual/noise-sensitivity checks do not necessarily expose a coherent
+calibration error absorbed into the fitted model.
+
+Timing and both combined commissioning cases are rejected for
+`standstill.excessive_residual`, even when partial standstill estimates have
+modest percentage errors. Adaptive terminal action `model_residual_terminal`
+prevents later stages; no retry is triggered. One-shot's existing electrical
+path can still fit/assess flux after a valid but quality-rejected standstill fit;
+held-out rotating-only acceptance is **47/48 one-shot versus 39/48 adaptive**.
+Neither path commissions mechanical parameters from rejected electrical data.
+
+Good speed control conceals some inaccurate parameters. All accepted
+commissioning-only cases pass the operating test; strong voltage/inverter bias
+also passes combined control. Strong current bias instead violates the .05 A
+physical iq tracking criterion despite speed RMSE remaining small. Angle error
+creates persistent physical id, rather than merely zero-mean ripple. M16's
+nominal 4% voltage-headroom recipe becomes optimistic after 5/10% actual bus sag.
+
+### Resolution
+
+Preserve these findings rather than tuning gates, severities, excitation or
+controllers. Retain all partial estimates, error labels, rejection reasons and
+attempt histories. Mark rejected control unavailable; never substitute zeros or
+count it as a successful simulation. Compare actual currents/references in the
+same true frame and separately report controller-frame error. Keep true torque
+and post-hoc accuracy labels outside every normal decision interface.
+
+Add regression tests demonstrating accepted uniform-current-gain bias and safe
+terminal rejection. The latter explicitly verifies the supervisor leaves prior
+controller parameters unchanged. A baseline AST contract verifies 12 protected
+modules, excluding only the two edited electrical simulation providers; empty
+Python 3.12 type-parameter AST fields are normalized for Python 3.11/3.12 CI.
+Final development output was rerun with the same method/seed after adding
+failure/attempt-estimate fields and consistent plot colors, reproducing all
+numbers. No model/metric/scenario/test change followed held-out execution.
+
+### Validation / Results
+
+Baseline **151 tests in 153.73 s**. M17 adds **29** tests for immutable/invalid
+configs, phase transforms and physical units/signs, coherent frame rotation,
+voltage source separation, inverter error/actual bus clipping, exact delay
+alignment, deterministic records, zero-error equivalence across all providers,
+isolated operating drift, unchanged stochastic metadata, unchanged algorithm
+contract, decision API boundaries and intended negative results. Full suite
+passed **180 tests in 143.08 s** before freeze. Final full-suite verification
+passed **180 tests in 130.47 s** after held-out artifacts/documentation; no tests
+were skipped or xfailed. `git diff --check` also passed.
+
+Development seed **20261004**, two motors, **192 rows**: each method accepts
+**26/32 (81.25%)**, with **20 accepted accurate**, **6 silent inaccurate** and
+**6 rejected/unavailable** full fits; no accurate full rejection or numerical
+estimator failure. Held-out seed **20261005**, three new motors, **288 rows**:
+each method accepts **39/48 (81.25%)**, with **30 accepted accurate**, **9 silent
+inaccurate**, **9 rejected/unavailable**, no accurate full rejection and no
+numerical estimator failure. Silent cases are **23.08% of accepted commissioning**
+in both populations. Both methods have identical full acceptance/operating
+outcomes. Adaptive performs **zero retries**, **zero recoveries**, **6/9 residual
+terminal rejections** and no budget/design-bound terminations. This is not
+evidence of retry recovery, or retry making structured bias worse.
+
+Control success/evaluated counts per method, development -> held-out:
+
+| Exposure | Development | Held-out | Held-out unavailable |
+| --- | ---: | ---: | ---: |
+| Commissioning-only | 26/26 | 39/39 | 9 |
+| Operation-only | 28/32 | 42/48 | 0 |
+| Combined | 24/26 | 36/39 | 9 |
+
+Held-out post-load speed RMSE median/worst: commissioning-only **1.44142 /
+2.73349 rpm**, operation-only **1.44171 / 3.17383 rpm**, combined **1.44166 /
+2.74765 rpm**. Current-strong combined iq RMSE **.06977–.11524 A** fails all
+three motors. Combined mild/strong commissioning is unavailable on all three;
+after clean commissioning, operation-only mild passes **3/3**, strong fails
+**3/3**, with worst iq RMSE **.116755 A**, speed deviation **10.0264 rpm** and
+recovery **.01664 s**. Most recovery values are zero because the disturbance
+remains within the existing ±10 rpm band, not because dynamics are instantaneous.
+Strong angle combined true id RMS is **.04825–.07991 A**, versus clean baseline
+**8.18–18.12 microampere**. Strong Rs drift still passes all three motors with
+speed RMSE **1.19786–2.74765 rpm**, iq RMSE **.00432–.00643 A** at this operating point.
+
+Small independent M16 interaction: first clean commissioned motor, fixed
+nominal-bus recipe from identified steady voltage, six operating cells per
+population. **2/6 agreement, four optimistic predictions** in each: sag-only
+and combined mild/strong all fail the unchanged hold, while ideal and Rs drift
+succeed. Held-out nominal bus **16.18591 V**, actual **15.37661/14.56732 V**;
+sag-only final speeds **984.01665/931.24935 rpm**, combined
+**982.07732/929.74449 rpm**, with **85.75–86.77%** terminal clipping in failures.
+M16 and its quasi-steady estimate semantics remain unchanged.
+
+[Development](../results/nonideality_robustness/development.csv),
+[held-out](../results/nonideality_robustness/held_out.csv),
+[summary](../results/nonideality_robustness/held_out_summary.json),
+[attempts](../results/nonideality_robustness/held_out_attempts.json),
+[impact plot](../results/nonideality_robustness/held_out_nonideality_impact_matrix.png),
+[response plot](../results/nonideality_robustness/held_out_combined_case_response.png)
+and [M16 rows](../results/nonideality_robustness/held_out_m16_comparison.csv)
+retain original results, with separate truth audits and sampled response traces.
+Plots were visually inspected. Exposure rows share only five motors, so they do
+not establish independent-sample population reliability.
+
+### What We Learned
+
+A measured-data gate can detect an inconsistent model without detecting a
+coherently biased model. Common current gain approximately scales electrical
+Rs/L down and reconstructed torque/J/B up; common voltage gain scales electrical
+and mechanical parameters together. Small residual and local noise sensitivity
+do not certify sensor calibration. Integral control and correlated tuning errors
+can preserve speed response despite inaccurate estimates. Sensing bias,
+historically valid-but-stale parameters and actuator headroom failures need
+separate interpretation. Adaptive logic cannot request a retry for an error its
+diagnostics accept; no retry effectiveness claim follows from this matrix.
+
+### Remaining Limitations
+
+Averaged simulation, not switching PWM/dead-time/device modeling or hardware
+validation. Fixed bounded stress/fault severities, low Gaussian noise and five
+motors do not represent universal device specifications. Gaussian noise is
+added after the deterministic sample chain; no full ADC or feedback-noise chain
+is modeled. Fixed bus sag, sign-based averaged voltage drop, fixed alignment bias
+and a one-step/sample delay do not capture frequency-dependent sensor dynamics,
+switching ripple or jitter. Rs drift is not a thermal network/online estimator.
+Unknown load/friction/model mismatch limitations of prior commissioning remain.
+Current-reference and excitation limits are simulation constraints, not physical
+hardware-safety guarantees. The compact M16 comparison probes one motor per
+population and a deliberately small nominal-headroom recipe, not universal
+prediction reliability. No calibrated probabilistic coverage for structured
+bias is claimed.
+The actual-bus clipping flag uses a strict vector comparison and can include
+last-bit boundary clips even without sag; it is separate from nominal FOC
+saturation and must be interpreted with terminal-command discrepancy.
+
+### Next Decision
+
+Use retained silent-bias and nominal/actual-bus failures to inform a separately
+designed future study of calibration/model validity and operating reserves.
+Any redesign requires its own development/held-out protocol. This milestone
+only characterizes the frozen workflow; firmware, GUI, online adaptation and
+release/orchestration work remain outside this PR.
