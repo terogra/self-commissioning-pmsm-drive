@@ -23,6 +23,9 @@ Milestone 17 now characterizes this unchanged workflow with structured sensing,
 angle, timing, averaged actuation, bus-sag and post-commissioning resistance errors.
 Independent populations retain biased acceptances and rejected cases; these
 nonidealities are optional and the default simulation remains unchanged.
+Milestone 18 adds a portable single-precision C controller kernel, an accepted-
+commissioning configuration exporter and deterministic Python/C replay tests.
+Commissioning and the simulation remain in Python.
 
 ## Current simulation
 
@@ -1596,3 +1599,131 @@ dynamics, switching ripple, thermal network, friction redesign or online correct
 is modeled. High-level conclusions depend on headroom and the chosen operating point.
 Structured bias is not covered by the existing Gaussian/local sensitivity model.
 No new estimator/retry action was introduced and no quality threshold was tuned.
+
+## Milestone 18 — portable C controller kernel
+
+The real-time math/control path is now implemented in ISO C99 with IEEE binary32
+`float`. Python remains the research reference and performs commissioning/gain
+generation. The C core has no heap, mutable global state, OS/Python dependencies,
+plant simulation or commissioning estimators. Motor/controller configurations and
+PI states are separate caller-owned structs. SI units and status codes are defined
+in [the public headers](firmware/include/pmsm_control.h).
+
+| C API | Preserved reference behavior |
+| --- | --- |
+| `pmsm_clarke`, `pmsm_inverse_clarke`, `pmsm_park`, `pmsm_inverse_park` | Amplitude-invariant transforms; electrical angle in radians |
+| `pmsm_pi_init/reset/update/track` | Integrate before output; ordered upper/lower clamps with conditional integral rollback; explicit back-calculation |
+| `pmsm_current_init/reset/update` | Both dq PIs, `omega_e=p*omega_m`, existing decoupling/feedforward, vector limiting, then both integrator corrections |
+| `pmsm_limit_voltage` | Strict magnitude comparison; direction-preserving scaling to nominal `Vdc/sqrt(3)` |
+| `pmsm_speed_init/reset/update` | Existing PI gains and symmetric iq limit, with the original conditional integration |
+
+Invalid inputs/configuration, nonpositive dt and nonfinite arithmetic are reported
+without partially committing state/output. This C API contract is not a hardware
+protection mechanism. Reset zeros integrators; configuration is unchanged.
+No equations or update order in the four Python reference modules were altered.
+
+### Accepted commissioning → configuration
+
+`src.firmware_config.build_firmware_config(full_result, ...)` requires an accepted
+**FullCommissioningResult**: both electrical and mechanical decisions must accept.
+It takes all six estimates plus known pole pairs, calls the existing Python current
+and speed constructors, then rounds parameters/derived gains once to binary32.
+`export_c_header(config, path)` writes exact C99 hexadecimal `f` literals in
+`static const` configuration objects. C does not duplicate tuning formulas.
+Default bandwidths are the existing 300 Hz current and 10 Hz speed settings;
+bus, damping, iq limit and anti-windup gain are configurable. A rejected result
+raises before configuration/header generation. The exporter takes no oracle/plant.
+
+The [generated example](results/firmware_parity/generated_motor_config.h) comes
+from accepted simulated locked/rotating/mechanical measurements with seeds
+1801/1802/1803, with a 24 V bus. Its comment identifies it as a simulation example,
+not universal motor constants. For another accepted result:
+
+```python
+from src.firmware_config import build_firmware_config, export_c_header
+config = build_firmware_config(full_result, dc_bus_voltage_v=24.0)
+export_c_header(config, "generated_motor_config.h", provenance="Describe measurement origin here")
+```
+
+### Parity method and quantitative evidence
+
+Both implementations receive identical binary32-representable inputs. The original
+Python controller keeps float64 arithmetic; differences therefore include exported
+coefficient rounding and accumulated binary32 state rounding. Every output and
+integrator is checked at every step. The combined trace uses the existing Python
+simulation solely to generate feedback and recorded iq-reference inputs: both
+speed PIs receive the same speed feedback, and both FOC controllers receive the
+same recorded iq reference. There is no separately evolving C plant.
+
+The [protocol](docs/firmware_core_protocol.md) declares budgets before measuring
+results: `abs_error <= atol + rtol*abs(reference)`. Transform budgets are
+8e-6/2e-6; short PI/speed budgets 2e-4/2e-5; FOC and long replay budgets
+5e-3 V (current output/state) or A (speed output/state), with rtol 2e-5.
+Binary32 unit roundoff, accumulation length, coefficient rounding and cancellation
+motivate these engineering budgets; they are not universal bounds. Relative errors
+are reported only where `abs(reference)>=1e-6`, alongside absolute errors.
+The budgets were not loosened after seeing results.
+
+Local GCC **16.2.0**, Windows, strict flags
+`-std=c99 -Wall -Wextra -Werror -pedantic -O2 -ffp-contract=off`, no fast-math:
+
+| Measurement | Maximum absolute difference |
+| --- | ---: |
+| Transform component | 1.864605e-6 (maximum relative 3.896980e-7) |
+| Standalone PI output / integral | 1.354661e-6 / 9.292793e-7 |
+| Synthetic FOC requested vd / vq | 6.066528e-7 / 7.545959e-6 V |
+| Synthetic FOC applied vd / vq | 1.398782e-6 / 5.710366e-6 V |
+| Synthetic FOC d / q integral | 4.332207e-7 / 5.309827e-6 V |
+| Standalone speed iq reference / integral | 6.804361e-7 / 6.649375e-7 A |
+| Combined applied vd / vq | 2.053589e-7 / 1.531645e-4 V |
+| Combined current d / q integral | 4.963309e-9 / 1.527868e-4 V |
+| Combined speed iq reference / integral | 1.751090e-5 / 1.751090e-5 A |
+| Combined voltage magnitude (worst absolute overall) | **1.535716e-4 V**, sample **24545** |
+
+**31,484 input samples**: 108 transforms, 256 PI, 768 FOC, 256 speed, 96 boundary
+probes and 30,000 combined replay steps. Worst relative difference overall is
+**.005850304 (0.585%)** in the combined q integrator at sample **6397**:
+Python .02553443619 V versus C .02538505197 V. Its absolute difference is only
+.0001493842 V; reporting voltage output error alone would hide this small-state
+cancellation/accumulation effect. The secondary explicit binary32 FOC reference
+has zero difference for its six compared values on this compiler; that observation
+does not establish cross-platform bitwise equivalence.
+
+**Negative result:** strict saturation flags agree **30,592/30,608** overall,
+including **30,512/30,512** away from the predeclared boundary envelope
+`16*u*(abs(requested_magnitude)+abs(limit))`. **16/96 near-boundary probes disagree**
+because float64 versus float32 norm rounding can change `>` at equality.
+All probes and both flags are retained; no threshold/algorithm was tuned to force
+agreement. Last-bit counts may vary by compiler/libm. This is numerical parity
+within declared budgets, not exact Boolean equivalence at saturation boundaries.
+
+[Summary with per-signal maxima/indices](results/firmware_parity/parity_summary.json),
+[all synthetic vectors](results/firmware_parity/parity_vectors.csv),
+[sampled replay trace](results/firmware_parity/parity_trace.csv), and
+[parity plot](results/firmware_parity/parity_plot.png) retain the evidence.
+All 30,000 replay steps are checked; the CSV/plot retains every 25th step, every
+signal's maximum absolute/relative error, and every flag disagreement.
+
+### Build and reproduction
+
+```sh
+# GCC or Clang on PATH; optionally set PMSM_CC to a compiler executable.
+python -m pytest -q
+python -m experiments.firmware_parity
+```
+
+The harness builds the two C sources and native assertion executable in temporary
+directories; binaries are not committed. GitHub Actions has explicit GCC/Clang
+C99 compile/parity jobs plus the full Python 3.11/3.12 suite. If a compiler is
+absent locally, native tests explicitly skip and Python/exporter tests still run;
+CI fails rather than skipping native verification. The local baseline was
+**180 passing**. Native assertions: **43 passing**. Final full local suite:
+**232 passed in 119.35 s**, including **52 new tests**, with no skips.
+
+This is **firmware-ready, not deployed firmware**. No MCU peripherals are
+configured; no PWM/ADC/encoder/HAL implementation exists yet. No hard real-time
+deadline has been measured on target silicon and no hardware validation or MISRA
+compliance is claimed. Actual STM32 integration belongs to future hardware work.
+Float32/libm behavior, target ABI, execution timing and compiler/FPU settings need
+target-specific verification. Estimators, gates, retries, M16/M17 scenarios and
+historical results remain unchanged; no M19 work is included.

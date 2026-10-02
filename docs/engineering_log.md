@@ -874,3 +874,140 @@ designed future study of calibration/model validity and operating reserves.
 Any redesign requires its own development/held-out protocol. This milestone
 only characterizes the frozen workflow; firmware, GUI, online adaptation and
 release/orchestration work remain outside this PR.
+
+## Milestone 18 — firmware-ready portable C control core with Python parity
+
+### Problem / Motivation
+
+Commissioning and robustness studies through M17 used Python. A future MCU needs
+an explicit controller state/configuration interface and evidence that translation
+preserves the validated equations, especially integral rollback and saturation
+back-calculation. Copying source without checking state trajectories would not
+demonstrate that equivalence.
+
+### Engineering Decision
+
+Verified/fetched main `3eb116ef6d22550668c507c23c9847cdde01c04b` and created
+`codex/firmware-ready-c-core`. Port only transforms, generic PI, dq FOC, vector
+limiting and speed PI. Keep Python commissioning, tuning formulas, plant and
+M16/M17 evidence unchanged. Define the [C API/parity protocol](firmware_core_protocol.md)
+before implementation; use real IEEE binary32 `float`, caller-owned configuration
+and mutable state, and no heap/global controller state. Primary proof replays
+identical inputs against the unchanged Python float64 reference rather than
+comparing independently evolving plants. Do not require bitwise equality.
+
+### Implementation
+
+Three headers define motor/current/speed/PI configurations, vector types, PI
+states, requested/applied-voltage outputs and status codes. Two C99 translation
+units implement amplitude-invariant transforms, ordered PI integration/clamping,
+`p*omega_m` decoupling/feedforward, direction-preserving nominal-bus vector limiting,
+back-calculation after saturation and speed iq limiting. Failed calls leave
+state/output untouched; reset deterministically zeros integrators.
+
+`src.firmware_config` requires accepted full electrical+mechanical commissioning,
+extracts identified Rs/Ld/Lq/psi/J/B, invokes existing current/speed constructors
+and emits exact binary32 hexadecimal C constants. There is no C commissioning or
+second gain formula. Tests reject either failed gate and invalid/unrepresentable
+configuration. The [example header](../results/firmware_parity/generated_motor_config.h)
+comes from real simulated sampled commissioning with seeds 1801/1802/1803 and a
+24 V nominal bus, explicitly labeled as simulation-derived demonstration values.
+
+`firmware.parity` compiles a host library, binds the public API and compares all
+outputs/integrators over deterministic transform, PI, FOC, speed and combined
+streams. The existing Python simulation only generates combined inputs; both
+FOC implementations use the same recorded iq reference and feedback. The speed
+output is compared separately, preventing upstream differences from contaminating
+the current-controller parity proof. All 30,000 replay steps are checked; artifact
+sampling retains every signal's maximum absolute/relative sample and all flag
+disagreements. Native C assertions also include/compile the generated header.
+CI adds visible GCC/Clang compile/parity jobs alongside the existing full suite.
+
+### Problems / Unexpected Results
+
+No GCC/Clang was initially on local PATH. A temporary official w64devkit toolchain
+was downloaded, checksum-verified and extracted outside the repository; GCC 16.2.0
+provided actual local C verification. No toolchain or binaries are committed.
+An initial focused pytest run had an existing Windows cache-directory permission
+warning; final verification disables that optional cache provider.
+
+**16/96 strict saturation-boundary probes have different Python/C flags**, although
+their numerical vector differences satisfy the predeclared budget. Float32 norm
+rounding can change a strict `>` comparison; forcing the flag would change the
+reference algorithm. The largest relative difference is in the small q integral,
+not the voltage magnitude: **.585%** despite only **.1494 mV** absolute discrepancy
+at that relative-worst step. Long accumulated rounding and cancellation must be
+reported even when output error is small.
+
+### Resolution
+
+Kept float precision, controller comparisons and tolerances unchanged. Retain
+every boundary probe and report exact flag agreement separately away from the
+predeclared `16*u*(abs(norm)+abs(limit))` envelope. Add tests that prohibit silent
+filtering; do not fix a platform-dependent count as a universal requirement.
+Use explicit float32 arithmetic only as a secondary diagnostic, keeping original
+Python arithmetic as the acceptance reference. Tests verify invalid dt/bus/gains,
+overflow without partial commits, independent instances and deterministic reset.
+Source hash tests normalize line endings and protect all four Python references.
+
+### Validation / Results
+
+Baseline: **180 tests passed in 124.46 s**. Local C builds cleanly with GCC
+**16.2.0**, `-std=c99 -Wall -Wextra -Werror -pedantic -O2 -ffp-contract=off`.
+**43 native C assertions pass**, including the generated configuration. No compiler
+warning was suppressed. Final full suite: **232 passed in 119.35 s**, including
+**52 new M18 tests**, with no skips or xfails. `git diff --check` passed. The
+generated plot was visually inspected, including separate error axes.
+
+**31,484 compared samples**: 108 transforms, 256 standalone PI, 768 synthetic
+FOC, 256 speed, 96 boundary vectors, 30,000 combined trace steps. Transform
+maximum absolute/relative error is **1.864605e-6 / 3.896980e-7**. Standalone PI
+output/integral maximum absolute error is **1.354661e-6 / 9.292793e-7**;
+speed reference/integral **6.804361e-7 / 6.649375e-7 A**. Synthetic FOC requested
+vd/vq errors are **6.066528e-7 / 7.545959e-6 V**; applied vd/vq
+**1.398782e-6 / 5.710366e-6 V**; d/q integral
+**4.332207e-7 / 5.309827e-6 V**.
+
+Combined applied vd/vq: **2.053589e-7 / 1.531645e-4 V**; current d/q integral
+**4.963309e-9 / 1.527868e-4 V**; speed output/integral both
+**1.751090e-5 A**. Overall absolute maximum: requested voltage magnitude,
+**.0001535715773 V**, sample **24545** (Python 9.48622325084 V, C 9.48606967926 V).
+Overall relative maximum: q integral **.00585030427**, sample **6397**
+(Python .02553443619 V, C .02538505197 V). This is 0.585%, not the voltage
+magnitude's much smaller relative discrepancy. All numerical differences meet
+the budgets declared before C results; none were loosened.
+
+Flags: **30,592/30,608 agreement**, **30,512/30,512 away from boundary**, with
+**16 disagreements among 96 boundary probes**, all retained. Explicit secondary
+float32 FOC agrees exactly for six compared outputs/states on this compiler;
+no universal bitwise-libm claim follows. Artifacts retain full maxima and locations:
+[summary](../results/firmware_parity/parity_summary.json),
+[vectors](../results/firmware_parity/parity_vectors.csv),
+[sampled replay](../results/firmware_parity/parity_trace.csv),
+[plot](../results/firmware_parity/parity_plot.png). No M16/M17 population was rerun
+or modified; no pre-existing functional Python code changed.
+
+### What We Learned
+
+Controller output parity alone can hide state discrepancies or update-order
+errors. Replaying identical sampled inputs makes that distinction auditable.
+Real binary32 introduces both accumulated integral rounding and Boolean boundary
+differences; preserving and quantifying them is stronger evidence than hiding
+double precision inside C. Offline accepted commissioning can supply a portable
+configuration without moving research estimators onto an MCU.
+
+### Remaining Limitations
+
+Firmware-ready, not deployed firmware. Host compiler tests do not measure target
+silicon deadlines, WCET, interrupt behavior or hardware validation. No peripheral,
+PWM/ADC/encoder, HAL/RTOS, fixed point or MISRA certification is provided. No C
+motor simulation is used; this study proves controller replay under declared
+streams, not a complete hardware drive. Float32/libm/FPU/ABI settings and last-bit
+flags require target verification. Existing commissioning bias/model/load limits
+still apply; the exporter does not re-certify accepted estimates.
+
+### Next Decision
+
+Use these APIs, generated constants and replay vectors for a separately scoped
+future hardware integration, including target timing and peripheral validation.
+M18 ends with this portable-kernel PR; no M19 implementation is started.
