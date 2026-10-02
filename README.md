@@ -17,6 +17,8 @@ identification-quality decision.
 A bounded commissioning supervisor can now retry a diagnosed weak test within
 configured simulation limits. It records every attempt, updates controllers
 only after full acceptance, and reports operating feasibility separately.
+A separate dynamic analysis now estimates a quasi-steady acceleration time and
+predicts deadline/hold success with the existing controller on the identified model.
 
 ## Current simulation
 
@@ -1243,3 +1245,177 @@ choices, not hardware-safety prescriptions.
 
 The full local regression suite passes **115 tests**, including the existing
 electrical, mechanical, and operating-feasibility tests.
+
+## Milestone 16 — Dynamic operating feasibility
+
+Steady-state current/voltage feasibility does not answer whether startup can
+finish before a deadline. [`src/dynamic_feasibility.py`](src/dynamic_feasibility.py)
+keeps identification quality, steady feasibility, and dynamic capability separate.
+`assess_dynamic_operating_point(accepted_full_result, request, config)` takes
+accepted estimates and design settings only, with no hidden plant or outcome
+input. Its immutable result retains both an quasi-steady model estimate and
+an existing-controller prediction, plus limiting factors and reasons. It never
+changes gates, controller assumptions, or adaptive retry decisions.
+
+### Quasi-steady and controller models
+
+For forward id=0 motoring, with `omega_e = p*omega_m` and `Vlim = Vdc/sqrt(3)`:
+
+```text
+a = (omega_e*Lq)^2 + Rs^2
+b = 2*Rs*omega_e*psi_f
+c = (omega_e*psi_f)^2 - Vlim^2
+a*iq^2 + b*iq + c <= 0
+```
+
+When `c <= 0`, the nonnegative voltage-limited root is calculated as
+`iq_v = 2*(-c)/(b + sqrt(b^2 - 4*a*c))`, avoiding subtractive cancellation
+(the zero-reserve root is zero). When `c > 0`, even zero motoring current is
+outside the quasi-steady voltage domain. Apply:
+
+```text
+iq_available = min(Imax, iq_v)
+Te_available = 1.5*p*psi_f*iq_available
+alpha_max = (Te_available - Tload - B*omega_m)/J
+T_quasi_steady_estimate = integral[d(omega_m)/alpha_max(omega_m)]
+```
+
+Integrate to the **lower tolerance-band boundary**, not silently to a different
+exact target. Nonpositive acceleration blocks entry in this model; otherwise
+refine the trapezoid grid until consecutive times change by at most 0.1%.
+Unresolved integration returns an indeterminate quasi-steady deadline result.
+`quasi_steady_deadline_met` compares entry time **plus required hold**
+with the deadline. Current, voltage, coincident limits, acceleration margin,
+and the limiting/bottleneck speed are retained along the trajectory.
+
+This is a **quasi-steady model-specific time estimate**, not a physical minimum
+or universal lower bound. It assumes instantaneous torque and omits `Lq*diq/dt`.
+The full dq transient simulation can enter the band earlier, **even using the
+same commissioned parameters**. A False quasi-steady deadline result does not
+physically rule out a transition; True does not guarantee controller success.
+
+The second calculation constructs a complete motor model from identified
+`Rs/Ld/Lq/psi_f/J/B/p` and runs the existing 300 Hz current / 10 Hz speed PI,
+SVPWM vector saturation, anti-windup, and iq-reference limiter. Both its plant
+model and controller use estimates. Independent hidden-plant simulations
+exist only in the experiment, **after prediction**. The only historical
+simulator extension is `initial_speed_rpm=0.0`; old defaults are preserved.
+
+### Deadline and interpretation
+
+`DynamicOperatingRequest` requires a nonnegative initial speed and resisting
+load, target greater than initial speed, positive finite bus/current/deadline,
+and a positive hold. The default band is ±`max(1 rpm, 1% target)` and hold
+**0.1 s**. Load is constant from t=0; initial dq currents and PI states are zero.
+Success requires a contiguous sampled hold completed before the deadline,
+finite signals, and `abs(iq_ref) <= Imax`. First entry, qualified entry, hold
+completion, final-band state, measured-current peak and saturation are separate
+outputs. A brief crossing is insufficient; a qualified hold is not permanent
+settling. Historical post-step states are interpreted at `(k+1)*dt` here,
+without changing old log timestamps. Downsampling plots does not affect scoring.
+
+Exact-target steady feasibility and lower-band steady feasibility remain
+separate. Near a voltage boundary a drive can hold within ±10 rpm while being
+unable to reach exactly 1000 rpm. Reference current limiting does not prevent
+all transient measured-current overshoot. The unconstrained mechanical plant
+can briefly reverse under a constant load before current builds up; minimum
+speed and `dynamic.reverse_speed_excursion` expose that scope caveat. No
+reverse/regenerative request analysis is supported.
+
+### Reproduce validation
+
+```bash
+python -m experiments.dynamic_operating_feasibility --population development
+# Freeze method/protocol before inspecting independently seeded evaluation.
+python -m experiments.dynamic_operating_feasibility --population evaluation
+python -m pytest -q
+```
+
+The [fixed protocol](docs/dynamic_feasibility_protocol.md) and development
+artifacts were committed in **717ef32** before held-out execution. Seeds
+**20261002 / 20261003** draw three development / five evaluation motors with
+eight scenarios per motor. Boundaries and randomized request settings use
+estimates only. Rejected commissioning and evaluation errors keep their rows.
+This is a small scenario sample with shared motors, not a reliability estimate.
+
+### Post-evaluation semantics correction
+
+PR #11 review corrected the API and artifact naming **after** the original
+held-out negative finding. `DynamicFeasibilityResult.quasi_steady` contains
+`quasi_steady_transition_time_estimate_s`, `quasi_steady_completion_time_estimate_s`,
+`quasi_steady_deadline_met`, and `quasi_steady_band_reachable`. Reachability and
+deadline flags describe only the reduced model, not physical impossibility.
+Nonpositive acceleration, missed deadline and unresolved integration reasons
+are also explicitly scoped to that model. No numerical method, controller,
+population/seed, gate or success criterion changed. Original saved evaluation
+values are preserved; plot labels were rebuilt from those CSVs with
+`python -m experiments.dynamic_operating_feasibility --replot-saved`. No
+replacement held-out population was run.
+
+### Quantitative results
+
+Eight representative requests retain **8/8** controller/outcome agreement,
+**4** successes, and **5** quasi-steady completion estimates within deadline.
+Times below are seconds; controller columns are **qualified band-entry times**, requiring an
+additional 0.1 s hold. A dash means no qualified hold before the deadline.
+
+| Scenario (deadline) | Quasi-steady entry estimate | Predicted qualified entry | Actual qualified entry | Outcome |
+| --- | ---: | ---: | ---: | --- |
+| Easy 250 rpm (0.6 s) | 0.05257 | 0.09344 | 0.09356 | Success |
+| Slow 1000 rpm (0.6 s) | 3.63427 | — | — | Failure; 336.73 rpm final |
+| Same slow point (4 s) | 3.63427 | 3.63484 | 3.65108 | Success |
+| Stronger current (0.6 s) | 0.89031 | — | — | Failure; 721.58 rpm final |
+| Voltage-limited 2000 rpm (0.6 s) | 0.35287 | 0.45824 | 0.45864 | Success; 61.45% saturation |
+| Outside exact voltage boundary (0.6 s) | 0.30847 | — | — | Failure; 983.75 rpm final |
+| Unreachable 2000 rpm / 12 V (0.6 s) | — | — | — | Failure; 1008.79 rpm final |
+| Moving start 250→1000 rpm (0.6 s) | 0.27587 | 0.27972 | 0.28020 | Success |
+
+Development: **24/24** agreement, 11 successes, zero false predicted successes
+or failures. Held-out: **40/40** agreement on five motors, **19** successes,
+**21** failures, zero unavailable/error rows, zero false predicted successes
+or failures. Quasi-steady completion estimates meet **20/40** deadlines.
+The 19 jointly qualified holds have median signed entry-time error **−0.00020 s**, maximum
+absolute error **0.00492 s**. Limiting factors: **25 current-only**, **15
+current+voltage**. Four of five held-out slightly outside exact voltage
+boundaries succeed within the band; the fifth remains at **988.61 rpm**.
+
+Negative findings are retained. Actual first entry precedes the quasi-steady
+estimate in **3/40** held-out rows. Motor 3's slow case enters **4.307 ms**
+earlier, consistent with point-estimate error; motor 4's high-speed and boundary
+cases enter **1.251 / 4.301 ms** earlier. For those latter two, even the
+commissioned-model controller enters before its own quasi-steady estimate,
+showing the effect of omitted dq transients. Inspection of the saved records
+also finds motor 3's same-model high-speed entry **151.25 µs** before its estimate
+(comparable to the 0.1% integration-refinement tolerance): three same-model
+early entries in total, two overlapping the three hidden-plant cases. These do not cause a binary
+deadline disagreement here. Brief reverse excursions occur in **35/40**
+held-out traces; the minimum across that population is **−0.01885 rpm**.
+The representative longer run's entry prediction error is **−16.24 ms**,
+larger than the held-out maximum; it is not omitted from the report.
+
+Replayed M14 acceleration cases have quasi-steady entry estimates **5.18108 /
+11.40166 / 5.55408 s**. Predictions and independent outcomes fail at both
+0.6 s and 4 s: **6/6 agreement**. The t=0 load and hold criterion differ from
+M14; saved historical outcomes remain separate. No algorithm was tuned to
+force these outcomes. The original implementation passed **147 tests** (115 baseline + 32 new).
+The semantics follow-up passes **151 tests**, including preserved-evidence,
+same-model deadline-counterexample and API/documentation regression checks.
+
+Artifacts: [representative rows](results/dynamic_operating_feasibility/representative.csv),
+[held-out rows](results/dynamic_operating_feasibility/held_out.csv),
+[summary](results/dynamic_operating_feasibility/summary.json),
+[M14 retrospective](results/dynamic_operating_feasibility/m14_retrospective.csv),
+[response comparisons](results/dynamic_operating_feasibility/representative_dynamics.png),
+and [transition-time map](results/dynamic_operating_feasibility/transition_time_map.png).
+The folder also retains development rows, separate plant/estimate audits,
+downsampled representative traces and the complete capability-map grid.
+
+### Assumptions and remaining work
+
+Simulation/design analysis only: accepted identified **point estimates**,
+known constant external load, constant viscous friction, ideal bus and linear
+SVPWM circle, id=0 command, no field weakening or MTPA. Finite controller
+transients can produce nonzero id. There are no uncertainty reserves or
+hardware guarantees. Inverter switching, sensor/inverter nonidealities, thermal
+drift and realistic delays are not modeled; realistic nonidealities belong to
+**Milestone 17**, which is not implemented here.

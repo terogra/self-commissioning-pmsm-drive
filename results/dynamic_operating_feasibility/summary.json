@@ -1,0 +1,103 @@
+{
+  "analysis_config": {
+    "simulation_dt_s": 4e-05,
+    "initial_path_points": 257,
+    "maximum_path_points": 4097,
+    "relative_time_tolerance": 0.001,
+    "trace_interval_s": 0.001
+  },
+  "seeds": {
+    "development": 20261002,
+    "evaluation": 20261003
+  },
+  "development": {
+    "seed": 20261002,
+    "plants": 3,
+    "total_cases": 24,
+    "evaluated_cases": 24,
+    "unavailable_or_error_cases": 0,
+    "prediction_agreement": 24,
+    "predicted_successes": 11,
+    "actual_successes": 11,
+    "false_predicted_success": 0,
+    "false_predicted_failure": 0,
+    "quasi_steady_deadline_met": 12,
+    "quasi_steady_deadline_missed_but_actual_success": 0,
+    "actual_entry_before_quasi_steady_estimate": 0,
+    "both_qualified_count": 11,
+    "qualified_entry_error_median_s": -3.999999999998449e-05,
+    "qualified_entry_absolute_error_max_s": 0.00028000000000000247,
+    "limiting_factor_distribution": {
+      "current": 15,
+      "current;voltage": 9
+    },
+    "brief_negative_actual_speed_cases": 21
+  },
+  "representative": {
+    "total_cases": 8,
+    "evaluated_cases": 8,
+    "unavailable_or_error_cases": 0,
+    "prediction_agreement": 8,
+    "predicted_successes": 4,
+    "actual_successes": 4,
+    "false_predicted_success": 0,
+    "false_predicted_failure": 0,
+    "quasi_steady_deadline_met": 5,
+    "quasi_steady_deadline_missed_but_actual_success": 0,
+    "actual_entry_before_quasi_steady_estimate": 0,
+    "both_qualified_count": 4,
+    "qualified_entry_error_median_s": -0.00043999999999999595,
+    "qualified_entry_absolute_error_max_s": 0.016240000000000254,
+    "limiting_factor_distribution": {
+      "current": 5,
+      "current;voltage": 3
+    },
+    "brief_negative_actual_speed_cases": 7
+  },
+  "held_out": {
+    "plants": 5,
+    "total_cases": 40,
+    "evaluated_cases": 40,
+    "unavailable_or_error_cases": 0,
+    "prediction_agreement": 40,
+    "predicted_successes": 19,
+    "actual_successes": 19,
+    "false_predicted_success": 0,
+    "false_predicted_failure": 0,
+    "quasi_steady_deadline_met": 20,
+    "quasi_steady_deadline_missed_but_actual_success": 0,
+    "actual_entry_before_quasi_steady_estimate": 3,
+    "both_qualified_count": 19,
+    "qualified_entry_error_median_s": -0.00020000000000000573,
+    "qualified_entry_absolute_error_max_s": 0.0049200000000002575,
+    "limiting_factor_distribution": {
+      "current": 25,
+      "current;voltage": 15
+    },
+    "brief_negative_actual_speed_cases": 35
+  },
+  "m14_retrospective": {
+    "total_cases": 6,
+    "evaluated_cases": 6,
+    "unavailable_or_error_cases": 0,
+    "prediction_agreement": 6,
+    "predicted_successes": 0,
+    "actual_successes": 0,
+    "false_predicted_success": 0,
+    "false_predicted_failure": 0,
+    "quasi_steady_deadline_met": 0,
+    "quasi_steady_deadline_missed_but_actual_success": 0,
+    "actual_entry_before_quasi_steady_estimate": 0,
+    "both_qualified_count": 0,
+    "qualified_entry_error_median_s": null,
+    "qualified_entry_absolute_error_max_s": null,
+    "limiting_factor_distribution": {
+      "current": 6
+    },
+    "brief_negative_actual_speed_cases": 6
+  },
+  "criterion": "Contiguous sampled hold in max(1 rpm, 1% target) for 0.1 s completed before deadline; finite signals and |iq_ref|<=Imax",
+  "protocol": "Method fixed after development and before independent seed evaluation; no outcome-based gate or algorithm tuning",
+  "limits": "Small correlated scenario sample; point estimates; quasi-steady time estimate is not a physical minimum or universal lower bound; no hardware guarantee",
+  "semantics_correction": "Naming corrected after the original held-out finding: full dq transients can enter before the quasi-steady estimate even on the same commissioned model. Original evaluation evidence, numerical method, seeds and scoring are unchanged."
+}
