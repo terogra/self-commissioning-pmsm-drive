@@ -620,3 +620,55 @@ The nine-case held-out set is deliberately small and stratified; zero observed f
 ### Next Decision
 
 Study transient operating reserve and uncertainty-aware feasibility using an independent design, and evaluate sensor bias/model mismatch before claiming broader autonomous robustness. Hardware commissioning and online operation-stage adaptation remain separate future work.
+
+## Milestone 16 — Dynamic operating feasibility
+
+### Problem / Motivation
+
+M14 found accepted, steady-feasible motors that could not accelerate to the command within a finite run. Its three held-out acceleration cases remained below tolerance even at 4 s. Slightly outside voltage boundaries, other cases held within ±10 rpm despite exact-target infeasibility. The engineering question was whether identified parameters and configured limits could explain finite-time capability without using hidden truth or changing commissioning acceptance.
+
+### Engineering Decision
+
+Keep three independent concepts: identification quality, steady operating feasibility, and dynamic capability. Add two dynamic predictions: an interpretable optimistic id=0 torque envelope and the existing cascaded controller simulated on a model built entirely from accepted estimates. Require a complete contiguous sampled hold before the deadline, while retaining first entry and final-band state separately. Report exact-target and lower-band steady feasibility independently. Use a development population, commit the fixed method, then run a different deterministic held-out seed; no gate or empirical decision threshold is fitted.
+
+### Implementation
+
+[`src/dynamic_feasibility.py`](../src/dynamic_feasibility.py) introduces immutable request/config, physical trajectory, controller-prediction and combined result records. For `omega_e=p*omega_m`, the quasi-steady voltage inequality is `a*iq²+b*iq+c<=0`, with `a=(omega_e*Lq)²+Rs²`, `b=2*Rs*omega_e*psi_f`, and `c=(omega_e*psi_f)²-(Vdc/sqrt(3))²`. The physically valid nonnegative root is rationalized as `2*(-c)/(b+sqrt(b²-4*a*c))`; a negative voltage reserve makes even zero motoring current infeasible. Apply `iq_available=min(Imax,iq_v)`, `Te=1.5*p*psi_f*iq_available`, and `alpha=(Te-Tload-B*omega_m)/J`. Nonpositive acceleration prevents lower-band entry; otherwise integrate `domega/alpha` on a refined grid. Identified J now explicitly controls acceleration time.
+
+The controller-aware path builds all six motor parameters and known p from accepted full commissioning. It uses the existing FOC, speed PI, voltage circle, anti-windup and current-reference limit. The only old simulator change adds a default-zero initial speed, finite validation and logging. Load starts at t=0, currents and integrators start at zero. The normal API receives no hidden plant, truth-error label, oracle or actual control outcome. Estimator, quality-policy and adaptive-supervisor source files remain unchanged.
+
+[`experiments/dynamic_operating_feasibility.py`](../experiments/dynamic_operating_feasibility.py) reuses M14 commissioning and then predicts before executing an independent hidden-plant simulation. It retains easy, short/long deadline, stronger-current, high-speed voltage, exact/band boundary, unreachable and moving-start requests. CSV rows keep all evaluated, unavailable or failed cases. Plant truth is stored in separate audit JSON. Plots compare predicted/actual responses and map optimistic entry time against target speed and current limit; traces and map grid are also saved. [`docs/dynamic_feasibility_protocol.md`](dynamic_feasibility_protocol.md) fixes numerical settings and outcome definitions.
+
+### Problems / Unexpected Results
+
+The quasi-steady envelope omits `Lq*diq/dt` and assumes instantaneous available torque. Two held-out commissioned-model responses entered before their own envelope estimate; three hidden-plant responses did so. Thus the integrated time cannot be advertised as a certified lower bound for arbitrary full-dq transients. Point-estimate error also shifts timing: the representative slow case's prediction was 16.24 ms early, larger than the held-out maximum. None of these observations was tuned away.
+
+Known constant resisting load with zero initial dq current caused small reverse excursions before current built up: 21/24 development, 35/40 held-out, and 7/8 representative traces. The worst held-out minimum was −0.01885 rpm. This is a scope caveat of the unconstrained simulated plant, not support for reverse or regenerative commissioning. The representative slightly outside exact voltage boundary was band-steady-feasible but had not completed a hold at 0.6 s (983.75 rpm final); four of five analogous held-out requests succeeded and one reached only 988.61 rpm.
+
+### Resolution
+
+Qualify the physics output as an optimistic estimate within its stated id=0 quasi-steady envelope, preserve controller-aware prediction as a separate output, and report every earlier-than-envelope entry. Add minimum speed and explicit `dynamic.reverse_speed_excursion` reasons without replacing the specified band-hold criterion. Do not clamp the plant speed or rewrite historical simulations. The physical deadline test includes entry plus hold; integration nonconvergence is indeterminate rather than a confident classification. Retain measured-current peaks because current-reference limiting is not instantaneous physical current protection. Interpret historical post-step logs at `(k+1)*dt` only for this new criterion.
+
+### Validation / Results
+
+Current-main baseline **363b70d** passed **115 tests**. The completed full suite passed **147 tests in 153.64 s**, including 32 new tests for request/config validation, rejected/missing estimates, explicit estimate-only model construction, J dependence, current/voltage monotonicity, analytic constant-acceleration integration, root domain/coincidence, convergence diagnostics, brief crossings, finite/reference checks, short/long deadline behavior, exact-vs-band distinction, unchanged adaptive histories/quality, deterministic request recipes and historical default samples. `git diff --check` passes. Both generated plots were visually inspected.
+
+The development method and protocol were frozen in **717ef32** before independent evaluation. Development seed **20261002**, three motors/eight requests each: **24/24 agreement**, **11 successes**, no false predicted success/failure and no unavailable cases. Physics left **12** deadlines possible. Median signed qualified-entry error **−40 µs**, maximum absolute error **280 µs** on the 11 jointly qualified holds. Limits: **15 current**, **9 current+voltage**. No actual first entry preceded its optimistic estimate.
+
+Held-out seed **20261003**, five new motors/eight requests each: **40/40 agreement**, **19 successes / 21 failures**, zero false predicted successes/failures, zero unavailable/error cases. Physics left **20** deadlines possible; no physically ruled-out deadline succeeded. On 19 jointly qualified holds, median signed entry error **−0.00020 s**, maximum absolute error **0.00492 s**. Factors: **25 current-only / 15 current+voltage**. Earlier-than-envelope hidden entries were motor 3's longer deadline (**4.307 ms**) and motor 4's high-speed/boundary cases (**1.251 / 4.301 ms**); the latter two also violate a universal-envelope-bound interpretation on the commissioned model itself. These remain in [held-out.csv](../results/dynamic_operating_feasibility/held_out.csv).
+
+The eight representative requests agree **8/8**, with **4 successes** versus **5** physics deadlines not ruled out. Easy 250 rpm entry bound **0.0525735 s**, actual qualified entry **0.09356 s**. Slow 1000 rpm bound **3.634268 s**: at 0.6 s it fails and reaches **336.734 rpm**; unchanged request at 4 s succeeds with predicted/actual qualified entries **3.63484 / 3.65108 s**. Raising current shortens the bound to **0.890312 s**, still too slow for 0.6 s (**721.585 rpm** final). Voltage-limited 2000 rpm succeeds with predicted/actual entries **0.45824 / 0.45864 s** and **61.45%** saturation. The unreachable 2000 rpm / 12 V case ends at **1008.792 rpm**. The moving-start case succeeds at **0.28020 s** actual qualified entry. [Representative table](../results/dynamic_operating_feasibility/representative.csv), [response plot](../results/dynamic_operating_feasibility/representative_dynamics.png), [capability map](../results/dynamic_operating_feasibility/transition_time_map.png) and [summary](../results/dynamic_operating_feasibility/summary.json) retain all eight outcomes.
+
+Replayed M14 held-out acceleration cases have bounds **5.181076 / 11.401662 / 5.554084 s**. All fail both 0.6 s and 4 s, with **6/6** controller/outcome agreement. Their 4 s final speeds are **901.680 / 579.202 / 879.377 rpm**. This replay uses M16's constant t=0 load and sampled hold, whereas M14 used a 0.3 s load step and terminal-window measured-current criterion. Saved old outcomes are retained separately; the two sets are not pooled. [Retrospective table](../results/dynamic_operating_feasibility/m14_retrospective.csv).
+
+### What We Learned
+
+Accepted estimates describe a model; steady feasibility describes a point; finite-time capability also requires J, torque reserve, current buildup and controller behavior. A point inside the steady envelope can be unusable at a short deadline. A slightly unattainable exact target can still satisfy an explicit band, while band feasibility alone does not guarantee a finite hold. The torque envelope is useful for interpretation, but full dq dynamics prevent treating its time as a universal physical certificate.
+
+### Remaining Limitations
+
+Simulation/design analysis with identified point estimates, known constant load, viscous friction, ideal constant bus and linear SVPWM. No field weakening, MTPA, uncertainty reserve, inverter switching, sensor/inverter nonidealities, or hardware guarantee. Controller id transients and measured-current overshoot are retained. Unsupported negative/decelerating requests fail; brief reverse responses expose the plant's startup assumption. Qualified sampled hold is not permanent settling. The 40 requests share only five motors; zero observed binary disagreements is not calibrated reliability. Commissioning acceptance remains independent of every dynamic outcome.
+
+### Next Decision
+
+Milestone 17 should study realistic nonidealities, sensor/model bias and timing effects before broader claims about commissioning and operating predictions. It is not implemented in this PR. A later orchestration layer can combine the three separate decisions without conflating them.

@@ -1,0 +1,29 @@
+{
+  "true_evaluation_only": {
+    "Rs": 0.56,
+    "Ld": 0.0014,
+    "Lq": 0.0008,
+    "psi_f": 0.015,
+    "pole_pairs": 4,
+    "J": 0.0005,
+    "B": 0.0003
+  },
+  "identified": {
+    "Rs": 0.5599057017946696,
+    "Ld": 0.0013993492842179838,
+    "Lq": 0.0008006650314875882,
+    "psi_f": 0.015000965291461943,
+    "pole_pairs": 4,
+    "J": 0.0004992267860113657,
+    "B": 0.0002996960067170858
+  },
+  "assumptions": [
+    "Forward acceleration, nonnegative speed/load, constant external resisting load.",
+    "Accepted identified point estimates; no uncertainty reserve or hardware guarantee.",
+    "Physics envelope assumes id=0 and instantaneous quasi-steady available iq.",
+    "Ideal linear SVPWM Vdc/sqrt(3); no field weakening or MTPA.",
+    "Controller prediction uses existing 300 Hz current / 10 Hz speed PI tuning.",
+    "Initial dq currents and PI integrators are zero; constant load starts at t=0.",
+    "A qualified sampled hold within the deadline is not permanent settling."
+  ]
+}
