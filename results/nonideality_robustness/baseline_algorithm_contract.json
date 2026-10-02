@@ -1,0 +1,22 @@
+{
+  "baseline_sha": "047d6511b86c34ce571005f8377387eb3674602b",
+  "excluded_provider_functions": [
+    "simulate_driven_rotor_measurements",
+    "simulate_locked_rotor_measurements"
+  ],
+  "ast_sha256": {
+    "src/commissioning.py": "d290afbfde66dbfedb0b51ab8de0572ff51f62f361602a373cb8bf3a8a66b034",
+    "src/commissioning_quality.py": "7198a38621a8162d79f3d2305ee4b3aa2b89d8e332a9b4ba9d9638b86f0ff8f5",
+    "src/identification_quality.py": "4c8d69256a8da5498afae93217a41d32eb78ecf050624f5eaa773e1204d07c32",
+    "src/mechanical_identification.py": "8e157922dcd6c8b3cd8a42c053b6e045f745f5821e2f6bd3f3240ba94d4d597f",
+    "src/full_commissioning.py": "89af687d2f84ee09c7edb994444fd2227eef4c04a531f65186d7edd3f607fa27",
+    "src/adaptive_commissioning.py": "88634c4c064861d48dfe7b2b1fe6f292b3f6082c43739b9692e53fd1d74a5023",
+    "src/foc.py": "743a0f819c81123770aae154febf75416a55c4d1b4d57f177c17bfa14d1b76e0",
+    "src/speed_control.py": "5cb5904788a37857d797926f0cc62f2ca9d9e30bec98ff53b07c4af71d1bef49",
+    "src/dynamic_feasibility.py": "77ff55230a579230d5e6d8e5ddb075e74e035eca1aa77e919c5c55800ef94289",
+    "src/operating_feasibility.py": "a122ffcbefdb384686e48247f5460aab289ea193c158f3699017f73a3fd1eea4",
+    "src/identification.py": "544f067c51f3f4521a9a97237ff0f283104a90745f6c302df53d7751c89c3e76",
+    "src/rotating_identification.py": "ad107438e8aa6a85d606d4c206db900306ed8f8a44a0d6e74ace5eb8600f47c4"
+  },
+  "normalization": "Ignore empty Python 3.12 type_params fields for Python 3.11/3.12 CI portability."
+}

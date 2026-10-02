@@ -1,0 +1,7 @@
+motor_id,scenario,initial_speed_rpm,target_speed_rpm,load_torque_nm,dc_bus_voltage_v,current_limit_a,deadline_s,speed_tolerance_fraction,minimum_speed_tolerance_rpm,hold_time_s,quasi_steady_deadline_met,prediction_success,nominal_voltage_margin_v,operation_status,actual_success,actual_hold_completion_s,actual_final_speed_rpm,actual_bus_voltage_v,actual_bus_saturation_fraction
+0,ideal,0,1000,0.05,20.77551967137989,5,0.6,0.01,1.0,0.1,True,True,0.4613366105702133,evaluated,True,0.19256000000000004,1000.0000000000267,20.77551967137989,0.0
+0,bus_sag_mild,0,1000,0.05,20.77551967137989,5,0.6,0.01,1.0,0.1,True,True,0.4613366105702133,evaluated,False,,985.178426811019,19.736743687810893,0.9218
+0,bus_sag_strong,0,1000,0.05,20.77551967137989,5,0.6,0.01,1.0,0.1,True,True,0.4613366105702133,evaluated,False,,932.8771462916642,18.6979677042419,0.9372666666666667
+0,rs_drift_strong,0,1000,0.05,20.77551967137989,5,0.6,0.01,1.0,0.1,True,True,0.4613366105702133,evaluated,True,0.19148000000000004,1000.000000000052,20.77551967137989,0.00046666666666666666
+0,combined_mild,0,1000,0.05,20.77551967137989,5,0.6,0.01,1.0,0.1,True,True,0.4613366105702133,evaluated,False,,985.4254105097527,19.736743687810893,0.9352666666666667
+0,combined_strong,0,1000,0.05,20.77551967137989,5,0.6,0.01,1.0,0.1,True,True,0.4613366105702133,evaluated,False,,936.5815678103951,18.6979677042419,0.9298666666666666

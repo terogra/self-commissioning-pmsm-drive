@@ -1,0 +1,125 @@
+{
+  "one_shot": {
+    "total": 32,
+    "accepted": 26,
+    "acceptance_coverage": 0.8125,
+    "stage_acceptance": {
+      "standstill": 26,
+      "rotating": 32,
+      "electrical": 26,
+      "mechanical": 26
+    },
+    "estimator_failures": 0,
+    "outcomes": {
+      "accepted_accurate": 20,
+      "accepted_inaccurate": 6,
+      "rejected_inaccurate_or_unavailable": 6
+    },
+    "all_six_available": 26,
+    "silent_inaccurate_acceptance": 6,
+    "accurate_rejections": 0,
+    "retries": 0,
+    "states": {
+      "full_accepted": 26,
+      "rejected": 6
+    },
+    "design_bound_terminations": 0,
+    "residual_terminations": 0
+  },
+  "adaptive": {
+    "total": 32,
+    "accepted": 26,
+    "acceptance_coverage": 0.8125,
+    "stage_acceptance": {
+      "standstill": 26,
+      "rotating": 26,
+      "electrical": 26,
+      "mechanical": 26
+    },
+    "estimator_failures": 0,
+    "outcomes": {
+      "accepted_accurate": 20,
+      "accepted_inaccurate": 6,
+      "rejected_inaccurate_or_unavailable": 6
+    },
+    "all_six_available": 26,
+    "silent_inaccurate_acceptance": 6,
+    "accurate_rejections": 0,
+    "retries": 0,
+    "states": {
+      "full_accepted": 26,
+      "terminal_rejected": 6
+    },
+    "design_bound_terminations": 0,
+    "residual_terminations": 6
+  },
+  "recovered_by_retry": 0,
+  "retry_accepted_but_inaccurate": 0,
+  "operation": {
+    "one_shot.commissioning_only": {
+      "total": 32,
+      "evaluated": 26,
+      "successes": 26,
+      "failures": 0,
+      "unavailable": 6,
+      "median_speed_rmse_rpm": 2.567873613482684,
+      "worst_speed_rmse_rpm": 2.5715968195208063
+    },
+    "one_shot.operation_only": {
+      "total": 32,
+      "evaluated": 32,
+      "successes": 28,
+      "failures": 4,
+      "unavailable": 0,
+      "median_speed_rmse_rpm": 2.570922383769794,
+      "worst_speed_rmse_rpm": 2.985784890079956
+    },
+    "one_shot.combined": {
+      "total": 32,
+      "evaluated": 26,
+      "successes": 24,
+      "failures": 2,
+      "unavailable": 6,
+      "median_speed_rmse_rpm": 2.5697122616682684,
+      "worst_speed_rmse_rpm": 2.585714960567558
+    },
+    "adaptive.commissioning_only": {
+      "total": 32,
+      "evaluated": 26,
+      "successes": 26,
+      "failures": 0,
+      "unavailable": 6,
+      "median_speed_rmse_rpm": 2.567873613482684,
+      "worst_speed_rmse_rpm": 2.5715968195208063
+    },
+    "adaptive.operation_only": {
+      "total": 32,
+      "evaluated": 32,
+      "successes": 28,
+      "failures": 4,
+      "unavailable": 0,
+      "median_speed_rmse_rpm": 2.570922383769794,
+      "worst_speed_rmse_rpm": 2.985784890079956
+    },
+    "adaptive.combined": {
+      "total": 32,
+      "evaluated": 26,
+      "successes": 24,
+      "failures": 2,
+      "unavailable": 6,
+      "median_speed_rmse_rpm": 2.5697122616682684,
+      "worst_speed_rmse_rpm": 2.585714960567558
+    }
+  },
+  "total_rows": 192,
+  "note": "Acceptance counts use one commissioning row per motor/scenario/method; exposure rows are not independent plants. Six-parameter <=10% labels are post-hoc only.",
+  "population_seed": 20261004,
+  "motors": 2,
+  "m16": {
+    "cases": 6,
+    "agreement": 2,
+    "unavailable": 0,
+    "false_predicted_success": 4,
+    "false_predicted_failure": 0
+  }
+}

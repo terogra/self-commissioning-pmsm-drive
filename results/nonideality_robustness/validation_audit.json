@@ -1,0 +1,51 @@
+{
+  "freeze_sha": "4723230167786d8760c8dc801ec32c05b11d330b",
+  "frozen_method_unchanged": true,
+  "frozen_paths_verified": [
+    "src/drive_nonidealities.py",
+    "src/identification.py",
+    "src/rotating_identification.py",
+    "src/mechanical_excitation.py",
+    "src/speed_foc_simulation.py",
+    "experiments/nonideality_robustness.py",
+    "tests/test_drive_nonidealities.py",
+    "docs/nonideality_robustness_protocol.md",
+    "results/nonideality_robustness/scenario_definitions.json",
+    "results/nonideality_robustness/frozen_policies.json",
+    "results/nonideality_robustness/baseline_algorithm_contract.json"
+  ],
+  "populations": {
+    "development": {
+      "retained_rows": 192,
+      "unique_rows": 192,
+      "truth_error_labels_verified": true,
+      "control_labels_verified": true,
+      "unavailable_control_rows": 24,
+      "numerical_control_error_rows": 0,
+      "histories": 32
+    },
+    "held_out": {
+      "retained_rows": 288,
+      "unique_rows": 288,
+      "truth_error_labels_verified": true,
+      "control_labels_verified": true,
+      "unavailable_control_rows": 36,
+      "numerical_control_error_rows": 0,
+      "histories": 48
+    }
+  },
+  "plot_review": "Four saved figures visually inspected; unavailable estimates shown grey; response comparison explicitly uses clean commissioning plus operating errors.",
+  "saturation_flag_caveat": "Strict post-actuation clip flag may include floating-point boundary clips; nominal FOC clipping is logged separately.",
+  "historical_default_equivalence": {
+    "simulate_locked_rotor_measurements": "All historical record fields exactly equal (20 ms record).",
+    "simulate_driven_rotor_measurements": "All historical record fields exactly equal (20 ms record).",
+    "simulate_mechanical_measurements": "All historical measurement/voltage fields exactly equal (two 20 ms plateaus).",
+    "run_speed_foc_simulation": "Every historical return field exactly equal for default nominal 0.6 s, 1000 rpm, 0.05 N m load step."
+  },
+  "pytest": {
+    "passed": 180,
+    "duration_s": 130.47,
+    "baseline_passed": 151,
+    "new_test_instances": 29
+  }
+}

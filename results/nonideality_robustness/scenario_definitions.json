@@ -1,0 +1,738 @@
+[
+  {
+    "name": "ideal",
+    "family": "ideal",
+    "severity": "baseline",
+    "errors": {
+      "current": {
+        "phase_gains": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "phase_offsets_a": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "quantum_a": 0.0
+      },
+      "voltage": {
+        "dq_gains": [
+          1.0,
+          1.0
+        ],
+        "dq_offsets_v": [
+          0.0,
+          0.0
+        ],
+        "quantum_v": 0.0,
+        "source": "command"
+      },
+      "frame": {
+        "electrical_angle_bias_rad": 0.0
+      },
+      "timing": {
+        "feedback_delay_steps": 0,
+        "record_current_delay_samples": 0
+      },
+      "actuation": {
+        "phase_sign_voltage_drop_v": 0.0,
+        "bus_sag_fraction": 0.0
+      },
+      "drift": {
+        "rs_factor": 1.0
+      }
+    }
+  },
+  {
+    "name": "current_mild",
+    "family": "current",
+    "severity": "mild",
+    "errors": {
+      "current": {
+        "phase_gains": [
+          1.01,
+          0.99,
+          1.0
+        ],
+        "phase_offsets_a": [
+          0.002,
+          -0.001,
+          -0.001
+        ],
+        "quantum_a": 0.002
+      },
+      "voltage": {
+        "dq_gains": [
+          1.0,
+          1.0
+        ],
+        "dq_offsets_v": [
+          0.0,
+          0.0
+        ],
+        "quantum_v": 0.0,
+        "source": "command"
+      },
+      "frame": {
+        "electrical_angle_bias_rad": 0.0
+      },
+      "timing": {
+        "feedback_delay_steps": 0,
+        "record_current_delay_samples": 0
+      },
+      "actuation": {
+        "phase_sign_voltage_drop_v": 0.0,
+        "bus_sag_fraction": 0.0
+      },
+      "drift": {
+        "rs_factor": 1.0
+      }
+    }
+  },
+  {
+    "name": "current_strong",
+    "family": "current",
+    "severity": "strong",
+    "errors": {
+      "current": {
+        "phase_gains": [
+          1.16,
+          1.14,
+          1.15
+        ],
+        "phase_offsets_a": [
+          0.01,
+          -0.015,
+          0.005
+        ],
+        "quantum_a": 0.01
+      },
+      "voltage": {
+        "dq_gains": [
+          1.0,
+          1.0
+        ],
+        "dq_offsets_v": [
+          0.0,
+          0.0
+        ],
+        "quantum_v": 0.0,
+        "source": "command"
+      },
+      "frame": {
+        "electrical_angle_bias_rad": 0.0
+      },
+      "timing": {
+        "feedback_delay_steps": 0,
+        "record_current_delay_samples": 0
+      },
+      "actuation": {
+        "phase_sign_voltage_drop_v": 0.0,
+        "bus_sag_fraction": 0.0
+      },
+      "drift": {
+        "rs_factor": 1.0
+      }
+    }
+  },
+  {
+    "name": "voltage_mild",
+    "family": "voltage",
+    "severity": "mild",
+    "errors": {
+      "current": {
+        "phase_gains": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "phase_offsets_a": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "quantum_a": 0.0
+      },
+      "voltage": {
+        "dq_gains": [
+          1.02,
+          1.02
+        ],
+        "dq_offsets_v": [
+          0.005,
+          -0.005
+        ],
+        "quantum_v": 0.005,
+        "source": "command"
+      },
+      "frame": {
+        "electrical_angle_bias_rad": 0.0
+      },
+      "timing": {
+        "feedback_delay_steps": 0,
+        "record_current_delay_samples": 0
+      },
+      "actuation": {
+        "phase_sign_voltage_drop_v": 0.0,
+        "bus_sag_fraction": 0.0
+      },
+      "drift": {
+        "rs_factor": 1.0
+      }
+    }
+  },
+  {
+    "name": "voltage_strong",
+    "family": "voltage",
+    "severity": "strong",
+    "errors": {
+      "current": {
+        "phase_gains": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "phase_offsets_a": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "quantum_a": 0.0
+      },
+      "voltage": {
+        "dq_gains": [
+          1.12,
+          1.12
+        ],
+        "dq_offsets_v": [
+          0.02,
+          -0.02
+        ],
+        "quantum_v": 0.02,
+        "source": "command"
+      },
+      "frame": {
+        "electrical_angle_bias_rad": 0.0
+      },
+      "timing": {
+        "feedback_delay_steps": 0,
+        "record_current_delay_samples": 0
+      },
+      "actuation": {
+        "phase_sign_voltage_drop_v": 0.0,
+        "bus_sag_fraction": 0.0
+      },
+      "drift": {
+        "rs_factor": 1.0
+      }
+    }
+  },
+  {
+    "name": "angle_mild",
+    "family": "angle",
+    "severity": "mild",
+    "errors": {
+      "current": {
+        "phase_gains": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "phase_offsets_a": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "quantum_a": 0.0
+      },
+      "voltage": {
+        "dq_gains": [
+          1.0,
+          1.0
+        ],
+        "dq_offsets_v": [
+          0.0,
+          0.0
+        ],
+        "quantum_v": 0.0,
+        "source": "command"
+      },
+      "frame": {
+        "electrical_angle_bias_rad": 0.03490658503988659
+      },
+      "timing": {
+        "feedback_delay_steps": 0,
+        "record_current_delay_samples": 0
+      },
+      "actuation": {
+        "phase_sign_voltage_drop_v": 0.0,
+        "bus_sag_fraction": 0.0
+      },
+      "drift": {
+        "rs_factor": 1.0
+      }
+    }
+  },
+  {
+    "name": "angle_strong",
+    "family": "angle",
+    "severity": "strong",
+    "errors": {
+      "current": {
+        "phase_gains": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "phase_offsets_a": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "quantum_a": 0.0
+      },
+      "voltage": {
+        "dq_gains": [
+          1.0,
+          1.0
+        ],
+        "dq_offsets_v": [
+          0.0,
+          0.0
+        ],
+        "quantum_v": 0.0,
+        "source": "command"
+      },
+      "frame": {
+        "electrical_angle_bias_rad": 0.10471975511965978
+      },
+      "timing": {
+        "feedback_delay_steps": 0,
+        "record_current_delay_samples": 0
+      },
+      "actuation": {
+        "phase_sign_voltage_drop_v": 0.0,
+        "bus_sag_fraction": 0.0
+      },
+      "drift": {
+        "rs_factor": 1.0
+      }
+    }
+  },
+  {
+    "name": "inverter_mild",
+    "family": "inverter",
+    "severity": "mild",
+    "errors": {
+      "current": {
+        "phase_gains": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "phase_offsets_a": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "quantum_a": 0.0
+      },
+      "voltage": {
+        "dq_gains": [
+          1.0,
+          1.0
+        ],
+        "dq_offsets_v": [
+          0.0,
+          0.0
+        ],
+        "quantum_v": 0.0,
+        "source": "command"
+      },
+      "frame": {
+        "electrical_angle_bias_rad": 0.0
+      },
+      "timing": {
+        "feedback_delay_steps": 0,
+        "record_current_delay_samples": 0
+      },
+      "actuation": {
+        "phase_sign_voltage_drop_v": 0.03,
+        "bus_sag_fraction": 0
+      },
+      "drift": {
+        "rs_factor": 1.0
+      }
+    }
+  },
+  {
+    "name": "inverter_strong",
+    "family": "inverter",
+    "severity": "strong",
+    "errors": {
+      "current": {
+        "phase_gains": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "phase_offsets_a": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "quantum_a": 0.0
+      },
+      "voltage": {
+        "dq_gains": [
+          1.0,
+          1.0
+        ],
+        "dq_offsets_v": [
+          0.0,
+          0.0
+        ],
+        "quantum_v": 0.0,
+        "source": "command"
+      },
+      "frame": {
+        "electrical_angle_bias_rad": 0.0
+      },
+      "timing": {
+        "feedback_delay_steps": 0,
+        "record_current_delay_samples": 0
+      },
+      "actuation": {
+        "phase_sign_voltage_drop_v": 0.15,
+        "bus_sag_fraction": 0
+      },
+      "drift": {
+        "rs_factor": 1.0
+      }
+    }
+  },
+  {
+    "name": "bus_sag_mild",
+    "family": "bus_sag",
+    "severity": "mild",
+    "errors": {
+      "current": {
+        "phase_gains": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "phase_offsets_a": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "quantum_a": 0.0
+      },
+      "voltage": {
+        "dq_gains": [
+          1.0,
+          1.0
+        ],
+        "dq_offsets_v": [
+          0.0,
+          0.0
+        ],
+        "quantum_v": 0.0,
+        "source": "command"
+      },
+      "frame": {
+        "electrical_angle_bias_rad": 0.0
+      },
+      "timing": {
+        "feedback_delay_steps": 0,
+        "record_current_delay_samples": 0
+      },
+      "actuation": {
+        "phase_sign_voltage_drop_v": 0,
+        "bus_sag_fraction": 0.05
+      },
+      "drift": {
+        "rs_factor": 1.0
+      }
+    }
+  },
+  {
+    "name": "bus_sag_strong",
+    "family": "bus_sag",
+    "severity": "strong",
+    "errors": {
+      "current": {
+        "phase_gains": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "phase_offsets_a": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "quantum_a": 0.0
+      },
+      "voltage": {
+        "dq_gains": [
+          1.0,
+          1.0
+        ],
+        "dq_offsets_v": [
+          0.0,
+          0.0
+        ],
+        "quantum_v": 0.0,
+        "source": "command"
+      },
+      "frame": {
+        "electrical_angle_bias_rad": 0.0
+      },
+      "timing": {
+        "feedback_delay_steps": 0,
+        "record_current_delay_samples": 0
+      },
+      "actuation": {
+        "phase_sign_voltage_drop_v": 0,
+        "bus_sag_fraction": 0.1
+      },
+      "drift": {
+        "rs_factor": 1.0
+      }
+    }
+  },
+  {
+    "name": "rs_drift_mild",
+    "family": "rs_drift",
+    "severity": "mild",
+    "errors": {
+      "current": {
+        "phase_gains": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "phase_offsets_a": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "quantum_a": 0.0
+      },
+      "voltage": {
+        "dq_gains": [
+          1.0,
+          1.0
+        ],
+        "dq_offsets_v": [
+          0.0,
+          0.0
+        ],
+        "quantum_v": 0.0,
+        "source": "command"
+      },
+      "frame": {
+        "electrical_angle_bias_rad": 0.0
+      },
+      "timing": {
+        "feedback_delay_steps": 0,
+        "record_current_delay_samples": 0
+      },
+      "actuation": {
+        "phase_sign_voltage_drop_v": 0.0,
+        "bus_sag_fraction": 0.0
+      },
+      "drift": {
+        "rs_factor": 1.2
+      }
+    }
+  },
+  {
+    "name": "rs_drift_strong",
+    "family": "rs_drift",
+    "severity": "strong",
+    "errors": {
+      "current": {
+        "phase_gains": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "phase_offsets_a": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "quantum_a": 0.0
+      },
+      "voltage": {
+        "dq_gains": [
+          1.0,
+          1.0
+        ],
+        "dq_offsets_v": [
+          0.0,
+          0.0
+        ],
+        "quantum_v": 0.0,
+        "source": "command"
+      },
+      "frame": {
+        "electrical_angle_bias_rad": 0.0
+      },
+      "timing": {
+        "feedback_delay_steps": 0,
+        "record_current_delay_samples": 0
+      },
+      "actuation": {
+        "phase_sign_voltage_drop_v": 0.0,
+        "bus_sag_fraction": 0.0
+      },
+      "drift": {
+        "rs_factor": 1.5
+      }
+    }
+  },
+  {
+    "name": "timing_one_sample",
+    "family": "timing",
+    "severity": "one_sample",
+    "errors": {
+      "current": {
+        "phase_gains": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "phase_offsets_a": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "quantum_a": 0.0
+      },
+      "voltage": {
+        "dq_gains": [
+          1.0,
+          1.0
+        ],
+        "dq_offsets_v": [
+          0.0,
+          0.0
+        ],
+        "quantum_v": 0.0,
+        "source": "command"
+      },
+      "frame": {
+        "electrical_angle_bias_rad": 0.0
+      },
+      "timing": {
+        "feedback_delay_steps": 1,
+        "record_current_delay_samples": 1
+      },
+      "actuation": {
+        "phase_sign_voltage_drop_v": 0.0,
+        "bus_sag_fraction": 0.0
+      },
+      "drift": {
+        "rs_factor": 1.0
+      }
+    }
+  },
+  {
+    "name": "combined_mild",
+    "family": "combined",
+    "severity": "mild",
+    "errors": {
+      "current": {
+        "phase_gains": [
+          1.01,
+          0.99,
+          1.0
+        ],
+        "phase_offsets_a": [
+          0.002,
+          -0.001,
+          -0.001
+        ],
+        "quantum_a": 0.002
+      },
+      "voltage": {
+        "dq_gains": [
+          1.02,
+          1.02
+        ],
+        "dq_offsets_v": [
+          0.005,
+          -0.005
+        ],
+        "quantum_v": 0.005,
+        "source": "command"
+      },
+      "frame": {
+        "electrical_angle_bias_rad": 0.03490658503988659
+      },
+      "timing": {
+        "feedback_delay_steps": 1,
+        "record_current_delay_samples": 1
+      },
+      "actuation": {
+        "phase_sign_voltage_drop_v": 0.03,
+        "bus_sag_fraction": 0.05
+      },
+      "drift": {
+        "rs_factor": 1.2
+      }
+    }
+  },
+  {
+    "name": "combined_strong",
+    "family": "combined",
+    "severity": "strong",
+    "errors": {
+      "current": {
+        "phase_gains": [
+          1.16,
+          1.14,
+          1.15
+        ],
+        "phase_offsets_a": [
+          0.01,
+          -0.015,
+          0.005
+        ],
+        "quantum_a": 0.01
+      },
+      "voltage": {
+        "dq_gains": [
+          1.12,
+          1.12
+        ],
+        "dq_offsets_v": [
+          0.02,
+          -0.02
+        ],
+        "quantum_v": 0.02,
+        "source": "command"
+      },
+      "frame": {
+        "electrical_angle_bias_rad": 0.10471975511965978
+      },
+      "timing": {
+        "feedback_delay_steps": 1,
+        "record_current_delay_samples": 1
+      },
+      "actuation": {
+        "phase_sign_voltage_drop_v": 0.15,
+        "bus_sag_fraction": 0.1
+      },
+      "drift": {
+        "rs_factor": 1.5
+      }
+    }
+  }
+]

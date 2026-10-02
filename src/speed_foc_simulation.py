@@ -27,6 +27,7 @@ def run_speed_foc_simulation(
     commissioning_result=None,
     current_limit_a=5.0,
     initial_speed_rpm=0.0,
+    nonidealities=None,
 ):
     """Run speed/current FOC with independent motor and controller models.
 
@@ -44,6 +45,11 @@ def run_speed_foc_simulation(
     controller_params = controller_params if controller_params is not None else PMSMParameters()
     if commissioning_result is not None and commissioning_result.quality.accepted:
         controller_params = commissioning_result.retuned_controller_parameters(controller_params)
+    active = nonidealities is not None and not nonidealities.is_ideal
+    if active:
+        from src.drive_nonidealities import apply_voltage, measure_current, estimator_voltage, FeedbackDelay, rotate_dq
+        plant_params = nonidealities.drift.plant_for_operation(plant_params)
+        feedback_delay = FeedbackDelay(nonidealities.timing.feedback_delay_steps)
     motor = PMSMModel(plant_params)
 
     # Inner current-control loop
@@ -92,12 +98,29 @@ def run_speed_foc_simulation(
     voltage_magnitude_history = np.zeros(len(time))
     requested_voltage_magnitude_history = np.zeros(len(time))
     voltage_saturated_history = np.zeros(len(time), dtype=bool)
+    feedback_history = np.zeros((len(time), 3))
+    measured_current_history = np.zeros((len(time), 2))
+    command_history = np.zeros((len(time), 2))
+    command_true_history = np.zeros((len(time), 2))
+    measured_voltage_history = np.zeros((len(time), 2))
+    reference_true_history = np.zeros((len(time), 2))
+    bus_saturated_history = np.zeros(len(time), dtype=bool)
+    actual_bus = dc_bus_voltage if not active or dc_bus_voltage is None else (
+        dc_bus_voltage*(1-nonidealities.actuation.bus_sag_fraction))
 
     for k, t in enumerate(time):
 
         i_d = state[0]
         i_q = state[1]
         omega_m = state[2]
+        true_angle = state[3]
+        command_angle = true_angle
+        if active:
+            measured = measure_current(state[:2], true_angle, nonidealities)
+            delayed = feedback_delay.sample((*measured, omega_m,
+                                             true_angle+nonidealities.frame.electrical_angle_bias_rad))
+            i_d, i_q, omega_m = delayed[:3]
+            command_angle = delayed[3]
 
         # Apply the configured load step.
         if t < load_step_time:
@@ -121,6 +144,19 @@ def run_speed_foc_simulation(
             omega_m=omega_m,
             dt=dt
         )
+        command_history[k] = (v_d, v_q)
+        feedback_history[k] = (i_d, i_q, omega_m)
+        if active:
+            command_true_history[k] = rotate_dq((v_d, v_q), command_angle-true_angle)
+            reference_true_history[k] = rotate_dq((0., iq_ref), command_angle-true_angle)
+            applied = apply_voltage((v_d, v_q), state[:2], true_angle, command_angle, dc_bus_voltage, nonidealities)
+            v_d, v_q = applied.terminal_d_v, applied.terminal_q_v
+            bus_saturated_history[k] = applied.bus_limited
+            measured_voltage_history[k] = estimator_voltage(command_history[k], (v_d, v_q), nonidealities)
+        else:
+            command_true_history[k] = command_history[k]
+            measured_voltage_history[k] = command_history[k]
+            reference_true_history[k] = (0., iq_ref)
 
         # PMSM model integration
         state = rk4_step(
@@ -139,6 +175,7 @@ def run_speed_foc_simulation(
 
         id_history[k] = state[0]
         iq_history[k] = state[1]
+        measured_current_history[k] = measure_current(state[:2], state[3], nonidealities) if active else state[:2]
         iq_ref_history[k] = iq_ref
 
         torque_history[k] = (
@@ -151,7 +188,7 @@ def run_speed_foc_simulation(
         load_history[k] = load_torque
         voltage_d_history[k] = v_d
         voltage_q_history[k] = v_q
-        voltage_magnitude_history[k] = current_controller.voltage_magnitude
+        voltage_magnitude_history[k] = float(np.hypot(v_d, v_q)) if active else current_controller.voltage_magnitude
         requested_voltage_magnitude_history[k] = current_controller.requested_voltage_magnitude
         voltage_saturated_history[k] = current_controller.voltage_saturated
 
@@ -168,6 +205,22 @@ def run_speed_foc_simulation(
         "voltage_magnitude": voltage_magnitude_history,
         "requested_voltage_magnitude": requested_voltage_magnitude_history,
         "voltage_saturated": voltage_saturated_history,
+        "command_voltage_d": command_history[:, 0],
+        "command_voltage_q": command_history[:, 1],
+        "command_true_voltage_d": command_true_history[:, 0],
+        "command_true_voltage_q": command_true_history[:, 1],
+        "measured_voltage_d": measured_voltage_history[:, 0],
+        "measured_voltage_q": measured_voltage_history[:, 1],
+        "feedback_id": feedback_history[:, 0],
+        "feedback_iq": feedback_history[:, 1],
+        "feedback_speed_rad_s": feedback_history[:, 2],
+        "measured_id": measured_current_history[:, 0],
+        "measured_iq": measured_current_history[:, 1],
+        "id_ref_true": reference_true_history[:, 0],
+        "iq_ref_true": reference_true_history[:, 1],
+        "actual_bus_saturated": bus_saturated_history,
+        "actual_dc_bus_voltage": actual_bus,
+        "actual_voltage_limit": actual_bus/np.sqrt(3) if actual_bus is not None else None,
         "dc_bus_voltage": dc_bus_voltage,
         "voltage_limit": current_controller.voltage_limit,
         "current_limit_a": current_limit_a,

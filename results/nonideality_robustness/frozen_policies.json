@@ -1,0 +1,36 @@
+{
+  "electrical_quality": {
+    "max_scaled_condition": 100.0,
+    "max_noise_information_fraction": 0.05,
+    "max_relative_standard_error": 0.03333333333333333,
+    "max_split_relative_difference": 0.1,
+    "residual_noise_multiplier": 3.0,
+    "relative_model_residual_allowance": 0.01,
+    "max_back_emf_noise_ratio": 0.1,
+    "min_windows": 10,
+    "min_mechanical_speed_rad_s": 10.0
+  },
+  "mechanical_quality": {
+    "min_windows": 10,
+    "max_scaled_condition": 100.0,
+    "max_noise_information_fraction": 0.05,
+    "max_relative_standard_error": 0.03333333333333333,
+    "max_split_relative_difference": 0.1,
+    "min_component_snr": 3.0,
+    "residual_noise_multiplier": 3.0,
+    "relative_model_residual_allowance": 0.01
+  },
+  "retry": {
+    "max_electrical_attempts": 4,
+    "max_mechanical_attempts": 4,
+    "max_standstill_voltage_magnitude_v": 3.0,
+    "max_standstill_duration_s": 0.8,
+    "max_rotating_speed_rpm": 1200.0,
+    "max_rotating_duration_s": 0.6,
+    "max_mechanical_reference_a": 1.0,
+    "max_mechanical_plateau_duration_s": 0.5,
+    "excitation_multiplier": 2.0,
+    "duration_multiplier": 2.0,
+    "speed_multiplier": 2.0
+  }
+}
