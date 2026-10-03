@@ -134,6 +134,11 @@ v1.0 teknik baseline'ında:
 - Float32 sınırında kalan 16 gerçek Boolean uyuşmazlığı özellikle saklandı ve
   raporlandı; sonuçları "mükemmel" göstermek için eşikler değiştirilmedi.
 
+Ayrıca M16 için korunması gereken önemli bir modelleme sınırı vardır: **full dq transient simulation**
+bazı durumlarda yarı-kararlı zaman kestiriminden daha erken hız bandına girebilir.
+Bu nedenle yarı-kararlı zaman kestirimi **not a physical minimum or universal lower bound**;
+yalnızca tanımlı model varsayımları altında kullanılan bir mühendislik kestirimidir.
+
 Ayrıntılı doğrulama:
 [docs/v1_validation.md](docs/v1_validation.md)
 
