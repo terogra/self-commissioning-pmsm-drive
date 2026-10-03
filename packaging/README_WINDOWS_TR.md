@@ -29,4 +29,4 @@ Bu bir simülasyon çalışmasıdır; donanım sürücüsü veya MCU'ya yüklenm
 değildir. İyi hız izleme tek başına doğru parametre kestirimini kanıtlamaz.
 Yarı kararlı durum süre kestirimi evrensel bir fiziksel alt sınır değildir.
 Kaynak MIT lisanslıdır; bağımlılıklar kendi lisanslarını korur. `BUILD_INFO.json`
-sürümü ve derleme kaynak bilgisini kaydeder. v1.1.0 sürüm adayıdır.
+sürümü ve derleme kaynak bilgisini kaydeder. v1.1.0 yayımlanmış sürümdür.
