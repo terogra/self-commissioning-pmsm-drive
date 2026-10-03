@@ -130,7 +130,7 @@ def show_operating_analysis(result):
     st.markdown(t("#### M14 steady operating feasibility"))
     if steady is None: st.warning(t("Steady analysis unavailable; see run warnings."))
     else:
-        st.info(t("Existing classification: ")+t(steady.classification)+f" ({steady.classification})")
+        st.info(t("Existing classification: ")+t(steady.classification))
         _table(record_rows(steady, omit=("assumptions",)), hide_index=True, width="stretch")
     st.markdown(t("#### M16 dynamic operating feasibility"))
     dynamic = result.dynamic_feasibility
