@@ -1173,3 +1173,33 @@ This finalization changes no PMSM equation, estimator, quality threshold,
 adaptive action, M14/M16 semantics, M17 scenario/evidence, or M18 numerical
 parity budget. Hardware deployment, MCU timing, and hardware validation remain
 future work.
+
+
+## v1.1 productization — Turkish-first UI and Windows distribution
+
+### Motivation
+
+After the v1.0.0 engineering release, the main remaining limitation was access:
+the repository primarily addressed English-speaking developers and required a
+Python/source workflow to open the application. The intended public audience is
+expected to include many Turkish-speaking engineering students and reviewers.
+
+### Implementation
+
+v1.1 adds a centralized Turkish/English presentation layer, makes Turkish the
+default UI language, and uses the engineering term **devreye alma** for
+commissioning. Internal diagnostic codes and serialized schemas remain stable.
+
+A separate PyInstaller onedir launcher packages the same Streamlit dashboard as
+an optional Windows x64 portable application. GitHub Actions builds it from
+source, runs UI/localization tests, starts the packaged application on loopback,
+requires an HTTP response, then creates a ZIP and SHA-256 checksum. Source-code
+execution with `python -m app` remains an equal supported path because the
+convenience executable is unsigned.
+
+### Boundary
+
+This work changes presentation and distribution only. M1-M19 control,
+identification, quality-gate, feasibility, nonideality and C-parity algorithms
+are unchanged. Historical v1.0 numerical artifacts remain historical; the app
+version can advance without rewriting their engineering evidence.
