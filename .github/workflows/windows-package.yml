@@ -47,24 +47,32 @@ jobs:
           $env:PMSM_HEADLESS = "1"
           $env:PMSM_PORT = "8765"
           $exe = Resolve-Path "dist/PMSM-Engineering-App/PMSM Engineering App.exe"
-          $process = Start-Process -FilePath $exe -PassThru
+          $stdout = Join-Path $env:RUNNER_TEMP "pmsm-app-stdout.log"
+          $stderr = Join-Path $env:RUNNER_TEMP "pmsm-app-stderr.log"
+          $process = Start-Process -FilePath $exe -PassThru -RedirectStandardOutput $stdout -RedirectStandardError $stderr
           try {
             $ready = $false
-            for ($i = 0; $i -lt 60; $i++) {
+            for ($i = 0; $i -lt 45; $i++) {
               Start-Sleep -Seconds 1
               try {
-                $response = Invoke-WebRequest -Uri "http://127.0.0.1:8765" -UseBasicParsing -TimeoutSec 2
+                $response = Invoke-WebRequest -Uri "http://127.0.0.1:8765" -UseBasicParsing -TimeoutSec 1
                 if ($response.StatusCode -eq 200) {
                   $ready = $true
                   break
                 }
               } catch {}
               if ($process.HasExited) {
-                throw "Packaged application exited before becoming ready."
+                throw "Packaged application exited before becoming ready (exit $($process.ExitCode))."
               }
             }
             if (-not $ready) {
-              throw "Packaged application did not become ready within 60 seconds."
+              Write-Host "--- packaged stdout ---"
+              if (Test-Path $stdout) { Get-Content $stdout }
+              Write-Host "--- packaged stderr ---"
+              if (Test-Path $stderr) { Get-Content $stderr }
+              Write-Host "--- listening ports ---"
+              netstat -ano | Select-String "LISTENING"
+              throw "Packaged application did not become ready on 127.0.0.1:8765."
             }
           } finally {
             if (-not $process.HasExited) {
