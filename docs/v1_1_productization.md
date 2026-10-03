@@ -77,6 +77,11 @@ under workspace sandbox restrictions. Logging falls back to the temporary
 directory when the normal directory cannot be created. Native startup no
 longer depends on a console being available.
 
+The first Linux GUI CI run failed at test collection because the runner lacked
+`libEGL.so.1`. Offscreen Qt still needs its linked system libraries. Linux GUI
+jobs now install `libegl1` and `libopengl0`; no tests are skipped to address
+that environment failure. GCC/Clang checks passed on that initial head.
+
 ## Preservation and limits
 
 The unchanged 74-file contract protects prior engineering code, protocols and

@@ -21,6 +21,10 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
           cache: pip
+      - name: Install Qt system libraries for offscreen tests
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libegl1 libopengl0
       - run: python -m pip install -r requirements-legacy.txt
       - run: python -m pytest -q
   firmware-parity:
@@ -54,6 +58,10 @@ jobs:
         with:
           python-version: '3.12'
           cache: pip
+      - name: Install Qt system libraries for offscreen tests
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libegl1 libopengl0
       - run: python -m pip install -r requirements.txt
       - name: Real backend and native Qt (no browser)
         run: python -m pytest -q tests/test_engineering_workflow.py tests/test_engineering_app.py tests/test_desktop.py
