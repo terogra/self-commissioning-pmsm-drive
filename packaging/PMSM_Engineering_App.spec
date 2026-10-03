@@ -1,17 +1,21 @@
 # -*- mode: python ; coding: utf-8 -*-
+from pathlib import Path
+
 from PyInstaller.utils.hooks import collect_all
+
+ROOT = Path(SPECPATH).resolve().parent
 
 streamlit_datas, streamlit_binaries, streamlit_hiddenimports = collect_all("streamlit")
 
 datas = list(streamlit_datas)
 datas += [
-    ("app/dashboard.py", "app"),
-    ("results/firmware_parity/parity_summary.json", "results/firmware_parity"),
+    (str(ROOT/"app"/"dashboard.py"), "app"),
+    (str(ROOT/"results"/"firmware_parity"/"parity_summary.json"), "results/firmware_parity"),
 ]
 
 a = Analysis(
-    ["app/windows_launcher.py"],
-    pathex=["."],
+    [str(ROOT/"app"/"windows_launcher.py")],
+    pathex=[str(ROOT)],
     binaries=streamlit_binaries,
     datas=datas,
     hiddenimports=streamlit_hiddenimports + ["app.dashboard", "app.presentation", "app.i18n"],
