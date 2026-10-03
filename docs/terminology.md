@@ -10,6 +10,11 @@ Use **PMSM Sürücü Devreye Alma Aracı** in Turkish and
 | Commissioning | Devreye Alma | Full measurement, quality and controller-update workflow |
 | Parameter estimation / Parameter identification | Parametre kestirimi | Numerical estimation of motor parameters; use one term throughout the UI |
 | Drive setup | Sürücü ayarları | Configuration, not a new controller design |
+| Initial model: Default | Başlangıç modeli: Varsayılan | Existing fallback assumptions; no unknown parameter entry required |
+| Custom | Özel | Explicitly reveals editable prior/fallback assumptions |
+| Parameters to estimate | Kestirilecek parametreler | Rs, Ld, Lq, psi_f, J, B are unknown quantities, not required inputs |
+| Advanced Simulation Settings | Gelişmiş Simülasyon Ayarları | Collapsed by default; simulation design inputs |
+| Simulation Motor Model | Simülasyon Motor Modeli | Hidden validation ground truth used to generate measurements |
 | Operating point | Çalışma noktası | Speed and load request |
 | Operating request | Çalışma noktası | Sidebar input group; internal message identifier retained |
 | Dynamic deadline [s] | Dinamik süre sınırı [s] | Existing M16 request deadline, in seconds |

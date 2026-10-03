@@ -5,6 +5,8 @@
 - Turkish-first README and full English landing page; v1.0 reference preserved.
 - Centralized Turkish/English presentation with stable widget/backend state.
 - Native PySide6/Qt desktop, responsive commissioning worker and embedded plots.
+- Basic known/requested inputs; collapsed simulation model and explicit custom
+  prior model. `python -m app` opens native Qt; `python -m app.legacy` is development-only.
 - Windowed Windows x64 onedir EXE without a browser, web server or console.
 - Legacy Streamlit UI retained only as an optional development dependency.
 - Pinned Windows build, actual Qt window initialization, extracted-ZIP retest,

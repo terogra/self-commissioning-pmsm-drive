@@ -3,7 +3,7 @@
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (
     QComboBox, QDoubleSpinBox, QFormLayout, QGroupBox, QLabel,
-    QScrollArea, QSpinBox, QVBoxLayout, QWidget,
+    QScrollArea, QSpinBox, QToolButton, QVBoxLayout, QWidget,
 )
 
 from app.localization import LANGUAGES, t
@@ -28,21 +28,18 @@ class ConfigurationPanel(QScrollArea):
         form = self.group("Drive / scenario configuration")
         self.number(form, "pole_pairs", "Known pole pairs [pairs]", default.prior_assumptions.pole_pairs, 1, 32, integer=True)
         self.number(form, "bus", "Nominal DC bus [V]", default.dc_bus_voltage_v, .1, 1e6)
-        for prefix, motor, heading in (("truth", default.simulation_truth, "Simulation evaluation / ground truth — plant configuration"),
-                                       ("prior", default.prior_assumptions, "Estimator-visible prior controller assumptions")):
-            form = self.group(heading)
-            if prefix == "truth": self.note(form, "Simulator inputs only. Estimators receive sampled records, not these constants.")
-            for name, unit, step in (("Rs", "ohm", .001), ("Ld", "H", 1e-7), ("Lq", "H", 1e-7),
-                                     ("psi_f", "Wb", 1e-6), ("J", "kg m²", 1e-7), ("B", "N m s/rad", 1e-7)):
-                self.number(form, prefix+"_"+name, f"{name} [{unit}]", getattr(motor, name), 0., 1e6, 7, step)
         form = self.group("Commissioning setup")
         self.combo(form, "mode", "Commissioning mode", ("one_shot", "adaptive"), default.mode)
         self.number(form, "seed", "Deterministic seed", default.seed, 0, 2**31-3, integer=True)
-        self.note(form, "Simulation design constraints; no physical hardware-safety guarantee. Mechanical external load is explicitly zero.")
-        self.number(form, "noise_i", "Recorded electrical current noise SD [A]", default.standstill.current_noise_std_a, 0, 1e6, 5, .001)
-        self.number(form, "noise_v", "Recorded voltage noise SD [V]", default.standstill.voltage_noise_std_v, 0, 1e6, 5, .001)
-        self.number(form, "rotor_speed", "Driven-rotor commissioning speed [rpm]", default.rotating.speed_rpm, 100, 1200)
-        self.number(form, "excitation", "Standstill voltage-program scale [dimensionless]", 1., 0, 1.5, 2, .01)
+        self.combo(form, "prior_mode", "Initial model", ("default", "custom"), "default")
+        form = self.group("Custom prior / fallback model")
+        self.prior_group = form.parentWidget()
+        self.motor_fields(form, "prior", default.prior_assumptions)
+        self.controls["prior_mode"].currentIndexChanged.connect(self.update_prior_visibility)
+        self.update_prior_visibility()
+        form = self.group("Parameters to estimate")
+        self.note(form, "Rs, Ld, Lq, psi_f, J, B")
+        self.note(form, "Estimated from sampled voltage, current and speed measurements.")
         form = self.group("Operating request")
         for key, label, value, lower, upper in (
             ("target", "Speed target [rpm]", default.speed_target_rpm, 1, 1e6),
@@ -51,24 +48,56 @@ class ConfigurationPanel(QScrollArea):
             ("deadline", "Dynamic deadline [s]", default.deadline_s, .01, 5),
             ("hold", "Required dynamic hold [s]", default.hold_time_s, .001, 1e6)):
             self.number(form, key, label, value, lower, upper, 4 if key == "load" else 3, .001 if key == "hold" else .01)
-        form = self.group("Validation timing")
-        self.number(form, "duration", "Control-validation duration [s]", default.simulation_duration_s, .01, 5, 3)
-        self.number(form, "step_time", "Operating load-step time [s]", default.load_step_time_s, 0, 1e6, 3)
         form = self.group("Simulation errors")
         self.combo(form, "scenario", "M17 simulation preset", tuple(s.name for s in scenarios()), default.scenario)
         self.combo(form, "exposure", "Impairment exposure", ("combined", "commissioning_only", "operation_only"), default.exposure)
+        self.advanced_toggle = QToolButton()
+        self.advanced_toggle.setObjectName("advanced_simulation_settings")
+        self.advanced_toggle.setCheckable(True)
+        self.advanced_toggle.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonTextBesideIcon)
+        self.layout.addWidget(self.advanced_toggle)
+        self.advanced_body = QWidget()
+        advanced_layout = QVBoxLayout(self.advanced_body)
+        advanced_layout.setContentsMargins(0, 0, 0, 0)
+        self.layout.addWidget(self.advanced_body)
+        form = self.group("Simulation Motor Model", advanced_layout)
+        self.note(form, "These values define only the simulated plant. Estimators do not receive them.")
+        self.motor_fields(form, "truth", default.simulation_truth)
+        form = self.group("Commissioning excitation / noise / validation timing", advanced_layout)
+        self.note(form, "Simulation design constraints; no physical hardware-safety guarantee. Mechanical external load is explicitly zero.")
+        self.number(form, "noise_i", "Recorded electrical current noise SD [A]", default.standstill.current_noise_std_a, 0, 1e6, 5, .001)
+        self.number(form, "noise_v", "Recorded voltage noise SD [V]", default.standstill.voltage_noise_std_v, 0, 1e6, 5, .001)
+        self.number(form, "rotor_speed", "Driven-rotor commissioning speed [rpm]", default.rotating.speed_rpm, 100, 1200)
+        self.number(form, "excitation", "Standstill voltage-program scale [dimensionless]", 1., 0, 1.5, 2, .01)
+        form = self.group("Validation timing", advanced_layout)
+        self.number(form, "duration", "Control-validation duration [s]", default.simulation_duration_s, .01, 5, 3)
+        self.number(form, "step_time", "Operating load-step time [s]", default.load_step_time_s, 0, 1e6, 3)
+        self.advanced_toggle.toggled.connect(self.update_advanced_visibility)
+        self.update_advanced_visibility(False)
         self.layout.addStretch()
         self.setWidget(body)
         self.retranslate()
 
-    def group(self, message):
+    def group(self, message, container_layout=None):
         box = QGroupBox()
         self.groups.append((box, message))
         form = QFormLayout(box)
         form.setFieldGrowthPolicy(QFormLayout.FieldGrowthPolicy.AllNonFixedFieldsGrow)
         form.setRowWrapPolicy(QFormLayout.RowWrapPolicy.WrapLongRows)
-        self.layout.addWidget(box)
+        (container_layout if container_layout is not None else self.layout).addWidget(box)
         return form
+
+    def motor_fields(self, form, prefix, motor):
+        for name, unit, step in (("Rs", "ohm", .001), ("Ld", "H", 1e-7), ("Lq", "H", 1e-7),
+                                 ("psi_f", "Wb", 1e-6), ("J", "kg m²", 1e-7), ("B", "N m s/rad", 1e-7)):
+            self.number(form, prefix+"_"+name, f"{name} [{unit}]", getattr(motor, name), 0., 1e6, 7, step)
+
+    def update_prior_visibility(self):
+        self.prior_group.setVisible(self.controls["prior_mode"].currentData() == "custom")
+
+    def update_advanced_visibility(self, expanded):
+        self.advanced_body.setVisible(expanded)
+        self.advanced_toggle.setArrowType(Qt.ArrowType.DownArrow if expanded else Qt.ArrowType.RightArrow)
 
     def note(self, form, message):
         label = QLabel()
@@ -109,6 +138,7 @@ class ConfigurationPanel(QScrollArea):
         return configuration_from_inputs(self.values())
 
     def retranslate(self):
+        self.advanced_toggle.setText(t("Advanced Simulation Settings"))
         for widget, message in self.groups: widget.setTitle(t(message))
         for label, message in self.labels+self.notes: label.setText(t(message))
         for control in self.controls.values():

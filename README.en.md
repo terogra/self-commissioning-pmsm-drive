@@ -48,11 +48,11 @@ cd self-commissioning-pmsm-drive
 python -m venv .venv
 .\.venv\Scripts\Activate.ps1
 python -m pip install -r requirements.txt
-python -m desktop
+python -m app
 ```
 
 If activation is blocked, use `.\.venv\Scripts\python.exe -m pip install -r requirements.txt`
-and `.\.venv\Scripts\python.exe -m desktop` without activating.
+and `.\.venv\Scripts\python.exe -m app` without activating.
 On Linux/macOS use `source .venv/bin/activate` instead.
 Downloading the source ZIP also works without Git.
 
@@ -61,6 +61,16 @@ Language changes do not modify parameters or computed results.
 **Run Commissioning** performs a new computation; tab/language changes do not.
 Computation runs on a worker thread; overlapping runs are blocked. Plots and
 tables stay inside the Qt window. Exports use native save-file dialogs.
+
+The basic view asks for pole pairs, DC bus, speed/load request, current limit,
+commissioning mode, seed and M17 scenario. **Initial model: Default** uses the
+existing prior assumptions; you do not need to enter the six unknown motor
+parameters. `Rs, Ld, Lq, psi_f, J, B` are estimated from measurements.
+**Custom** reveals the prior/fallback model fields. The simulated plant values,
+excitation/noise and validation timing are under **Advanced Simulation Settings**,
+collapsed by default. Those motor values define only the simulated plant;
+estimators do not receive them. Results distinguish prior assumptions,
+estimates and active controller values; ground truth belongs to **Validation**.
 
 ## Commissioning workflow
 
@@ -110,7 +120,7 @@ is not relabeled or overwritten; current-run version provenance is separate.
 [v1.0 technical reference and advanced commands](README.v1.0.md).
 
 The old Streamlit UI is retained for development only: install
-`requirements-legacy.txt`, then `python -m app`. It is excluded from the Windows
+`requirements-legacy.txt`, then `python -m app.legacy`. It is excluded from the Windows
 desktop product and is not the primary application.
 
 ## Assumptions and boundaries

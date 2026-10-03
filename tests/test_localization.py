@@ -21,7 +21,7 @@ def default_language():
 
 
 def test_default_turkish_and_english_catalogue():
-    from app.__main__ import launch_command
+    from app.legacy import launch_command
     from app.portable import launch_settings
     assert "--client.toolbarMode=minimal" in launch_command()
     assert launch_settings({})["client.toolbarMode"] == "minimal"

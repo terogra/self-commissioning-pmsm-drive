@@ -1,4 +1,4 @@
-"""Windowed PyInstaller entry point; source entry is python -m desktop."""
+"""Windowed PyInstaller entry point; source entry is python -m app."""
 
 import logging
 import sys

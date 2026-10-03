@@ -13,9 +13,13 @@ from src.engineering_workflow import (
 def configuration_from_inputs(values):
     default = EngineeringWorkflowConfig()
     pairs = values["pole_pairs"]
-    motors = {prefix: MotorConfiguration(**{name: values[prefix+"_"+name]
-              for name in ("Rs", "Ld", "Lq", "psi_f", "J", "B")}, pole_pairs=pairs)
-              for prefix in ("truth", "prior")}
+    motors = {}
+    for prefix in ("truth", "prior"):
+        if prefix == "prior" and values["prior_mode"] == "default":
+            motors[prefix] = replace(default.prior_assumptions, pole_pairs=pairs)
+        else:
+            motors[prefix] = MotorConfiguration(**{name: values[prefix+"_"+name]
+                for name in ("Rs", "Ld", "Lq", "psi_f", "J", "B")}, pole_pairs=pairs)
     return replace(default, simulation_truth=motors["truth"], prior_assumptions=motors["prior"],
         scenario=values["scenario"], mode=values["mode"], exposure=values["exposure"], seed=values["seed"],
         dc_bus_voltage_v=values["bus"], speed_target_rpm=values["target"], load_torque_nm=values["load"],

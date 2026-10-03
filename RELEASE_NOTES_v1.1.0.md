@@ -6,7 +6,11 @@ Henüz etiketlenmedi veya yayımlanmadı. Not tagged or released.
 
 Turkish-first landing page, full English equivalent, centralized bilingual
 presentation in a native PySide6/Qt desktop and Windows x64 onedir distribution.
-Source execution is `python -m desktop`. The old Streamlit UI is an optional
+Source execution is `python -m app`, opening the same native Qt application.
+Unknown motor parameters are hidden from the default input workflow: the
+simulation model is in a collapsed advanced section, and editable prior values
+require an explicit Custom selection. All numerical defaults remain unchanged.
+The old Streamlit UI (`python -m app.legacy`) is an optional
 development-only interface. This is productization, **not M20**.
 
 ## Distribution

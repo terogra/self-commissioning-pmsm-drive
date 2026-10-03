@@ -14,10 +14,11 @@ from desktop.runtime import resource_root
 from src.engineering_workflow import ROOT
 
 
-def test_native_source_initializes_qt_from_an_unrelated_cwd(tmp_path):
+@pytest.mark.parametrize("entry", ("app", "desktop"))
+def test_native_source_initializes_qt_from_an_unrelated_cwd(tmp_path, entry):
     report = tmp_path/"source-qt.json"
     environment = dict(os.environ, QT_QPA_PLATFORM="offscreen", PYTHONPATH=str(ROOT), LOCALAPPDATA=str(tmp_path))
-    completed = subprocess.run([sys.executable, "-m", "desktop", "--smoke-report", str(report)],
+    completed = subprocess.run([sys.executable, "-m", entry, "--smoke-report", str(report)],
         cwd=tmp_path, env=environment, capture_output=True, text=True, timeout=30)
     assert completed.returncode == 0, completed.stderr
     state = json.loads(report.read_text(encoding="utf-8"))

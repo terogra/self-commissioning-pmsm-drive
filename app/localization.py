@@ -19,6 +19,15 @@ TR = {
     "released": "yayımlandı",
     "Run Commissioning": "Devreye Almayı Başlat",
     "Drive / scenario configuration": "Sürücü ayarları",
+    "Advanced Simulation Settings": "Gelişmiş Simülasyon Ayarları",
+    "Simulation Motor Model": "Simülasyon Motor Modeli",
+    "These values define only the simulated plant. Estimators do not receive them.": "Bu değerler yalnızca sanal motoru oluşturur. Kestirici bu değerlere erişmez.",
+    "Initial model": "Başlangıç modeli",
+    "default": "Varsayılan",
+    "custom": "Özel",
+    "Custom prior / fallback model": "Özel başlangıç / yedek model",
+    "Parameters to estimate": "Kestirilecek parametreler",
+    "Estimated from sampled voltage, current and speed measurements.": "Örneklenmiş gerilim, akım ve hız ölçümlerinden kestirilir.",
     "M17 simulation preset": "M17 senaryosu",
     "Commissioning mode": "Devreye alma yöntemi",
     "Impairment exposure": "Hatanın uygulandığı aşama",
@@ -341,6 +350,8 @@ TR = {
 }
 
 EN = {
+    "default": "Default",
+    "custom": "Custom",
     "CURRENT RUN RESULTS: seed {seed} / {scenario} / {mode} / {exposure}": "Seed {seed} · {mode} · {exposure}",
     "ideal": "Nominal (ideal)",
     "one_shot": "One-shot",

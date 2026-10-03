@@ -49,12 +49,12 @@ cd self-commissioning-pmsm-drive
 python -m venv .venv
 .\.venv\Scripts\Activate.ps1
 python -m pip install -r requirements.txt
-python -m desktop
+python -m app
 ```
 
 Etkinleştirme betiği engellenirse ortamı etkinleştirmeden
 `.\.venv\Scripts\python.exe -m pip install -r requirements.txt` ve
-`.\.venv\Scripts\python.exe -m desktop` kullanılabilir.
+`.\.venv\Scripts\python.exe -m app` kullanılabilir.
 Linux/macOS'ta etkinleştirme komutu `source .venv/bin/activate` olur.
 Git olmadan kaynak ZIP'i indirmek de mümkündür.
 
@@ -64,6 +64,17 @@ Dil değişimi parametreleri veya hesaplanmış sonucu değiştirmez.
 Hesaplama arka plan iş parçacığında çalışır; aynı anda ikinci işlem başlatılmaz.
 Grafikler ve kayıt tabloları Qt penceresindedir. Dışa aktarımda yerel dosya
 kaydetme iletişim kutusu kullanılır.
+
+Varsayılan görünümde kutup çifti, DC bara, hız/yük isteği, akım sınırı,
+devreye alma yöntemi, tohum ve M17 senaryosu seçilir. **Başlangıç modeli:
+Varsayılan** mevcut başlangıç kabullerini kullanır; altı motor parametresini
+girmeniz gerekmez. `Rs, Ld, Lq, psi_f, J, B` ölçümlerden kestirilir.
+**Özel** seçimi başlangıç/yedek model alanlarını açar. Sanal motorun gerçek
+değerleri, uyartım/gürültü ve doğrulama zamanlaması **Gelişmiş Simülasyon
+Ayarları** içinde varsayılan olarak gizlidir. Bu motor değerleri yalnızca
+sanal motoru oluşturur; kestiriciye verilmez. Sonuçlarda başlangıç kabulleri,
+kestirimler ve etkin denetleyici ayrı gösterilir; gerçek değerler **Doğrulama**
+alanındadır.
 
 ## Devreye alma akışı
 
@@ -112,7 +123,7 @@ etiketlenmez veya üzerine yazılmaz; yeni çalışmanın sürüm bilgisi ayrıd
 [v1.0 teknik başvuru ve deney komutları](README.v1.0.md).
 
 Eski Streamlit arayüzü yalnızca geliştirme için tutulur: `python -m pip install
--r requirements-legacy.txt`, ardından `python -m app`. Windows masaüstü
+-r requirements-legacy.txt`, ardından `python -m app.legacy`. Windows masaüstü
 ürününe dahil edilmez; ana kullanım yolu değildir.
 
 ## Varsayımlar ve sınırlar

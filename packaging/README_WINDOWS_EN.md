@@ -18,7 +18,7 @@ directory fallback. Moving the EXE requires moving its `_internal` directory
 and contents as well.
 
 **Unsigned EXE: SmartScreen may warn.** SHA-256 checks integrity, not signing or
-safety. The source path is `python -m desktop`. Compare the ZIP using
+safety. The source path is `python -m app`, opening the same native GUI. Compare the ZIP using
 `Get-FileHash -Algorithm SHA256` against `SHA256SUMS.txt`.
 
 This remains a simulation study, not a hardware drive or deployed MCU firmware.

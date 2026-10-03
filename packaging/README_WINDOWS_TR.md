@@ -21,7 +21,8 @@ Bu yol kullanılamazsa aynı göreli klasör geçici dizinde oluşturulur. Uygul
 EXE'yi taşıdığınızda `_internal` klasörü ve içeriği de taşınmalıdır.
 
 **EXE imzasızdır; SmartScreen uyarabilir.** SHA-256 bütünlük kontrolüdür, kod
-imzası veya güvenlik garantisi değildir. Kaynak kullanım yolu `python -m desktop`.
+imzası veya güvenlik garantisi değildir. Kaynak kullanım yolu `python -m app`;
+aynı yerel Qt uygulamasını açar.
 ZIP hash'ini `Get-FileHash -Algorithm SHA256` ile `SHA256SUMS.txt` ile karşılaştırın.
 
 Bu bir simülasyon çalışmasıdır; donanım sürücüsü veya MCU'ya yüklenmiş firmware

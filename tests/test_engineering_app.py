@@ -10,7 +10,7 @@ import zipfile
 import numpy as np
 import pytest
 
-from app.__main__ import launch_command
+from app.legacy import launch_command
 from app.presentation import attempt_rows, controller_rows, load_committed_parity_evidence, overview_rows, parameter_rows
 from experiments.v1_demo import DEMO_CONFIGURATIONS, generate_demo
 from src.engineering_bundle import export_run_bundle, run_bundle_zip, run_summary
@@ -23,13 +23,19 @@ def demos():
     return tuple(run_engineering_workflow(c) for _, c in DEMO_CONFIGURATIONS)
 
 
-def test_launch_is_one_command_and_bound_to_localhost():
+def test_legacy_development_launch_is_explicit_and_bound_to_localhost():
     command = launch_command(["--server.headless=true"])
     assert command[1:4] == ["-m", "streamlit", "run"]
     assert command[4] == str(ROOT/"app/dashboard.py")
     assert "--server.address=127.0.0.1" in command
     assert command[-1] == "--server.headless=true"
     assert __version__ == "1.1.0"
+
+
+def test_normal_app_entry_is_the_native_desktop():
+    from app.__main__ import main
+    from desktop.main import main as desktop_main
+    assert main is desktop_main
 
 
 def test_presentation_is_read_only_and_has_no_engineering_equations(demos):

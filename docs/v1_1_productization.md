@@ -13,6 +13,32 @@ does not validate the current product. The normal product is now Qt, with no
 browser, HTTP server, Streamlit or persistent console. The former launcher is
 retired; the legacy web interface is optional development-only code.
 
+## Basic configuration follow-up
+
+After the accepted native migration at
+`ed2eb2ceca32136ad699bbbc799002ee13634f4d`, the default view now presents
+known/requested inputs and a read-only list of the six parameters to estimate.
+The plant's editable validation truth and excitation/noise/timing controls
+live in **Advanced Simulation Settings**, collapsed by default. Prior motor
+fields appear only after selecting **Initial model: Custom**. Default uses
+the exact existing prior values, even if retained hidden custom edits are invalid.
+Language changes preserve selection, expansion, edits and completed results.
+
+`python -m app` now calls the same native Qt entry as the EXE; `desktop` is an
+internal compatible alias. The optional web UI has the explicit development
+command `python -m app.legacy`. No engineering API, numerical default or
+historical result changes. Tests compare both default accepted and timing-case
+rejected Qt runs directly against backend summaries, excluding metadata only.
+The README screenshot is regenerated from the real updated Qt application.
+
+Local follow-up validation: **303 passed in 218.79 s**, including 18 native Qt
+tests. Both `app` and the internal `desktop` alias initialize native windows
+without web imports from an unrelated cwd. The rebuilt EXE initialized in
+**1.438 s** and its ZIP extracted into a path with spaces in **1.578 s**;
+both exited zero. These packaged probes required normal AppData log access
+outside the development workspace sandbox. No runtime/logging change was made.
+CI results and the new archive checksum are recorded on the PR.
+
 See [desktop architecture](desktop_architecture.md) for module ownership,
 threading, result semantics, localization, plots and resource paths.
 

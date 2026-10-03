@@ -1,6 +1,6 @@
 # Native desktop architecture — v1.1.0 candidate
 
-The product is a PySide6/Qt Windows desktop, launched with `python -m desktop`
+The product is a PySide6/Qt Windows desktop, launched with `python -m app`
 or `PMSM-Commissioning-Workbench.exe`. It has no web server, browser view or
 HTML UI. `app.dashboard` is retained only for optional legacy development.
 The [v1.0 architecture](architecture.md) remains historical evidence.
@@ -27,7 +27,11 @@ flowchart TD
   firmware and bundle exports to existing APIs. It contains no estimators,
   gate thresholds, gain formulas or feasibility decisions.
 - `desktop.configuration` uses backend defaults and stores combo codes in Qt
-  item data. Truth and prior assumptions are separate groups. The field ranges
+  item data. Simulation truth lives inside a collapsed advanced group. The
+  default prior is read from `EngineeringWorkflowConfig().prior_assumptions`;
+  an explicit Custom selection reveals editable fallback assumptions. Switching
+  back to Default retains custom widget edits but ignores them for the run.
+  Language changes preserve the collapse/selection states. The field ranges
   follow the legacy UI; unbounded fields use finite Qt input ranges only.
 - `desktop.worker` runs the synchronous API in a `QThread`. The GUI disables
   inputs/run/export during work, blocks overlap and declines close until the
@@ -60,6 +64,8 @@ cwd. Version is still `1.1.0`, release candidate; no tag/release is created.
 `requirements.txt` contains the desktop dependencies and pytest.
 `packaging/requirements-windows.txt` pins the native build inputs; Streamlit is
 absent. `requirements-legacy.txt` adds the optional development web UI.
+`app.__main__` delegates directly to the native entry, as does the internal
+`desktop` module alias. The web launcher is explicitly `python -m app.legacy`.
 Full Python CI retains those legacy UI tests; the native Windows job installs
 no Streamlit and skips only its two optional UI tests.
 

@@ -72,6 +72,78 @@ def test_native_startup_defaults_and_runtime(window):
     assert runtime_report(window)["window_visible"]
 
 
+def test_basic_view_hides_unknown_motor_inputs_by_default(window):
+    panel = window.input_panel
+    assert not panel.advanced_toggle.isChecked()
+    assert panel.advanced_body.isHidden() and panel.prior_group.isHidden()
+    assert panel.controls["prior_mode"].currentData() == "default"
+    for name in ("Rs", "Ld", "Lq", "psi_f", "J", "B"):
+        assert not panel.controls["truth_"+name].isVisible()
+        assert not panel.controls["prior_"+name].isVisible()
+    for key in ("pole_pairs", "bus", "target", "load", "limit", "mode", "scenario", "seed"):
+        assert panel.controls[key].isVisible()
+    assert any(label.text() == "Rs, Ld, Lq, psi_f, J, B" for label, _ in panel.notes)
+    assert panel.configuration() == EngineeringWorkflowConfig()
+
+
+def test_custom_prior_is_explicit_and_default_keeps_exact_backend_values(window):
+    panel = window.input_panel
+    selector = panel.controls["prior_mode"]
+    selector.setCurrentIndex(selector.findData("custom"))
+    assert not panel.prior_group.isHidden()
+    panel.controls["prior_Rs"].setValue(.7)
+    panel.controls["prior_J"].setValue(.0008)
+    assert panel.configuration().prior_assumptions.Rs == .7
+    assert panel.configuration().prior_assumptions.J == .0008
+    selector.setCurrentIndex(selector.findData("default"))
+    assert panel.prior_group.isHidden()
+    assert panel.configuration().prior_assumptions == EngineeringWorkflowConfig().prior_assumptions
+    selector.setCurrentIndex(selector.findData("custom"))
+    assert panel.controls["prior_Rs"].value() == .7
+    assert panel.configuration().prior_assumptions.J == .0008
+    panel.controls["prior_Ld"].setValue(0)
+    with pytest.raises(ValueError, match="workflow.invalid_motor_configuration"):
+        panel.configuration()
+    selector.setCurrentIndex(selector.findData("default"))
+    assert panel.configuration() == EngineeringWorkflowConfig()
+
+
+def test_advanced_visibility_and_custom_values_survive_language_switch(window, monkeypatch):
+    panel = window.input_panel
+    monkeypatch.setattr(window.service, "run", lambda _: pytest.fail("Language switch computed a run"))
+    for expanded, mode in ((False, "default"), (True, "custom")):
+        panel.advanced_toggle.setChecked(expanded)
+        selector = panel.controls["prior_mode"]
+        selector.setCurrentIndex(selector.findData(mode))
+        panel.controls["truth_Rs"].setValue(.6)
+        panel.controls["prior_Rs"].setValue(.7)
+        before = panel.configuration()
+        for code in ("en", "tr"):
+            panel.language.setCurrentIndex(panel.language.findData(code))
+            assert panel.advanced_toggle.isChecked() == expanded
+            assert panel.advanced_body.isHidden() == (not expanded)
+            assert panel.prior_group.isHidden() == (mode == "default")
+            assert selector.currentData() == mode
+            assert panel.configuration() == before
+            assert panel.controls["truth_Rs"].value() == .6
+            assert panel.controls["prior_Rs"].value() == .7
+    assert panel.advanced_toggle.text() == "Gelişmiş Simülasyon Ayarları"
+    assert t("These values define only the simulated plant. Estimators do not receive them.") == \
+        "Bu değerler yalnızca sanal motoru oluşturur. Kestirici bu değerlere erişmez."
+
+
+def test_truth_remains_evaluation_only_in_records_and_parameter_display(results):
+    from app.presentation import parameter_rows
+    for result in results:
+        summary = run_summary(result)
+        assert "simulation_truth" not in summary["estimator_visible_configuration"]
+        assert summary["simulation_evaluation_ground_truth"]["truth"]["Rs"] == result.config.simulation_truth.Rs
+        for record in result.measurement_records:
+            assert not any(key in vars(record.measurements) for key in ("plant", "simulation_truth", "true_torque"))
+        rows = parameter_rows(result)
+        assert all(set(row) == {"Parameter", "Unit", "Prior assumption", "Identified / known", "Controller value"} for row in rows)
+
+
 def test_language_switch_preserves_inputs_results_and_exports(window, results, monkeypatch):
     window.present_result(results[0])
     before = json.dumps(run_summary(window.result), sort_keys=True)
@@ -96,6 +168,8 @@ def test_exact_corrected_turkish_terms(window):
 
 
 def test_real_native_worker_accepts_and_rejects_without_overlap(window, qt, results):
+    assert window.input_panel.configuration() == EngineeringWorkflowConfig()
+    assert window.input_panel.advanced_body.isHidden() and window.input_panel.prior_group.isHidden()
     received = []
     window.run_completed.connect(received.append)
     QTest.mouseClick(window.run_button, Qt.MouseButton.LeftButton)
