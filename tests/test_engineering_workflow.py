@@ -13,6 +13,7 @@ from src.foc import CurrentFOCController
 from src.operating_feasibility import OperatingPointRequest, assess_operating_point
 from src.speed_control import SpeedController
 from src.speed_foc_simulation import run_speed_foc_simulation
+from src.version import __version__
 
 
 @pytest.fixture(scope="module")
@@ -106,7 +107,7 @@ def test_header_matches_M18_exporter(nominal, tmp_path):
     actual = export_firmware_configuration(nominal, tmp_path/"actual.h")
     cfg = build_firmware_config(nominal.commissioning, dc_bus_voltage_v=nominal.config.dc_bus_voltage_v,
                                 iq_limit_a=nominal.config.current_limit_a)
-    expected = export_c_header(cfg, tmp_path/"expected.h", provenance="SIMULATED accepted full commissioning; project 1.0.0; seed 1901; scenario ideal.")
+    expected = export_c_header(cfg, tmp_path/"expected.h", provenance=f"SIMULATED accepted full commissioning; project {__version__}; seed 1901; scenario ideal.")
     assert actual.read_bytes() == expected.read_bytes()
     assert nominal.firmware_config == cfg
 

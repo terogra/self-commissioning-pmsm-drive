@@ -29,7 +29,7 @@ def test_launch_is_one_command_and_bound_to_localhost():
     assert command[4] == str(ROOT/"app/dashboard.py")
     assert "--server.address=127.0.0.1" in command
     assert command[-1] == "--server.headless=true"
-    assert __version__ == "1.0.0"
+    assert __version__ == "1.1.0"
 
 
 def test_presentation_is_read_only_and_has_no_engineering_equations(demos):
@@ -116,7 +116,15 @@ def test_one_command_demo_reproduces_committed_results_and_headers(tmp_path):
         _compare_numbers(json.loads((generated/"commissioning_attempts.json").read_text()),
                          json.loads((committed/"commissioning_attempts.json").read_text()))
         if (committed/"generated_motor_config.h").exists():
-            assert (generated/"generated_motor_config.h").read_bytes() == (committed/"generated_motor_config.h").read_bytes()
+            # Historical numeric constants remain exact; only the explicit
+            # provenance version belongs to the new application run.
+            current_header = (generated/"generated_motor_config.h").read_text(encoding="utf-8")
+            historic_header = (committed/"generated_motor_config.h").read_text(encoding="utf-8")
+            historic_version = json.loads((committed/"run_summary.json").read_text())["metadata"]["version"]
+            assert historic_version == "1.0.0"
+            expected_header = historic_header.replace(f"project {historic_version};", f"project {__version__};", 1)
+            assert current_header == expected_header
+            assert f"project {__version__};" in current_header
             # Numeric trace equality across supported host platforms, not PNG-byte identity.
             def read_trace(path):
                 with path.open(newline="", encoding="utf-8") as file:

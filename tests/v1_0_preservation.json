@@ -1,0 +1,301 @@
+{
+  "baseline": "d3ae7f3ef62a814b5bc7a93ea737c73af1b819da",
+  "files": {
+    "docs/adaptive_commissioning_protocol.md": {
+      "sha256": "c5b95aea8a93da2b820d4d61b8f13f9067691138cc8a524c0a9c49657eae6b3a",
+      "binary": false
+    },
+    "docs/architecture.md": {
+      "sha256": "9955e8d7727d6f1ae3174d2d20eceb781b6671d71dd73185f6c6bc9e5575e9a8",
+      "binary": false
+    },
+    "docs/dynamic_feasibility_protocol.md": {
+      "sha256": "5168669a9fd62d92929801b793377bde7312a34c9444be0db099ee435539ff22",
+      "binary": false
+    },
+    "docs/engineering_log.md": {
+      "sha256": "c04aec611c2016339d27ad13281e84a0194c595299e223acf8ece3fc926f6d74",
+      "binary": false
+    },
+    "docs/firmware_core_protocol.md": {
+      "sha256": "96d7bd468a59cc7bc0b9bcd8488693b8e7db000e49c78c330e5635fa6cf59ea0",
+      "binary": false
+    },
+    "docs/images/v1_dashboard_accepted.png": {
+      "sha256": "4ad5cb1c4b741fa685ee0513401232bbafab7b9ff14cf485d2b0d39067124d4b",
+      "binary": true
+    },
+    "docs/images/v1_dashboard_rejected.png": {
+      "sha256": "9e175c89de317ab84cf17ef938c57d00ab049bbc085f9e95356f3a6844d2bdd1",
+      "binary": true
+    },
+    "docs/mechanical_policy_freeze.md": {
+      "sha256": "edb89e889b4e21b5bd39dab926eb22f62284bc0dace01f96b6c1beffdd7e65c7",
+      "binary": false
+    },
+    "docs/nonideality_robustness_protocol.md": {
+      "sha256": "40b76a2e8a0c9229bd5c7ce1a23135b2fdd00be3e1f4636250f8a2c6ac448be6",
+      "binary": false
+    },
+    "docs/operating_feasibility_protocol.md": {
+      "sha256": "830d5bb6ba474c2185ecb913a7a99061e622157c1d80878349cdfafc60dc3543",
+      "binary": false
+    },
+    "docs/quality_policy_freeze.md": {
+      "sha256": "8dd1fef001a84dd91f71a57f011320be69f47cf689171ad8d91ad4e7dd6dd29a",
+      "binary": false
+    },
+    "docs/v1_validation.md": {
+      "sha256": "ac46952fb21575978c8dee3cbb3daa8a5722bbcef6dac942329d7581fd9c676d",
+      "binary": false
+    },
+    "experiments/__init__.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "binary": false
+    },
+    "experiments/adaptive_commissioning.py": {
+      "sha256": "85fbf96ced22005f19b261ac4adb931e513009c7de6c4f69720f303b68a6ce7e",
+      "binary": false
+    },
+    "experiments/commissioning_monte_carlo.py": {
+      "sha256": "78877a0a17edd36a62c0cbd52199218e2c8b9fc1536a779bed3104f11a768e06",
+      "binary": false
+    },
+    "experiments/commissioning_quality_validation.py": {
+      "sha256": "ce5f4b2afbb0eeda5de245597fcffff0789a7b7fcc9fc811ca9129febb3ca737",
+      "binary": false
+    },
+    "experiments/commissioning_recovery.py": {
+      "sha256": "5129b0addbdb753041ff51e8e7f00d7ffcbd7dd25146b874c71e967aa4f5ee1a",
+      "binary": false
+    },
+    "experiments/dynamic_operating_feasibility.py": {
+      "sha256": "c3994a879a613acb2beb949f6f88cc4dc787b9d4f5cc0d8701442c9a002fd84f",
+      "binary": false
+    },
+    "experiments/firmware_parity.py": {
+      "sha256": "fc40cb4e7740eebfd71a834709d6ac18a660d5f8a2fb2c136c06ef82e0485f81",
+      "binary": false
+    },
+    "experiments/foc_load_sweep.py": {
+      "sha256": "16b45d839f5ad56f03f043859083c4db6f3fbc7083c1cd842eab7ced021866ee",
+      "binary": false
+    },
+    "experiments/full_commissioning_recovery.py": {
+      "sha256": "77d9bc997b9f683897a2f33af37b8eceb768e9839621f3c9e9028b4041c41cbf",
+      "binary": false
+    },
+    "experiments/load_sweep.py": {
+      "sha256": "e7a53aef785511ea7c49b0b754aaa85e8dbcf735836c3f88b726769e7eb297e4",
+      "binary": false
+    },
+    "experiments/mechanical_population.py": {
+      "sha256": "86ba3263cc880dd43ffebf930038b13805ae77eb3a8caa457afc2d0de528842e",
+      "binary": false
+    },
+    "experiments/nonideality_robustness.py": {
+      "sha256": "b76731ef7440a60bb2325015b0a6edc0609480c8f275ac965d88916964344d40",
+      "binary": false
+    },
+    "experiments/operating_feasibility.py": {
+      "sha256": "f841a22be9c7f9a3f465caf3795af728b4cdbea3cfaf42ab0a3415fc2cd0a017",
+      "binary": false
+    },
+    "experiments/parameter_sensitivity.py": {
+      "sha256": "22478219810b0a9997f65f1358e43df26097d1eed87dbb79ef32ff4c074e87cc",
+      "binary": false
+    },
+    "experiments/rotating_flux_identification.py": {
+      "sha256": "c20191f87ba80fe3fdb16f6b3bd6b174a2cb7fb0ba5630906ca12080e4a57eaa",
+      "binary": false
+    },
+    "experiments/standstill_identification.py": {
+      "sha256": "74a2e441749ab59ae015f0825c09e8ce4abf9225e446587a3dcdccebc6b0f9af",
+      "binary": false
+    },
+    "experiments/v1_demo.py": {
+      "sha256": "1bc39f306f4db0717517ce1ae50b09c71315bc49c3ac327cb3dab3f941a1b9c8",
+      "binary": false
+    },
+    "experiments/voltage_saturation_mismatch.py": {
+      "sha256": "c7613bd1c3209702928669186b5deaba1f0f1735e1ab9807761505c15c2217b2",
+      "binary": false
+    },
+    "firmware/__init__.py": {
+      "sha256": "273958c98cec60563e845c839771270ce87383fa0c5031702ed581223ce75ad1",
+      "binary": false
+    },
+    "firmware/include/pmsm_config.h": {
+      "sha256": "2faf93f9a96d892c8280c9b5e69cd83a66f40919c89d83eff8c2e2c03cfa58d3",
+      "binary": false
+    },
+    "firmware/include/pmsm_control.h": {
+      "sha256": "aefa5ba8ebe2c0e7d7f9512358f5df6913fbf608943d3a74911d1232affa25c9",
+      "binary": false
+    },
+    "firmware/include/pmsm_transforms.h": {
+      "sha256": "16ea267f59aea6c9cdcfff48a71521da1f07b61ac64ffaa463936fe93b492849",
+      "binary": false
+    },
+    "firmware/parity.py": {
+      "sha256": "d9c44ec5ac0a1b78f27487223041049b6f47fc1cb4b852c1417f129403e9f0dc",
+      "binary": false
+    },
+    "firmware/src/pmsm_control.c": {
+      "sha256": "981ff013d62d972d4daa8d5ea4121d4ea5147f05f474f1c4a5acbb60f12db4bd",
+      "binary": false
+    },
+    "firmware/src/pmsm_transforms.c": {
+      "sha256": "42cd235a40f1ab3e08b5dcb08c2a9c26fa63be7997bfe6437bd4fe71f9389b3d",
+      "binary": false
+    },
+    "firmware/tests/test_core.c": {
+      "sha256": "2743cff5c67cf9ccbdbfa150c6c6d28b0a0f07f4355097a07a72b9585ae6b8ff",
+      "binary": false
+    },
+    "results/firmware_parity/parity_summary.json": {
+      "sha256": "d2946025ee493e5e67589857ede72ab3c2c13a4dbc72211a7ab5f0793c93ebe9",
+      "binary": false
+    },
+    "results/v1_demo/nominal/commissioning_attempts.json": {
+      "sha256": "96ea7a6f675e53f46f4f3ad1d97de1fd1306527259140eb35629b8ad4aff6127",
+      "binary": false
+    },
+    "results/v1_demo/nominal/control_trace.csv": {
+      "sha256": "0c5dd162f366f237a37a5375fe497c534c0b70f7fd21859f80eb174221f7305b",
+      "binary": false
+    },
+    "results/v1_demo/nominal/generated_motor_config.h": {
+      "sha256": "05505afbb003bbc511c9f9bcb8a402e446d4513469eec7cdef0c889679db5816",
+      "binary": false
+    },
+    "results/v1_demo/nominal/run_summary.json": {
+      "sha256": "009a4465c839f3c1068b75db7fe988eb3a2afba5e32a92919c8f4f2f368d019b",
+      "binary": false
+    },
+    "results/v1_demo/nominal/summary_plot.png": {
+      "sha256": "1976cac226186e3088f16213d374f23a32000a793e7e2937edd4de49817bf19b",
+      "binary": true
+    },
+    "results/v1_demo/rejected_timing/commissioning_attempts.json": {
+      "sha256": "5da73f0ca46367ed893577db1784883f30820302809ef6963d793c782938ffa4",
+      "binary": false
+    },
+    "results/v1_demo/rejected_timing/run_summary.json": {
+      "sha256": "414128e00bd0ccdceb8caf5e8cea9d1bbf81aeca234d6ee9f473e0402c01ab38",
+      "binary": false
+    },
+    "results/v1_demo/rejected_timing/summary_plot.png": {
+      "sha256": "a7a8b61cb3bda7f451dea44c67aad9a55cbdc23817e5cbfeb1db53b2d5ed43e5",
+      "binary": true
+    },
+    "src/__init__.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "binary": false
+    },
+    "src/adaptive_commissioning.py": {
+      "sha256": "c8c961523206afb4057b2a288dd2fe2ba1152ce80a0a0a4ac79bfc7a6e45b84c",
+      "binary": false
+    },
+    "src/commissioning.py": {
+      "sha256": "a93fb7c29113a9bf869cc97468ee39ae557a6eccc2536b4acf03d8e62da9e404",
+      "binary": false
+    },
+    "src/commissioning_quality.py": {
+      "sha256": "417759e2d3ae5c89c2697ecb7e474f1b1e5c3c00f6ccbd0e527c8f0016f4dbfe",
+      "binary": false
+    },
+    "src/controllers.py": {
+      "sha256": "2d149864ea66e8e7410967d799c63f1b41b13305cca16018f2b673b48da34cce",
+      "binary": false
+    },
+    "src/drive_nonidealities.py": {
+      "sha256": "0856c0cba78fb2d67d5398257601ebb9726d0919d4258e7b838decbccc986edd",
+      "binary": false
+    },
+    "src/dynamic_feasibility.py": {
+      "sha256": "8f036a8e810d290fd9a56268c10e16b5074ea53b3f02ba3a90b08bac7628ab83",
+      "binary": false
+    },
+    "src/engineering_bundle.py": {
+      "sha256": "c139c304c2a6d9525dfedceed8c3a79ca487bd8db1a5be7eaaca9f70383341c1",
+      "binary": false
+    },
+    "src/engineering_reporting.py": {
+      "sha256": "b9251dfea738d6c266fed523ed111f5a8c8a06318d012549d7740d00220aea95",
+      "binary": false
+    },
+    "src/engineering_workflow.py": {
+      "sha256": "b507caae9d2669ef3038214976030f261a65a637c234d23056fd7b42dfb94216",
+      "binary": false
+    },
+    "src/firmware_config.py": {
+      "sha256": "f2d3f0caa8d3962f0b7237b43b2bb45c29ded5de03795ecc13dd48728431d303",
+      "binary": false
+    },
+    "src/foc.py": {
+      "sha256": "57b2b0f5387212254fbee2895392808b7bf155abe7fd9304cc4f65e0359810a9",
+      "binary": false
+    },
+    "src/foc_simulation.py": {
+      "sha256": "d06a776c39334676831ed811383e28ca18bc9b89bd36536e8e0dd47a4c657aea",
+      "binary": false
+    },
+    "src/full_commissioning.py": {
+      "sha256": "8b61e1196f34bfa2517d3d2ed344aad085bb5d03b40afccb3e3aeba22aa4cbdc",
+      "binary": false
+    },
+    "src/identification.py": {
+      "sha256": "3246ce39f277f11e086c2d1c312194ca89e829c9bc487486bf81fa6e8056b29f",
+      "binary": false
+    },
+    "src/identification_quality.py": {
+      "sha256": "be93e552e447a1d3728c1a6db054dd4506b1432068a6ead5e47aa35244970e8a",
+      "binary": false
+    },
+    "src/mechanical_excitation.py": {
+      "sha256": "68038799d471391232168f4c05d7e4433bbb6fc0fb89e2b7cad714c9076b3a0c",
+      "binary": false
+    },
+    "src/mechanical_identification.py": {
+      "sha256": "912f13e52f4bc67f539aabc0ed73cb1f5973e26c3f90f4b85dde46b62529d1e0",
+      "binary": false
+    },
+    "src/monte_carlo.py": {
+      "sha256": "a042360d08f45492142469c59c284dc4d1ac2e954f5c6a521f4f21c098e2ed61",
+      "binary": false
+    },
+    "src/motor.py": {
+      "sha256": "abd25c20d153c4be9dbb64229940504faf76883f45b5213ba49ce77c263f67e5",
+      "binary": false
+    },
+    "src/operating_feasibility.py": {
+      "sha256": "3621a16f164c48e6f9fceb4edf78bdc79125595ac4ec3d609dbbfa041c2dc893",
+      "binary": false
+    },
+    "src/rotating_identification.py": {
+      "sha256": "3872d5af220ae975bca05d5cd14c4c73f63c1fdd05f48861941e110244761273",
+      "binary": false
+    },
+    "src/simulation.py": {
+      "sha256": "72613be1c4be871a793c4fe275f47e6525b50cbb9d2742d57df9bad9a28c9432",
+      "binary": false
+    },
+    "src/speed_control.py": {
+      "sha256": "3db4481023a224bc090671bae716be5f57ccb0b9f7e751af0ddd36b3d2d47368",
+      "binary": false
+    },
+    "src/speed_foc_simulation.py": {
+      "sha256": "58c080de6ffa550535bef2bc46ece8242e910ef9aeefb50f3eaf404945e814d8",
+      "binary": false
+    },
+    "src/transforms.py": {
+      "sha256": "d15adfed7d104669a2fafce8f8d45fd9d41a41ebd1a3aeb2c1449737da7841db",
+      "binary": false
+    },
+    "README.v1.0.md": {
+      "sha256": "52226a4be9d1ec4b7b98823c98a7d852a4775c098e700b494d8923fb28e6a1a4",
+      "binary": false
+    }
+  }
+}

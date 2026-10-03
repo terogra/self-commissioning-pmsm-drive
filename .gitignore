@@ -31,6 +31,12 @@ MANIFEST
 #   before PyInstaller builds the exe, so as to inject date/other infos into it.
 *.manifest
 *.spec
+!packaging/windows.spec
+
+# Local portable distribution outputs; CI uploads these as artifacts.
+package-diagnostics/
+portable-artifacts/
+package-build.log
 
 # Installer logs
 pip-log.txt
@@ -216,3 +222,4 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+/dist-*/

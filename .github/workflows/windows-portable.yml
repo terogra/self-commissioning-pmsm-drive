@@ -1,0 +1,100 @@
+name: Windows portable application
+
+on:
+  push:
+    branches: [main, codex/v1.1.0-productization]
+    tags: ['v1.1.0']
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+  release:
+    types: [published]
+
+permissions:
+  contents: read
+
+jobs:
+  windows-package:
+    name: Windows x64 build, EXE runtime, ZIP and SHA-256
+    runs-on: windows-latest
+    env:
+      PYTHONNOUSERSITE: '1'
+      PYTHONUSERBASE: ${{ github.workspace }}/build/isolated-user-site
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.12'
+          cache: pip
+          cache-dependency-path: packaging/requirements-windows.txt
+      - name: Install pinned Windows build inputs
+        run: python -m pip install -r packaging/requirements-windows.txt
+      - id: version
+        name: Verify source version and tag
+        shell: pwsh
+        run: |
+          $appVersion = python -c "from src.version import __version__; print(__version__)"
+          "version=$appVersion" >> $env:GITHUB_OUTPUT
+          if ($env:GITHUB_REF.StartsWith('refs/tags/') -and $env:GITHUB_REF_NAME -ne "v$appVersion") {
+            throw "Tag does not match source version"
+          }
+      - name: Localization and real headless application tests
+        run: python -m pytest -q tests/test_localization.py tests/test_windows_packaging.py tests/test_engineering_app.py tests/test_engineering_workflow.py
+      - name: Build actual onedir executable
+        shell: pwsh
+        run: |
+          python -m PyInstaller --noconfirm --distpath dist --workpath build packaging/windows.spec 2>&1 | Tee-Object -FilePath package-build.log
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Start packaged EXE and require loopback HTTP 200
+        run: python packaging/smoke_test.py --exe "dist/PMSM Engineering App/PMSM Engineering App.exe" --output package-diagnostics/build --port 18511
+      - name: Create ZIP and SHA-256 after runtime success
+        run: python packaging/archive.py --directory "dist/PMSM Engineering App" --output portable-artifacts --version "${{ steps.version.outputs.version }}" --smoke-result package-diagnostics/build/smoke_result.json
+      - name: Extract ZIP into a path with spaces and test again
+        shell: pwsh
+        run: |
+          $extractedPath = Join-Path $env:RUNNER_TEMP 'PMSM extracted with spaces'
+          Expand-Archive -LiteralPath "portable-artifacts/PMSM-Engineering-App-v${{ steps.version.outputs.version }}-Windows-x64.zip" -DestinationPath $extractedPath
+          $appExe = Join-Path $extractedPath 'PMSM Engineering App/PMSM Engineering App.exe'
+          python packaging/smoke_test.py --exe $appExe --output package-diagnostics/extracted --port 18512
+      - uses: actions/upload-artifact@v6
+        with:
+          name: PMSM-Engineering-App-v${{ steps.version.outputs.version }}-Windows-x64
+          path: |
+            portable-artifacts/*.zip
+            portable-artifacts/SHA256SUMS.txt
+          if-no-files-found: error
+      - name: Preserve startup/build diagnostics even on failure
+        if: always()
+        uses: actions/upload-artifact@v6
+        with:
+          name: windows-runtime-diagnostics
+          path: |
+            package-build.log
+            package-diagnostics/
+          if-no-files-found: warn
+
+  release-assets:
+    name: Attach verified assets to an existing matching release
+    needs: windows-package
+    if: startsWith(github.ref, 'refs/tags/')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v7
+        with:
+          name: PMSM-Engineering-App-v${{ needs.windows-package.outputs.version }}-Windows-x64
+          path: portable-artifacts
+      - name: Upload only to a release already created by the maintainer
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: |
+          if gh release view "$RELEASE_TAG" >/dev/null 2>&1; then
+            gh release upload "$RELEASE_TAG" portable-artifacts/*.zip portable-artifacts/SHA256SUMS.txt --clobber
+          else
+            echo "No existing release; workflow artifacts retained. Publishing the matching release triggers verification and upload."
+          fi
