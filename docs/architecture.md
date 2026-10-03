@@ -1,6 +1,6 @@
 # v1 engineering application architecture
 
-Version **1.0.0**, release candidate. M19 integrates M1-M18 without changing
+Version **1.0.0**. M19 integrates M1-M18 without changing
 their equations, thresholds, adaptive actions or numerical parity budgets.
 
 ## Entry points and ownership
@@ -14,7 +14,7 @@ their equations, thresholds, adaptive actions or numerical parity budgets.
 | Figures | `src/engineering_reporting.py` | Plot measured fits and actual simulated control signals |
 | Bundle | `src/engineering_bundle.py` | JSON, sampled CSV, PNG, accepted M18 header and ZIP |
 | Demonstration | `experiments/v1_demo.py` | Two predeclared cases through the same backend |
-| Version | `src/version.py` | Single project version and release-candidate status |
+| Version | `src/version.py` | Single project version and release status |
 
 ```mermaid
 flowchart TD
