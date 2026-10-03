@@ -18,6 +18,24 @@ def parameter_rows(result):
         for name, unit in zip(PARAMETER_NAMES, PARAMETER_UNITS)]
 
 
+def overview_rows(result):
+    """Display existing run state; no feasibility, quality or control calculation."""
+    identified = ", ".join(row["Parameter"] for row in parameter_rows(result)
+                           if row["Parameter"] != "pole_pairs" and row["Identified / known"] is not None)
+    dynamic = result.dynamic_feasibility
+    return (
+        ("Commissioning", result.status),
+        ("M17 simulation preset", result.config.scenario),
+        ("Speed target [rpm]", f"{result.config.speed_target_rpm:g}"),
+        ("DC bus [V]", f"{result.config.dc_bus_voltage_v:g}"),
+        ("Identified parameters" if result.quality.accepted else "Estimates / prior retained", identified or "unavailable"),
+        ("Steady-state feasibility", result.steady_feasibility.classification if result.steady_feasibility is not None else "unavailable"),
+        ("Dynamic feasibility", "unavailable" if dynamic is None else
+         "Predicted success" if dynamic.controller.predicted_closed_loop_success else "Predicted failure"),
+        ("Firmware export", "Available" if result.firmware_available else "Blocked"),
+    )
+
+
 def attempt_rows(result):
     return [{"Stage": a.stage.value, "Attempt": a.number, "Quality": "ACCEPT" if a.quality.accepted else "REJECT",
         "Estimator succeeded": a.estimator_succeeded, "Reasons": "; ".join(a.quality.rejection_reasons),

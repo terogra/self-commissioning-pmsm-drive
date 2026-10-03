@@ -10,8 +10,8 @@ import zipfile
 import numpy as np
 import pytest
 
-from app.__main__ import launch_command
-from app.presentation import attempt_rows, controller_rows, load_committed_parity_evidence, parameter_rows
+from app.legacy import launch_command
+from app.presentation import attempt_rows, controller_rows, load_committed_parity_evidence, overview_rows, parameter_rows
 from experiments.v1_demo import DEMO_CONFIGURATIONS, generate_demo
 from src.engineering_bundle import export_run_bundle, run_bundle_zip, run_summary
 from src.engineering_workflow import EngineeringWorkflowConfig, ROOT, run_engineering_workflow
@@ -23,13 +23,19 @@ def demos():
     return tuple(run_engineering_workflow(c) for _, c in DEMO_CONFIGURATIONS)
 
 
-def test_launch_is_one_command_and_bound_to_localhost():
+def test_legacy_development_launch_is_explicit_and_bound_to_localhost():
     command = launch_command(["--server.headless=true"])
     assert command[1:4] == ["-m", "streamlit", "run"]
     assert command[4] == str(ROOT/"app/dashboard.py")
     assert "--server.address=127.0.0.1" in command
     assert command[-1] == "--server.headless=true"
-    assert __version__ == "1.0.0"
+    assert __version__ == "1.1.0"
+
+
+def test_normal_app_entry_is_the_native_desktop():
+    from app.__main__ import main
+    from desktop.main import main as desktop_main
+    assert main is desktop_main
 
 
 def test_presentation_is_read_only_and_has_no_engineering_equations(demos):
@@ -48,6 +54,26 @@ def test_presentation_is_read_only_and_has_no_engineering_equations(demos):
             assert node.module not in {"src.identification", "src.mechanical_identification", "src.foc", "src.speed_control", "src.controllers"}
         if isinstance(node, ast.Call) and isinstance(node.func, ast.Name):
             assert node.func.id not in {"run_engineering_workflow", "estimate_flux_linkage", "assess_commissioning"}
+
+
+def test_overview_reports_existing_results_without_promoting_rejected_estimates(demos):
+    for result in demos:
+        before = json.dumps(run_summary(result), sort_keys=True)
+        rows = dict(overview_rows(result))
+        assert rows["Commissioning"] == result.status
+        assert rows["M17 simulation preset"] == result.config.scenario
+        assert float(rows["Speed target [rpm]"]) == result.config.speed_target_rpm
+        assert float(rows["DC bus [V]"]) == result.config.dc_bus_voltage_v
+        assert rows["Firmware export"] == ("Available" if result.firmware_available else "Blocked")
+        if result.quality.accepted:
+            assert rows["Identified parameters"] == "Rs, Ld, Lq, psi_f, J, B"
+            assert rows["Steady-state feasibility"] == result.steady_feasibility.classification
+            assert rows["Dynamic feasibility"] == ("Predicted success" if
+                result.dynamic_feasibility.controller.predicted_closed_loop_success else "Predicted failure")
+        else:
+            assert "Estimates / prior retained" in rows and "Identified parameters" not in rows
+            assert rows["Steady-state feasibility"] == rows["Dynamic feasibility"] == "unavailable"
+        assert json.dumps(run_summary(result), sort_keys=True) == before
 
 
 def test_committed_parity_is_labeled_and_not_current_run():
@@ -116,7 +142,15 @@ def test_one_command_demo_reproduces_committed_results_and_headers(tmp_path):
         _compare_numbers(json.loads((generated/"commissioning_attempts.json").read_text()),
                          json.loads((committed/"commissioning_attempts.json").read_text()))
         if (committed/"generated_motor_config.h").exists():
-            assert (generated/"generated_motor_config.h").read_bytes() == (committed/"generated_motor_config.h").read_bytes()
+            # Historical numeric constants remain exact; only the explicit
+            # provenance version belongs to the new application run.
+            current_header = (generated/"generated_motor_config.h").read_text(encoding="utf-8")
+            historic_header = (committed/"generated_motor_config.h").read_text(encoding="utf-8")
+            historic_version = json.loads((committed/"run_summary.json").read_text())["metadata"]["version"]
+            assert historic_version == "1.0.0"
+            expected_header = historic_header.replace(f"project {historic_version};", f"project {__version__};", 1)
+            assert current_header == expected_header
+            assert f"project {__version__};" in current_header
             # Numeric trace equality across supported host platforms, not PNG-byte identity.
             def read_trace(path):
                 with path.open(newline="", encoding="utf-8") as file:
@@ -126,6 +160,7 @@ def test_one_command_demo_reproduces_committed_results_and_headers(tmp_path):
 
 
 def test_dashboard_headless_smoke_and_real_accept_reject_cycle():
+    pytest.importorskip("streamlit", reason="Optional legacy web UI is not a desktop runtime dependency")
     from streamlit.testing.v1 import AppTest
     from app import dashboard  # import must not launch a server or run commissioning
     assert callable(dashboard.main)
