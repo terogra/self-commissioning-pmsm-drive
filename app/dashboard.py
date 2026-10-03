@@ -54,11 +54,21 @@ def _localized_selectbox(label_key, options, state_key):
     current = st.session_state.get(persisted_key, options[0])
     if current not in options:
         current = options[0]
+
+    # Streamlit/AppTest can retain widgets from the previous language for one
+    # rerun. Capture the language in this widget's formatter so an old English
+    # widget does not start formatting its values as Turkish (or vice versa).
+    def fixed_choice(value, language=language):
+        translated = value_text(language, value)
+        if translated != str(value):
+            return translated
+        return str(value).replace("_", " ")
+
     selected = st.selectbox(
-        _t(label_key),
+        text(language, label_key),
         options,
         index=options.index(current),
-        format_func=_choice,
+        format_func=fixed_choice,
         key=f"{state_key}_{language}",
     )
     st.session_state[persisted_key] = selected
