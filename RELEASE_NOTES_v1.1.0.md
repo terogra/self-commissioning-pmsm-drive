@@ -1,6 +1,4 @@
-# v1.1.0 — sürüm adayı / release candidate
-
-Henüz etiketlenmedi veya yayımlanmadı. Not tagged or released.
+# v1.1.0
 
 ## Scope
 
@@ -15,14 +13,13 @@ development-only interface. This is productization, **not M20**.
 
 ## Distribution
 
-Expected assets after independent review and publication:
+Release assets:
 
 - `PMSM-Commissioning-Workbench-v1.1.0-Windows-x64.zip`
 - `SHA256SUMS.txt`
 - GitHub's source ZIP/tar.gz
 
-During review use verified Actions artifacts or run from source. The portable
-EXE opens a native Qt window with no browser, HTTP server or persistent console.
+The portable EXE opens a native Qt window with no browser, HTTP server or persistent console.
 CI initializes the actual built and extracted Qt executable in offscreen mode.
 Qt plugins, Matplotlib resources and committed M18 parity data are bundled.
 The EXE is unsigned; SHA-256 and Actions provenance are not code signing.
@@ -41,5 +38,3 @@ See [productization evidence](docs/v1_1_productization.md) and PR CI for exact
 Python/compiler/localization/EXE smoke results. Compilation alone does not
 satisfy acceptance. No MCU deployment, target timing, hardware validation,
 MISRA or physical safety claim. Existing bias/identifiability/model limits remain.
-
-No merge, v1.1 tag or release publication is performed by this change.
