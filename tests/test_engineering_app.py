@@ -121,7 +121,7 @@ def test_one_command_demo_reproduces_committed_results_and_headers(tmp_path):
             # v1.0 demo artifact and ignore only the generated provenance version token.
             generated_header = (generated/"generated_motor_config.h").read_text(encoding="utf-8")
             committed_header = (committed/"generated_motor_config.h").read_text(encoding="utf-8")
-            normalize_version = lambda value: re.sub(r"project \\d+\\.\\d+\\.\\d+;", "project <version>;", value)
+            normalize_version = lambda value: re.sub(r"project \d+\.\d+\.\d+;", "project <version>;", value)
             assert normalize_version(generated_header) == normalize_version(committed_header)
             # Numeric trace equality across supported host platforms, not PNG-byte identity.
             def read_trace(path):
@@ -159,7 +159,7 @@ def test_dashboard_headless_smoke_and_real_accept_reject_cycle():
     app.button(key="generate_header").click().run()
     assert not app.exception
     assert "SIMULATED accepted full commissioning" in app.session_state["header"]
-    app.selectbox(key="scenario").select("timing_one_sample")
+    app.selectbox(key="scenario_tr").select("timing_one_sample")
     app.button(key="run_commissioning").click().run()
     assert not app.exception
     assert not app.session_state["result"].quality.accepted
