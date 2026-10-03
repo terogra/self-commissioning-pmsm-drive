@@ -1,4 +1,4 @@
-/* Generated binary32 constants. SIMULATED accepted full commissioning; project 1.1.0; seed 1901; scenario ideal.
+/* Generated binary32 constants. SIMULATED accepted full commissioning; project 1.0.0; seed 1901; scenario ideal.
  * Demonstration/configuration only; no hardware validation or safety guarantee. */
 #ifndef COMMISSIONED_PMSM_CONFIG_H
 #define COMMISSIONED_PMSM_CONFIG_H
