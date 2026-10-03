@@ -350,4 +350,4 @@ def export_firmware_configuration(result, path):
         raise ValueError("workflow.firmware_configuration_unavailable")
     config = build_firmware_config(result.commissioning, dc_bus_voltage_v=result.config.dc_bus_voltage_v,
                                   iq_limit_a=result.config.current_limit_a)
-    return export_c_header(config, path, provenance=f"SIMULATED accepted full commissioning; project {__version__} RC; seed {result.config.seed}; scenario {result.config.scenario}.")
+    return export_c_header(config, path, provenance=f"SIMULATED accepted full commissioning; project {__version__}; seed {result.config.seed}; scenario {result.config.scenario}.")

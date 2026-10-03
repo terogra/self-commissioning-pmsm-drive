@@ -1,6 +1,6 @@
 # Self-Commissioning PMSM Drive
 
-## v1.0.0 release candidate
+## v1.0.0
 
 A local engineering application for **simulation-based PMSM self-commissioning**.
 It acquires simulated sampled measurements, identifies `Rs/Ld/Lq/psi_f/J/B`,
@@ -21,8 +21,8 @@ python -m app
 The Streamlit application binds to `127.0.0.1`. Configure a case and select
 **Run Commissioning**. Numerical work runs only on that action; changing a
 display tab does not repeat commissioning or compile C. The version is defined
-once in `src/version.py`. This is release preparation: no v1 tag or GitHub
-release has been created.
+once in `src/version.py`. Source code is distributed under the MIT License; see
+[LICENSE](LICENSE).
 
 ### What the application does
 
@@ -137,7 +137,8 @@ identification or quality algorithm is introduced by M19.
 
 Further reading: [architecture](docs/architecture.md),
 [v1 validation](docs/v1_validation.md), [engineering journal](docs/engineering_log.md),
-[changelog](CHANGELOG.md), [release candidate notes](RELEASE_NOTES_v1.0.0.md).
+[changelog](CHANGELOG.md), [release notes](RELEASE_NOTES_v1.0.0.md), and
+[MIT License](LICENSE).
 
 ## Technical model and milestone evidence
 

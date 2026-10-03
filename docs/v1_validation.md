@@ -1,4 +1,4 @@
-# v1 release-candidate validation
+# v1.0.0 validation
 
 This document separates newly computed M19 application results from retained
 M1-M18 engineering evidence. It is not a hardware-validation report.
@@ -183,8 +183,7 @@ required changing the engineering backend.
   MISRA claim. Host C parity includes genuine float32 boundary differences.
 - The local dashboard runs synchronously; large cases can take time. There is
   no background real-time service or packaged standalone installer.
-- The repository has no declared software license; M19 does not invent one.
-  A license decision and PR/CI review remain release decisions.
+- Source code is distributed under the MIT License; see `LICENSE`.
 
-Version is prepared as 1.0.0 RC. **Do not tag, publish a GitHub Release or merge
-as part of this milestone.** Review the open PR and CI before release decisions.
+Version 1.0.0 is the validated software baseline described above. Release tags
+and GitHub release metadata should point to the reviewed release commit.

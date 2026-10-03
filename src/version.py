@@ -1,4 +1,4 @@
-"""Single application version; release/tag creation is a separate reviewed step."""
+"""Single application version and release status."""
 
 __version__ = "1.0.0"
-RELEASE_STATUS = "release candidate"
+RELEASE_STATUS = "released"

@@ -1,6 +1,6 @@
 # Changelog
 
-## 1.0.0 — release candidate, not released
+## 1.0.0 — 2026-10-03
 
 ### Added in Milestone 19
 
@@ -12,16 +12,17 @@
   explicit truth/evaluation boundary and export blocking on rejection.
 - Current-run JSON/CSV/PNG/header bundles and deterministic accepted/rejected
   demonstration: `python -m experiments.v1_demo`.
-- Version source, architecture/validation/release-candidate documentation and
+- Version source, architecture/validation/release documentation and
   headless application/demo CI alongside existing Python and C checks.
 - 33 application/backend tests; complete local suite now has 265 passing tests.
+- MIT License for source-code use, modification and redistribution.
 
 ### Preserved
 
 M1-M18 algorithms, estimator/gate thresholds, adaptive logic, M14/M16 semantics,
 M17 scenario/evaluation evidence and M18 C/parity equations/budgets. The earlier
 M16 observation that dq transients can beat the quasi-steady estimate remains
-explicit. No release tag, GitHub Release, MCU deployment or new license.
+explicit. No MCU deployment, hardware-validation claim, or change to historical engineering evidence.
 
 ### Corrected during integration
 
