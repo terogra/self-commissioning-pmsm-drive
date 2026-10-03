@@ -1011,3 +1011,150 @@ still apply; the exporter does not re-certify accepted estimates.
 Use these APIs, generated constants and replay vectors for a separately scoped
 future hardware integration, including target timing and peripheral validation.
 M18 ends with this portable-kernel PR; no M19 implementation is started.
+
+## Milestone 19 — End-to-end engineering application and v1 release candidate
+
+### Problem / Motivation
+
+M1-M18 supplied the complete simulation/commissioning/analysis/C backend, but
+a reviewer had to assemble many experiment commands to follow one case.
+Accepted/rejected estimates, retry history, retuned controllers, operating
+predictions, nonidealities and firmware configuration lacked one inspectable
+application path. Productizing that path must not introduce a second estimator,
+change quality gates, hide failures or mistake historical evidence for a new run.
+
+### Engineering Decision
+
+Verified/fetched current main `fe0173120fbc64a5accb05ca474a86892ec569e1` and
+created `codex/end-to-end-engineering-app-v1`. Implement the headless orchestration
+first, then a thin local Streamlit dashboard. Keep existing algorithms, gates,
+adaptive actions, M14/M16 semantics, M17 registry/results and M18 C budgets
+unchanged. Use typed frozen result envelopes, an explicit simulation-truth
+boundary, original controller constructors and accepted-only export. Prepare
+version 1.0.0 as a release candidate, without a tag, GitHub Release or merge.
+
+### Implementation
+
+`src.engineering_workflow` resolves configuration/seeds/bus and calls existing
+sampled standstill, driven-rotor and free-rotor acquisition. One-shot or original
+adaptive commissioning returns actual estimates/gates/attempts. Full acceptance
+feeds original retuning, M14 steady and M16 dynamic assessment, original speed
+FOC simulation with exact M17 errors, and M18 configuration construction.
+Rejection keeps all prior controller parameters, partial fits and failures,
+with no fabricated downstream commissioned operation.
+
+`app` launches with `python -m app`; read-only presentation shows estimates,
+units, diagnostics, fit plots, attempt actions/next settings, active parameters
+and gains. Truth/errors/true-frame control validation are separately labeled.
+Current-run downloads use `src.engineering_bundle`; engineering figures use
+`src.engineering_reporting`. Firmware export rechecks acceptance. M18 evidence
+is displayed as committed, hashed validation evidence, never current-run replay.
+
+`python -m experiments.v1_demo` computes two predeclared cases into a new
+`results/v1_demo` directory: nominal one-shot and adaptive one-sample timing
+error. Historical directories are protected. New headless tests and CI exercise
+real backend/AppTest/demo paths. README now leads with v1 usage; architecture,
+validation, changelog and release-candidate notes document the boundaries.
+
+### Problems / Unexpected Results
+
+The initial result configuration reported obsolete default stage seeds/bus
+although providers used the selected values. This was a provenance integration
+error, not an estimator error. Native browser number validation also blocked
+submission of small SI defaults and the hold-time default because their generic
+input steps did not fit the HTML grid. Headless AppTest alone did not expose
+that browser behavior. An accepted-but-unavailable export originally used an
+exception name implying quality rejection; those states need distinct reporting.
+Final review also found a new figure label claiming retained priors when accepted
+control validation was unavailable; that label needed the same separation.
+
+The nominal M16 controller prediction returns success while also reporting
+`dynamic.reverse_speed_excursion`: minimum **-0.017217995998478113 rpm**.
+This is existing backend semantics, not a new integration defect. The actual
+load-step recovery metric is **0 s** because the entire deviation is within the
+existing +/-10 rpm band; it is not evidence of instantaneous dynamics.
+The exact timing-delay preset terminates at standstill despite a rank-3 numerical
+fit. Neither observation was tuned away to improve the demonstration.
+
+### Resolution
+
+Store resolved provider inputs and assert them against measurement records.
+Stop feature expansion to correct numeric widget steps, verify real browser
+validity and add a grid regression. Distinguish export/plot unavailability from
+gate rejection and cover the accepted-but-unavailable plot in a regression.
+Inspect the accepted/rejected application in a real local browser;
+save screenshots, including blocked export. Preserve original reason strings,
+success criteria and all partial/rejected records. No M1-M18 algorithm correction
+was needed.
+
+### Validation / Results
+
+Baseline **232 passed in 117.87 s**; final **265 passed in 168.01 s**, including
+33 new tests and no skips/xfails. Direct equivalence tests cover M14, M16,
+constructor gains, actual control trace and M18 header. Additional tests preserve
+adaptive retries, rejected priors, biased acceptances, operation-only sag,
+accepted-but-infeasible operation and failed providers. The demo is reproduced
+by one command and its computed JSON/CSV/header compared against the new artifacts.
+
+Local strict GCC **16.2.0** recheck: **43 C assertions**, **31,484 samples**,
+unchanged maximum absolute error **0.0001535715773 V**, relative maximum
+**0.00585030427** in q integral. Flags **30,592/30,608**, away from boundary
+**30,512/30,512**; all 16 boundary discrepancies retained. Clang is checked by
+the existing CI job; it was not available locally. No M18 artifact was overwritten.
+
+Nominal seed 1901, 24 V, 1000 rpm, 5 A limit, load step 0.05 N m at 0.3 s:
+three accepted stages, M14 `feasible`, firmware available. Estimates/errors:
+
+| Parameter | Estimate | Absolute error % |
+| --- | --- | --- |
+| Rs (ohm) | 0.4999714668704501 | 0.005706625910 |
+| Ld (H) | 0.0011998665089995645 | 0.011124250036 |
+| Lq (H) | 0.0008998205646831202 | 0.019937257431 |
+| psi_f (Wb) | 0.02199917603768355 | 0.003745283257 |
+| J (kg m²) | 0.0005491416419952162 | 0.156065091779 |
+| B (N m s/rad) | 0.00019975742406827315 | 0.121287965863 |
+
+Post-load speed RMSE **1.6072373103997428 rpm**, true-frame iq RMSE
+**0.0030203618653856356 A**, maximum speed deviation **5.210293678960511 rpm**,
+recovery **0 s**, current peak **4.999996729356155 A**, command/terminal voltage
+utilization **0.7944419176947385**, both saturation fractions **0**.
+M16 quasi-steady transition **0.09495434060449318 s**; controller entry
+**0.10172 s**, hold completion **0.20172000000000004 s**, predicted success true,
+with the reverse-excursion diagnostic retained.
+
+Adaptive timing case: one rejected standstill attempt, reason
+`standstill.excessive_residual`, terminal reason
+`standstill.model_residual_terminal`, no retry. Partial Rs/Ld/Lq remain visible;
+residual **0.0001018341996930411 V s**, scaled condition **1.0026856200502245**,
+normalized excess residual **1.6977787767548365 > 1.0**. No later commissioned
+stages or header are fabricated. See [v1 validation](v1_validation.md) and the
+[new demo bundles](../results/v1_demo) for complete records.
+
+### What We Learned
+
+A coherent application needs explicit state and information boundaries as much
+as numerical algorithms. Quality acceptance, operating feasibility, model
+prediction and hidden-plant evaluation must remain separately interpretable.
+Browser-native validation can reveal a real input failure that a headless UI
+test misses. Provenance must describe actual resolved inputs. Rejected cases
+and small adverse diagnostics are part of the engineering demonstration.
+
+### Remaining Limitations
+
+Simulation only; no MCU deployment, hardware validation, target timing, MISRA
+claim or physical safety guarantee. Known zero external mechanical load,
+attached-inertia changes, friction mismatch and sensor bias remain existing
+limits. Gates can accept biased data; good tracking does not imply accurate
+commissioning. M16 quasi-steady timing is not a universal lower bound; its earlier
+negative held-out finding remains intact. M16 constant-load prediction and
+actual load-step/M17 validation have distinct assumptions. The dashboard is
+synchronous, not a real-time drive service. Compact bundles retain all attempts
+but do not export every acquisition waveform. The repository has no declared
+software license; no license was invented for v1 preparation.
+
+### Next Decision
+
+Review the M19 PR and Python/GCC/Clang/headless-app CI, decide licensing and
+release readiness, then separately authorize merge/tag/release if appropriate.
+This milestone ends with an open PR and release-candidate files; it starts no
+new engineering algorithm, hardware integration or subsequent milestone.

@@ -1,0 +1,122 @@
+{
+  "attempts": [
+    {
+      "action": "model_residual_terminal",
+      "configuration": {
+        "current_noise_std_a": 0.01,
+        "d_hold_samples": 23,
+        "d_voltage_v": 1.2,
+        "dc_bus_voltage_v": 24.0,
+        "duration_s": 0.4,
+        "integration_dt_s": 2e-05,
+        "q_hold_samples": 31,
+        "q_voltage_v": 1.4,
+        "sample_dt_s": 0.0001,
+        "seed": 1901,
+        "speed_noise_std_rad_s": 0.02,
+        "voltage_noise_std_v": 0.01
+      },
+      "decision": "terminal",
+      "diagnostics": {
+        "component_snr": null,
+        "effective_rank": 3,
+        "noise_information_fraction": 0.0003889782992004982,
+        "relative_sensitivity": [
+          0.000276467694818185,
+          0.000751255376556865,
+          0.0005212724610489685
+        ],
+        "residual_rmse": 0.0001018341996930411,
+        "scaled_condition_number": 1.0026856200502245,
+        "split_relative_difference": 0.017690519195231597
+      },
+      "estimated_parameters": {
+        "Ld": 0.0012425407380017705,
+        "Lq": 0.0009394228188310561,
+        "Rs": 0.4728342026011756
+      },
+      "estimator_succeeded": true,
+      "next_configuration": null,
+      "number": 1,
+      "quality": {
+        "accepted": false,
+        "checks": [
+          {
+            "limit": 0,
+            "name": "standstill.rank_deficiency",
+            "passed": true,
+            "value": 0
+          },
+          {
+            "limit": 0,
+            "name": "standstill.insufficient_windows",
+            "passed": true,
+            "value": -390
+          },
+          {
+            "limit": 100.0,
+            "name": "standstill.conditioning",
+            "passed": true,
+            "value": 1.0026856200502245
+          },
+          {
+            "limit": 0.05,
+            "name": "standstill.noise_information",
+            "passed": true,
+            "value": 0.0003889782992004982
+          },
+          {
+            "limit": 0.03333333333333333,
+            "name": "standstill.relative_uncertainty",
+            "passed": true,
+            "value": 0.000751255376556865
+          },
+          {
+            "limit": 0.1,
+            "name": "standstill.inconsistent_halves",
+            "passed": true,
+            "value": 0.017690519195231597
+          },
+          {
+            "limit": 1.0,
+            "name": "standstill.excessive_residual",
+            "passed": false,
+            "value": 1.6977787767548365
+          }
+        ],
+        "estimator_failure": null,
+        "rejection_reasons": [
+          "standstill.excessive_residual"
+        ]
+      },
+      "stage": "standstill"
+    }
+  ],
+  "measurement_records": [
+    {
+      "configuration": {
+        "current_noise_std_a": 0.01,
+        "d_hold_samples": 23,
+        "d_voltage_v": 1.2,
+        "dc_bus_voltage_v": 24.0,
+        "duration_s": 0.4,
+        "integration_dt_s": 2e-05,
+        "q_hold_samples": 31,
+        "q_voltage_v": 1.4,
+        "sample_dt_s": 0.0001,
+        "seed": 1901,
+        "speed_noise_std_rad_s": 0.02,
+        "voltage_noise_std_v": 0.01
+      },
+      "measurement_failure": null,
+      "noise_metadata": {
+        "current_std_a": 0.01,
+        "speed_std_rad_s": 0.02,
+        "voltage_std_v": 0.01
+      },
+      "number": 1,
+      "sample_count": 4001,
+      "stage": "standstill"
+    }
+  ]
+}
