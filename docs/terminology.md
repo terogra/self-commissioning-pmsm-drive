@@ -11,6 +11,12 @@ Use **PMSM Sürücü Devreye Alma Aracı** in Turkish and
 | Parameter estimation / Parameter identification | Parametre kestirimi | Numerical estimation of motor parameters; use one term throughout the UI |
 | Drive setup | Sürücü ayarları | Configuration, not a new controller design |
 | Operating point | Çalışma noktası | Speed and load request |
+| Operating request | Çalışma noktası | Sidebar input group; internal message identifier retained |
+| Dynamic deadline [s] | Dinamik süre sınırı [s] | Existing M16 request deadline, in seconds |
+| Available | Kullanılabilir | Firmware export availability |
+| Blocked | Engellendi | Firmware export blocked by rejection |
+| M17 simulation preset | M17 senaryosu | Existing M17 scenario selection; scenario codes unchanged |
+| Simulation errors | İdeal olmayan etkiler | Sidebar group for existing M17 error models |
 | Steady-state | Kararlı durum | M14 equilibrium model |
 | Steady-state feasibility | Kararlı durum uygunluğu | Current/voltage requirements at equilibrium |
 | Dynamic feasibility | Dinamik uygunluk | M16 deadline and hold requirement |

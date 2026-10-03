@@ -18,7 +18,8 @@ def launch_settings(environment):
         raise ValueError("PMSM_PORT must be between 1 and 65535")
     return {"server.address": "127.0.0.1", "server.port": port,
             "server.headless": headless == "1", "browser.gatherUsageStats": False,
-            "global.developmentMode": False, "server.fileWatcherType": "none"}
+            "global.developmentMode": False, "server.fileWatcherType": "none",
+            "client.toolbarMode": "minimal"}
 
 
 def configure_streamlit(settings):

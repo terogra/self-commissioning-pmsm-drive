@@ -213,6 +213,7 @@ def _refresh_display_labels():
 
 
 def main():
+    st.set_option("client.toolbarMode", "minimal")
     set_language(st.session_state.get("language", DEFAULT_LANGUAGE))
     st.set_page_config(page_title=t("PMSM engineering application"), layout="wide")
     st.sidebar.selectbox("Dil / Language", list(LANGUAGES), format_func=LANGUAGES.__getitem__, key="language", on_change=_refresh_display_labels)

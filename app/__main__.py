@@ -8,7 +8,8 @@ import sys
 def launch_command(arguments=()):
     script = Path(__file__).resolve().with_name("dashboard.py")
     return [sys.executable, "-m", "streamlit", "run", str(script),
-        "--server.address=127.0.0.1", "--browser.gatherUsageStats=false", *arguments]
+        "--server.address=127.0.0.1", "--browser.gatherUsageStats=false",
+        "--client.toolbarMode=minimal", *arguments]
 
 
 def main():

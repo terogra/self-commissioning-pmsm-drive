@@ -21,6 +21,10 @@ def default_language():
 
 
 def test_default_turkish_and_english_catalogue():
+    from app.__main__ import launch_command
+    from app.portable import launch_settings
+    assert "--client.toolbarMode=minimal" in launch_command()
+    assert launch_settings({})["client.toolbarMode"] == "minimal"
     assert DEFAULT_LANGUAGE == "tr" and set(LANGUAGES) == {"tr", "en"}
     assert t("Run Commissioning") == "Devreye Almayı Başlat"
     assert t("Commissioning") == "Devreye Alma"
@@ -52,6 +56,17 @@ def test_canonical_terms_match_glossary():
         set_language("en")
         assert t(english) == english
         assert english.lower() in glossary.lower()
+    set_language("tr")
+    for message, label in {
+        "Operating request": "Çalışma noktası",
+        "Dynamic deadline [s]": "Dinamik süre sınırı [s]",
+        "Available": "Kullanılabilir",
+        "Blocked": "Engellendi",
+        "M17 simulation preset": "M17 senaryosu",
+        "Simulation errors": "İdeal olmayan etkiler",
+    }.items():
+        assert t(message) == label
+        assert message in glossary and label in glossary
     readme_tr = (ROOT/"README.md").read_text(encoding="utf-8")
     readme_en = (ROOT/"README.en.md").read_text(encoding="utf-8")
     assert "PMSM Sürücü Devreye Alma ve Parametre Kestirimi" in readme_tr
@@ -110,6 +125,8 @@ def test_plot_translation_does_not_change_numeric_artists_or_result():
 def test_language_switch_preserves_widgets_results_and_export():
     from streamlit.testing.v1 import AppTest
     app = AppTest.from_file(str(ROOT/"app/dashboard.py"), default_timeout=60).run()
+    from streamlit import get_option
+    assert get_option("client.toolbarMode") == "minimal"
     assert not app.exception and app.selectbox(key="language").value == "tr"
     assert app.button(key="run_commissioning").label == "Devreye Almayı Başlat"
     app.number_input(key="seed").set_value(1909)
