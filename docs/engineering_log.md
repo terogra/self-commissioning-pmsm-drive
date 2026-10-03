@@ -1158,3 +1158,18 @@ Review the M19 PR and Python/GCC/Clang/headless-app CI, decide licensing and
 release readiness, then separately authorize merge/tag/release if appropriate.
 This milestone ends with an open PR and release-candidate files; it starts no
 new engineering algorithm, hardware integration or subsequent milestone.
+
+
+## v1.0.0 release finalization — 2026-10-03
+
+After M19 review and passing Python 3.11/3.12, GCC, Clang, and headless
+application/demo CI, the repository was prepared for the v1.0.0 release.
+The project release status changed from release candidate to released and an
+MIT License was added. Firmware-header provenance was made version-stable by
+recording project version, seed, and scenario without embedding the transient
+RC label.
+
+This finalization changes no PMSM equation, estimator, quality threshold,
+adaptive action, M14/M16 semantics, M17 scenario/evidence, or M18 numerical
+parity budget. Hardware deployment, MCU timing, and hardware validation remain
+future work.
