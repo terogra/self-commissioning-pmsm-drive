@@ -10,8 +10,8 @@ yeniden ayarlar; çalışma noktasını ve kapalı çevrim yanıtını inceler. 
 başlangıç parametreleri korunur, firmware dışa aktarımı kapatılır.
 
 PySide6/Qt ile bağımsız masaüstü uygulamasıdır; tarayıcı veya yerel web sunucusu
-gerekmez. v1.0 altyapısı kararlı; v1.1.0 Türkçe/English arayüz ve Windows dağıtımı için
-**sürüm adayıdır, henüz yayımlanmamıştır**.
+gerekmez. v1.0 mühendislik altyapısı korunmuştur; v1.1.0 Türkçe/English arayüz
+ve Windows x64 dağıtımıyla yayımlanmıştır.
 
 ![PMSM Sürücü Devreye Alma Aracı — gerçek simülasyon sonucu](docs/images/v1_1_dashboard_tr.png)
 
@@ -22,11 +22,10 @@ gerekmez. v1.0 altyapısı kararlı; v1.1.0 Türkçe/English arayüz ve Windows 
 Windows x64 için hedef dosya:
 **`PMSM-Commissioning-Workbench-v1.1.0-Windows-x64.zip`**.
 
-1. [Windows derleme iş akışından](https://github.com/terogra/self-commissioning-pmsm-drive/actions/workflows/windows-portable.yml)
-   başarılı derlemenin ZIP ve `SHA256SUMS.txt` dosyalarını indirin. İnceleme
-   sırasında bunlar workflow artifact'ıdır; GitHub hesabı gerekebilir.
-   v1.1 yayımlandığında [Releases](https://github.com/terogra/self-commissioning-pmsm-drive/releases)
-   sayfasında bulunacaktır.
+1. [v1.1.0 sürüm sayfasından](https://github.com/terogra/self-commissioning-pmsm-drive/releases/tag/v1.1.0)
+   Windows ZIP ve `SHA256SUMS.txt` dosyalarını indirin. Doğrulanmış CI çıktıları
+   ayrıca [Windows derleme iş akışında](https://github.com/terogra/self-commissioning-pmsm-drive/actions/workflows/windows-portable.yml)
+   saklanır.
 2. ZIP'in **tamamını** çıkartın; `_internal` klasörünü koruyun.
 3. **`PMSM-Commissioning-Workbench.exe`** dosyasına çift tıklayın. Uygulama
    bağımsız bir masaüstü penceresinde açılır; tarayıcı veya yerel web sunucusu
@@ -146,4 +145,4 @@ fiziksel güvenlik garantisi iddia edilmez. Windows paketi yerel ve imzasızdır
 ## Lisans ve sürüm
 
 Kaynak kod [MIT lisanslıdır](LICENSE); bağımlılıkların kendi lisansları geçerlidir.
-[Değişiklik günlüğü](CHANGELOG.md) · [v1.1 sürüm adayı notları](RELEASE_NOTES_v1.1.0.md).
+[Değişiklik günlüğü](CHANGELOG.md) · [v1.1 sürüm notları](RELEASE_NOTES_v1.1.0.md).
