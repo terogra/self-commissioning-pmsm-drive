@@ -10,8 +10,7 @@ speed PI controllers, then checks the operating point and closed-loop response.
 Rejection retains the prior controller parameters and blocks firmware export.
 
 This is a native PySide6/Qt desktop application; no browser or local web server
-is required. The v1.0 backend is stable. v1.1.0 is an **unreleased candidate** for the
-Turkish/English UI and Windows distribution.
+is required. The v1.0 engineering backend is preserved. **v1.1.0 is released** with the native Qt desktop UI and Windows distribution.
 
 ![PMSM Drive Commissioning Workbench — Turkish UI, actual simulation result](docs/images/v1_1_dashboard_tr.png)
 
@@ -22,10 +21,8 @@ Turkish/English UI and Windows distribution.
 Target Windows x64 file:
 **`PMSM-Commissioning-Workbench-v1.1.0-Windows-x64.zip`**.
 
-1. Download the ZIP and `SHA256SUMS.txt` from a successful
-   [Windows workflow run](https://github.com/terogra/self-commissioning-pmsm-drive/actions/workflows/windows-portable.yml).
-   During review these are workflow artifacts; a GitHub account may be required.
-   After publication they will be on the [Releases page](https://github.com/terogra/self-commissioning-pmsm-drive/releases).
+1. Download the ZIP and `SHA256SUMS.txt` from the **v1.1.0** entry on the
+   [Releases page](https://github.com/terogra/self-commissioning-pmsm-drive/releases).
 2. Extract the **entire ZIP** and retain its `_internal` folder.
 3. Double-click **`PMSM-Commissioning-Workbench.exe`**. The application opens as
    a standalone desktop window; no browser or local web server is required.
@@ -141,4 +138,4 @@ safety guarantee is claimed. The Windows package is local and unsigned.
 ## License and version
 
 Source code is [MIT licensed](LICENSE); dependencies retain their own licenses.
-[Changelog](CHANGELOG.md) · [v1.1 candidate notes](RELEASE_NOTES_v1.1.0.md).
+[Changelog](CHANGELOG.md) · [v1.1.0 release notes](RELEASE_NOTES_v1.1.0.md).
