@@ -1,13 +1,14 @@
 """Streamlit presentation of real workflow results; import has no UI side effects."""
 
 from dataclasses import replace
+from html import escape
 from pathlib import Path
 import tempfile
 
 import streamlit as st
 from app.localization import DEFAULT_LANGUAGE, LANGUAGES, display_formatter, display_rows, localize_figure, set_language, t
 
-from app.presentation import attempt_rows, controller_rows, estimate_rows, load_committed_parity_evidence, metric_rows, parameter_rows, record_rows
+from app.presentation import attempt_rows, controller_rows, estimate_rows, load_committed_parity_evidence, metric_rows, overview_rows, parameter_rows, record_rows
 from src.engineering_bundle import json_value, run_bundle_zip
 from src.engineering_reporting import commissioning_figure, control_figure
 from src.engineering_workflow import (
@@ -31,36 +32,52 @@ def _motor_inputs(default, prefix):
     return values
 
 
+def show_overview(result):
+    cells = "".join(f"<div><dt>{escape(t(label))}</dt><dd>{escape(t(value))}</dd></div>"
+                    for label, value in overview_rows(result))
+    st.html(f'<dl class="run-overview" aria-label="{escape(t("Run summary"))}">{cells}</dl>')
+
+
 def configuration_form():
     default = EngineeringWorkflowConfig()
     with st.sidebar.container():
-        st.subheader(t("Drive / scenario configuration"))
-        scenario = st.selectbox(t("M17 simulation preset"), [s.name for s in scenarios()],
-            format_func=display_formatter(), key="scenario")
-        mode = st.selectbox(t("Commissioning mode"), ["one_shot", "adaptive"], format_func=display_formatter(), key="mode")
-        exposure = st.selectbox(t("Impairment exposure"), ["combined", "commissioning_only", "operation_only"], format_func=display_formatter(), key="exposure")
-        seed = st.number_input(t("Deterministic seed"), min_value=0, max_value=2**31-3, value=default.seed, step=1, key="seed")
-        pairs = st.number_input(t("Known pole pairs [pairs]"), min_value=1, max_value=32, value=4, step=1, key="pole_pairs")
-        bus = st.number_input(t("Nominal DC bus [V]"), min_value=.1, value=24., key="bus")
-        speed = st.number_input(t("Speed target [rpm]"), min_value=1., value=1000., key="target")
-        load = st.number_input(t("External operating load [N m]"), min_value=0., value=.05, format="%.4f", key="load")
-        limit = st.number_input(t("Operating iq reference limit [A]"), min_value=.01, value=5., key="limit")
-        deadline = st.number_input(t("Dynamic deadline [s]"), min_value=.01, max_value=5., value=.6, key="deadline")
-        hold = st.number_input(t("Required dynamic hold [s]"), min_value=.001, step=.001, value=.1, format="%.3f", key="hold")
-        with st.expander(t("Simulation evaluation / ground truth — plant configuration")):
+        st.markdown("#### "+t("Drive / scenario configuration"))
+        left, right = st.columns(2)
+        with left:
+            pairs = st.number_input(t("Known pole pairs [pairs]"), min_value=1, max_value=32, value=4, step=1, key="pole_pairs")
+        with right:
+            bus = st.number_input(t("Nominal DC bus [V]"), min_value=.1, value=24., key="bus")
+        with st.expander(t("Motor parameters")):
+            st.markdown(t("Simulation evaluation / ground truth — plant configuration"))
             st.caption(t("Simulator inputs only. Estimators receive sampled records, not these constants."))
             truth = _motor_inputs(default.simulation_truth, "truth_")
-        with st.expander(t("Estimator-visible prior controller assumptions")):
+            st.markdown(t("Estimator-visible prior controller assumptions"))
             prior = _motor_inputs(default.prior_assumptions, "prior_")
-        with st.expander(t("Commissioning excitation / noise / validation timing")):
+        with st.expander(t("Commissioning setup")):
+            mode = st.selectbox(t("Commissioning mode"), ["one_shot", "adaptive"], format_func=display_formatter(), key="mode")
+            seed = st.number_input(t("Deterministic seed"), min_value=0, max_value=2**31-3, value=default.seed, step=1, key="seed")
             st.caption(t("Simulation design constraints; no physical hardware-safety guarantee. Mechanical external load is explicitly zero."))
             current_noise = st.number_input(t("Recorded electrical current noise SD [A]"), min_value=0., value=.01, format="%.5f", key="noise_i")
             voltage_noise = st.number_input(t("Recorded voltage noise SD [V]"), min_value=0., value=.01, format="%.5f", key="noise_v")
             rotor_speed = st.number_input(t("Driven-rotor commissioning speed [rpm]"), min_value=100., max_value=1200., value=600., key="rotor_speed")
             excitation_scale = st.number_input(t("Standstill voltage-program scale [dimensionless]"), min_value=0., max_value=1.5, value=1., key="excitation")
+        with st.expander(t("Operating request"), expanded=True):
+            left, right = st.columns(2)
+            with left:
+                speed = st.number_input(t("Speed target [rpm]"), min_value=1., value=1000., key="target")
+                limit = st.number_input(t("Operating iq reference limit [A]"), min_value=.01, value=5., key="limit")
+                hold = st.number_input(t("Required dynamic hold [s]"), min_value=.001, step=.001, value=.1, format="%.3f", key="hold")
+            with right:
+                load = st.number_input(t("External operating load [N m]"), min_value=0., value=.05, format="%.4f", key="load")
+                deadline = st.number_input(t("Dynamic deadline [s]"), min_value=.01, max_value=5., value=.6, key="deadline")
+        with st.expander(t("Validation timing")):
             duration = st.number_input(t("Control-validation duration [s]"), min_value=.01, max_value=5., value=.6, key="duration")
             step_time = st.number_input(t("Operating load-step time [s]"), min_value=0., value=.3, key="step_time")
-        submitted = st.button(t("Run Commissioning"), type="primary", key="run_commissioning")
+        with st.expander(t("Simulation errors")):
+            scenario = st.selectbox(t("M17 simulation preset"), [s.name for s in scenarios()],
+                format_func=display_formatter(), key="scenario")
+            exposure = st.selectbox(t("Impairment exposure"), ["combined", "commissioning_only", "operation_only"], format_func=display_formatter(), key="exposure")
+        submitted = st.button(t("Run Commissioning"), type="secondary", key="run_commissioning")
     if not submitted: return None
     # Build typed settings only. All computation occurs behind the orchestration API.
     return EngineeringWorkflowConfig(simulation_truth=MotorConfiguration(**truth, pole_pairs=pairs),
@@ -74,9 +91,9 @@ def configuration_form():
 
 
 def show_commissioning(result):
-    st.subheader(t("Sampled-data commissioning / attempt history"))
+    st.markdown("#### "+t("Sampled-data commissioning / attempt history"))
     rows = attempt_rows(result)
-    if rows: _table(rows, hide_index=True, width="stretch")
+    if rows: _table(rows, hide_index=True, width="stretch", column_config={"Next configuration": None})
     else: st.warning(t("No estimator attempt completed. See the measurement/configuration failure below."))
     for stage in ("standstill", "rotating", "mechanical"):
         st.markdown(t("#### {stage} stage", stage=t(stage)))
@@ -89,7 +106,7 @@ def show_commissioning(result):
                         column_config={"Estimate": st.column_config.NumberColumn(format="%.8g")})
                 _table([{"Check": c.name, "Measured value": c.value, "Limit": c.limit, "Passed": c.passed}
                               for c in attempt.quality.checks], hide_index=True, width="stretch")
-                if attempt.quality.rejection_reasons: st.error("; ".join(attempt.quality.rejection_reasons))
+                if attempt.quality.rejection_reasons: st.error("`"+"; ".join(attempt.quality.rejection_reasons)+"`")
                 if attempt.quality.estimator_failure: st.error(attempt.quality.estimator_failure)
                 if attempt.diagnostics is not None: _table(record_rows(attempt.diagnostics), hide_index=True, width="stretch")
                 st.caption(t("Residual units: V s for electrical/flux stages; N m s for mechanical. Local sensitivities are not confidence probabilities."))
@@ -105,7 +122,7 @@ def show_commissioning(result):
 
 
 def show_operating_analysis(result):
-    st.subheader(t("Operating analysis — separate from commissioning quality"))
+    st.markdown("#### "+t("Operating analysis — separate from commissioning quality"))
     if not result.quality.accepted:
         st.warning(t("Unavailable: full commissioning rejected. No commissioned operation is fabricated."))
         return
@@ -133,7 +150,7 @@ def show_operating_analysis(result):
 
 
 def show_evaluation(result):
-    st.subheader(t("Closed-loop validation — Simulation evaluation / ground truth"))
+    st.markdown("#### "+t("Closed-loop validation — Simulation evaluation / ground truth"))
     st.caption(t("Evaluation-only information below is never used to accept commissioning or select retries."))
     _table(record_rows(result.simulation_evaluation.truth), hide_index=True, width="stretch")
     _table([{"Parameter": name, "Post-hoc absolute error [%]": value}
@@ -150,7 +167,7 @@ def show_evaluation(result):
 
 
 def show_firmware(result):
-    st.subheader(t("Firmware configuration"))
+    st.markdown("#### "+t("Firmware configuration"))
     st.caption(t("Portable firmware-ready control configuration — not deployed MCU firmware. No target timing, hardware validation or MISRA compliance is claimed."))
     if result.firmware_available:
         with st.expander(t("Exported binary32 motor / current / speed constants")):
@@ -199,7 +216,18 @@ def main():
     set_language(st.session_state.get("language", DEFAULT_LANGUAGE))
     st.set_page_config(page_title=t("PMSM engineering application"), layout="wide")
     st.sidebar.selectbox("Dil / Language", list(LANGUAGES), format_func=LANGUAGES.__getitem__, key="language", on_change=_refresh_display_labels)
-    st.title(t("Self-Commissioning PMSM Engineering"))
+    # Own-markup styles plus one stable container test ID to reduce default top padding.
+    st.html('''<style>
+        [data-testid="stMainBlockContainer"] {padding-top:4rem; padding-bottom:2rem;}
+        .workbench-title {font-size:1.65rem; font-weight:600; margin:0; line-height:1.25;}
+        .run-overview {display:grid; grid-template-columns:repeat(4,minmax(0,1fr));
+            gap:0; margin:0; border:1px solid #80808050;}
+        .run-overview div {padding:0.6rem 0.8rem; min-width:0;}
+        .run-overview dt {font-size:0.8rem; opacity:0.75; margin-bottom:0.2rem;}
+        .run-overview dd {font-size:0.95rem; font-weight:600; margin:0; overflow-wrap:anywhere;}
+        @media(max-width:800px) {.run-overview {grid-template-columns:repeat(2,minmax(0,1fr));}}
+    </style>''')
+    st.html(f'<h1 class="workbench-title">{escape(t("Self-Commissioning PMSM Engineering"))}</h1>')
     st.caption(t("v{version} — {status}. Local simulation study; no hardware deployment.", version=__version__, status=t(RELEASE_STATUS)))
     st.sidebar.caption(t("Results change only when Run Commissioning is submitted. Current inputs and last completed run may differ."))
     try:
@@ -220,8 +248,8 @@ def main():
         st.markdown(t("Measurements → Rs/Ld/Lq → psi_f → J/B → gates/supervision → retuning → M14/M16 analysis → simulation validation → M18 export"))
         show_parity()
         return
-    st.subheader(t(result.status))
-    if not result.quality.accepted: st.error("; ".join(result.quality.rejection_reasons))
+    show_overview(result)
+    if not result.quality.accepted: st.error("`"+"; ".join(result.quality.rejection_reasons)+"`")
     st.caption(t("CURRENT RUN RESULTS: seed {seed} / {scenario} / {mode} / {exposure}", seed=result.config.seed, scenario=t(result.config.scenario), mode=t(result.config.mode), exposure=t(result.config.exposure)))
     with st.expander(t("Reproducibility / estimator-visible configuration")):
         configuration = json_value(result.config)
@@ -231,7 +259,7 @@ def main():
     tabs = st.tabs([t("Commissioning"), t("Parameters / controllers"), t("Operating analysis"), t("Simulation evaluation"), t("Nonidealities"), t("Firmware / M18")])
     with tabs[0]: show_commissioning(result)
     with tabs[1]:
-        st.subheader(t("Prior → identified → active controller"))
+        st.markdown("#### "+t("Prior → identified → active controller"))
         _table(parameter_rows(result), hide_index=True, width="stretch", column_config={
             name: st.column_config.NumberColumn(format="%.8g") for name in ("Prior assumption", "Identified / known", "Controller value")})
         _table(controller_rows(result), hide_index=True, width="stretch",
@@ -240,7 +268,7 @@ def main():
     with tabs[2]: show_operating_analysis(result)
     with tabs[3]: show_evaluation(result)
     with tabs[4]:
-        st.subheader(t("M17 simulation stress/error models"))
+        st.markdown("#### "+t("M17 simulation stress/error models"))
         st.json(json_value(result.nonidealities))
         st.caption(t("Exposure controls commissioning, operation, or both; Rs drift applies only during operation. Nominal-bus FOC command and true terminal voltage are distinct; extra actual-bus clipping is not fed back into nominal anti-windup."))
         st.markdown(t("#### Simulation evaluation / ground truth"))

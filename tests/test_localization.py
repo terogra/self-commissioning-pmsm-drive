@@ -24,17 +24,46 @@ def test_default_turkish_and_english_catalogue():
     assert DEFAULT_LANGUAGE == "tr" and set(LANGUAGES) == {"tr", "en"}
     assert t("Run Commissioning") == "Devreye Almayı Başlat"
     assert t("Commissioning") == "Devreye Alma"
+    assert t("Self-Commissioning PMSM Engineering") == "PMSM Sürücü Devreye Alma Aracı"
+    assert not any(term in text.lower() for text in TR.values()
+                   for term in ("mühendislik platformu", "sürücü mühendisliği", "kapsamlı çözüm"))
     assert not any("komisyon" in text.lower() for text in TR.values())
     set_language("en")
+    assert t("Self-Commissioning PMSM Engineering") == "PMSM Drive Commissioning Workbench"
     assert t("Run Commissioning") == "Run Commissioning"
     with pytest.raises(ValueError): set_language("fake")
+
+
+def test_canonical_terms_match_glossary():
+    glossary = (ROOT/"docs/terminology.md").read_text(encoding="utf-8")
+    canonical = {
+        "Commissioning": "Devreye Alma", "Parameter identification": "Parametre kestirimi",
+        "Operating point": "Çalışma noktası", "Steady-state": "Kararlı durum",
+        "Dynamic feasibility": "Dinamik uygunluk", "Voltage saturation": "Gerilim doyumu",
+        "DC bus": "DC bara", "Excitation": "Uyartım", "Residual": "Model artığı",
+        "Bias": "Bias / sistematik hata", "Quasi-steady": "Yarı kararlı durum",
+        "Controller-aware prediction": "Denetleyici modeliyle öngörü",
+        "Ground truth": "Gerçek simülasyon değerleri", "Retry": "Yeniden deneme",
+    }
+    for english, turkish in canonical.items():
+        set_language("tr")
+        assert t(english) == turkish
+        assert turkish.lower() in glossary.lower()
+        set_language("en")
+        assert t(english) == english
+        assert english.lower() in glossary.lower()
+    readme_tr = (ROOT/"README.md").read_text(encoding="utf-8")
+    readme_en = (ROOT/"README.en.md").read_text(encoding="utf-8")
+    assert "PMSM Sürücü Devreye Alma ve Parametre Kestirimi" in readme_tr
+    assert "PMSM drive commissioning and parameter identification" in readme_en
+    assert "docs/images/v1_1_dashboard_tr.png" in readme_tr and "docs/images/v1_1_dashboard_tr.png" in readme_en
 
 
 def test_unknown_machine_codes_and_row_values_survive():
     code = "future_stage.unknown_rejection"
     original = [{"Reasons": code, "Value": .00055, "Passed": False}]
     translated = display_rows(original)
-    assert translated == [{"Nedenler": code, "Değer": .00055, "Geçti": False}]
+    assert translated == [{"Nedenler": code, "Değer": .00055, "Sağlandı": False}]
     assert original[0]["Reasons"] == code
     assert t("standstill.excessive_residual") == "standstill.excessive_residual"
     set_language("en")

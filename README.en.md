@@ -2,23 +2,21 @@
 
 # Self-Commissioning PMSM Drive
 
-## PMSM self-commissioning and drive engineering platform
+## PMSM drive commissioning and parameter identification
 
-A local engineering application that follows a PMSM drive **from measurements
-to controllers**. It estimates six electrical/mechanical motor parameters from
-simulated voltage, current and speed samples, assesses quality, retunes PI
-controllers when accepted, and validates requested drive operation.
+A local tool for identifying `Rs, Ld, Lq, psi_f, J, B` from simulated voltage,
+current and speed measurements. Accepted commissioning retunes the current and
+speed PI controllers, then checks the operating point and closed-loop response.
+Rejection retains the prior controller parameters and blocks firmware export.
 
-The purpose is to show success as well as degradation/failure under weak
-excitation, measurement bias and voltage limits. Rejected results remain visible;
-the prior controller is retained and firmware export is blocked.
+The v1.0 backend is stable. v1.1.0 is an **unreleased candidate** for the
+Turkish/English UI and Windows distribution.
 
-**The v1.0 engineering backend is stable. v1.1.0 is an unreleased candidate for
-Turkish/English presentation and portable Windows distribution.**
+![PMSM Drive Commissioning Workbench — Turkish UI, actual simulation result](docs/images/v1_1_dashboard_tr.png)
 
-## Try the application — two equal options
+## Run the application
 
-### A — Ready Windows version
+### 1 — Windows package
 
 Target Windows x64 file:
 **`PMSM-Engineering-App-v1.1.0-Windows-x64.zip`**.
@@ -37,7 +35,7 @@ not signing or safety. If you prefer not to run an unsigned binary, use the
 source path below. The EXE is optional.
 [Windows startup and troubleshooting](packaging/README_WINDOWS_EN.md).
 
-### B — Run from Python source
+### 2 — Source code
 
 With Python **3.11 or 3.12**, in Windows PowerShell:
 
@@ -60,7 +58,7 @@ Language changes do not modify parameters or computed results.
 **Run Commissioning** performs a new computation; tab/language changes do not.
 The server binds only to the local `127.0.0.1` address.
 
-## End-to-end workflow
+## Commissioning workflow
 
 ```mermaid
 flowchart LR
@@ -77,11 +75,11 @@ flowchart LR
 
 Inspect stage estimates, measured/fitted plots, residual/sensitivity diagnostics,
 rejection reasons, retry history, controller gains and current/voltage limits.
-Hidden truth is separate under **Simulation evaluation / ground truth**;
+Simulation ground truth is separate under **Validation**;
 estimators and quality gates do not receive it. Diagnostic codes and JSON keys
 remain stable in both languages for reproducibility.
 
-## What is technically validated?
+## Validation
 
 - dq PMSM, Clarke/Park, current FOC and cascaded speed PI; DC-bus saturation and anti-windup.
 - `Rs, Ld, Lq, psi_f, J, B` from measurements; measured-data gates and bounded adaptive attempts.
@@ -91,6 +89,7 @@ remain stable in both languages for reproducibility.
 
 [Validation details](docs/v1_validation.md) · [v1.1 productization](docs/v1_1_productization.md) ·
 [Architecture](docs/architecture.md) · [Engineering journal](docs/engineering_log.md).
+[UI terminology](docs/terminology.md).
 
 Browser-free real demonstration:
 

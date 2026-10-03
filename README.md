@@ -2,24 +2,21 @@
 
 # Self-Commissioning PMSM Drive
 
-## PMSM Otomatik Devreye Alma ve Sürücü Mühendislik Platformu
+## PMSM Sürücü Devreye Alma ve Parametre Kestirimi
 
-Bir PMSM sürücüsünü **ölçümden denetleyiciye kadar** inceleyen yerel mühendislik
-uygulaması. Benzetilen gerilim, akım ve hız örneklerinden motorun altı elektriksel
-ve mekanik parametresini kestirir; kaliteyi değerlendirir, uygun olduğunda PI
-denetleyicileri yeniden ayarlar ve sürücünün çalışma koşullarını doğrular.
+Simüle edilen gerilim, akım ve hız ölçümlerinden `Rs, Ld, Lq, psi_f, J, B`
+kestirimi yapar. Kalite kontrolleri sağlanırsa akım ve hız PI denetleyicilerini
+yeniden ayarlar; çalışma noktasını ve kapalı çevrim yanıtını inceler. Ret durumunda
+başlangıç parametreleri korunur, firmware dışa aktarımı kapatılır.
 
-Amaç, otomatik devreye almanın başarılı örnekleriyle birlikte zayıf uyartım,
-ölçüm yanlılığı ve gerilim sınırı altında nerede başarısız olduğunu göstermektir.
-Reddedilen sonuçlar görünür kalır; başlangıç denetleyicisi korunur ve firmware
-dışa aktarımı engellenir.
+v1.0 altyapısı kararlı; v1.1.0 Türkçe/English arayüz ve Windows dağıtımı için
+**sürüm adayıdır, henüz yayımlanmamıştır**.
 
-**v1.0 mühendislik altyapısı kararlı. v1.1.0, Türkçe/English arayüz ve Windows
-taşınabilir dağıtım için sürüm adayıdır; henüz yayımlanmamıştır.**
+![PMSM Sürücü Devreye Alma Aracı — gerçek simülasyon sonucu](docs/images/v1_1_dashboard_tr.png)
 
-## Uygulamayı deneyin — iki eşit seçenek
+## Çalıştırma
 
-### A — Hazır Windows sürümü
+### 1 — Windows paketi
 
 Windows x64 için hedef dosya:
 **`PMSM-Engineering-App-v1.1.0-Windows-x64.zip`**.
@@ -40,7 +37,7 @@ kontrol eder; kod imzası veya güvenlik garantisi değildir. İmzasız ikili
 çalıştırmak istemiyorsanız kaynak yolunu kullanın. EXE zorunlu değildir.
 [Windows başlangıç ve hata giderme](packaging/README_WINDOWS_TR.md).
 
-### B — Python kaynak kodundan çalıştırma
+### 2 — Kaynak kod
 
 Python **3.11 veya 3.12** ile Windows PowerShell'de:
 
@@ -64,7 +61,7 @@ Dil değişimi parametreleri veya hesaplanmış sonucu değiştirmez.
 **Devreye Almayı Başlat** yeni hesaplama yapar; sekme veya dil değişimi yapmaz.
 Sunucu yalnızca yerel `127.0.0.1` adresinde çalışır.
 
-## Uçtan uca iş akışı
+## Devreye alma akışı
 
 ```mermaid
 flowchart LR
@@ -74,27 +71,28 @@ flowchart LR
     J --> Q[Kalite kapıları ve uyarlamalı gözetim]
     Q -->|Ret| R[Başlangıç denetleyicisini koru]
     Q -->|Tam kabul| C[FOC ve hız PI yeniden ayarlama]
-    C --> F[Sürekli ve dinamik uygunluk]
+    C --> F[Kararlı durum ve dinamik uygunluk]
     C --> V[Kapalı çevrim / M17 hata modelleri]
     C --> H[Taşınabilir C99 yapılandırması]
 ```
 
-Aşama kestirimleri, ölçüm/model grafikleri, artık ve duyarlılık tanıları, ret
+Aşama kestirimleri, ölçüm/model grafikleri, model artığı ve duyarlılık tanıları, ret
 nedenleri, yeniden deneme geçmişi, kazançlar ve akım/gerilim sınırları incelenebilir.
-Gizli gerçek değerler ayrı **Benzetim değerlendirmesi / gerçek değerler**
+Gerçek simülasyon değerleri ayrı **Doğrulama**
 bölümündedir; kestirici veya kalite kapısı bunlara erişmez. İç tanı kodları
 ve JSON anahtarları iki dilde de tekrarlanabilirlik için sabittir.
 
-## Teknik olarak ne doğrulandı?
+## Doğrulama
 
 - dq PMSM modeli, Clarke/Park, akım FOC ve kademeli hız PI; DC bara doyumu ve anti-windup.
 - Ölçümlerle `Rs, Ld, Lq, psi_f, J, B` kestirimi, ölçüm tabanlı kalite kapıları ve sınırlandırılmış uyarlamalı denemeler.
-- Ayrı geliştirme/değerlendirme popülasyonları, başarısız ve yanlı kabul örnekleri; M17 ölçüm/inverter/gecikme/bara/Rs hata modelleri.
+- Ayrı geliştirme/değerlendirme popülasyonları, başarısız ve bias içeren kabul örnekleri; M17 ölçüm/inverter/gecikme/bara/Rs hata modelleri.
 - Kararlı v1.0: **265 test**, **43 yerel C doğrulaması**, **31.484 Python/C örneği**; **16 doyum sınırı farkı** kanıtta korunur.
 - v1.1 CI: Python 3.11/3.12, GCC/Clang, başsız uygulama, dil değişimi ve gerçek paketlenmiş EXE için HTTP 200; çıkartılan ZIP yeniden sınanır ve SHA-256 üretilir.
 
 [Doğrulama ayrıntıları](docs/v1_validation.md) · [v1.1 ürünleştirme](docs/v1_1_productization.md) ·
 [Mimari](docs/architecture.md) · [Mühendislik günlüğü](docs/engineering_log.md).
+[Arayüz terminolojisi](docs/terminology.md).
 
 Tarayıcısız gerçek gösterim:
 
@@ -109,13 +107,13 @@ etiketlenmez veya üzerine yazılmaz; yeni çalışmanın sürüm bilgisi ayrıd
 
 ## Varsayımlar ve sınırlar
 
-Bu bir **benzetim çalışmasıdır**. Bilinen kutup çifti sayısı ve mekanik devreye
+Bu bir **simülasyon çalışmasıdır**. Bilinen kutup çifti sayısı ve mekanik devreye
 almada bilinen sıfır dış yük varsayılır. Bilinmeyen yük, Coulomb/statik sürtünme,
-eklenen atalet ve sensör yanlılığı kapsamı sınırlar. İyi hız izleme tek başına
+eklenen atalet ve sensör bias/ofset hatası kapsamı sınırlar. İyi hız izleme tek başına
 doğru devreye almayı kanıtlamaz. Kalite kabulü her çalışma isteğinin uygun
 olduğunu göstermez.
 
-Yarı durağan süre kestirimi evrensel bir fiziksel alt sınır değildir; tam dq
+Yarı kararlı durum süre kestirimi evrensel bir fiziksel alt sınır değildir; tam dq
 geçici rejimi hız bandına daha erken girebilir. Korunan teknik ifade:
 the quasi-steady estimate is **not a physical minimum or universal lower bound**;
 the **full dq transient simulation** can enter the band earlier.

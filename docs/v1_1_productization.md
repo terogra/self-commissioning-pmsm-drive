@@ -155,3 +155,38 @@ universal physical lower bound; full dq transients can enter earlier. Quality
 acceptance does not guarantee accuracy or operating feasibility. No hardware
 deployment/timing validation, MISRA or safety claims are added. The dashboard
 remains synchronous/local.
+
+## Product-quality review on PR #17
+
+The Turkish title is **PMSM Sürücü Devreye Alma Aracı**; the English title is
+**PMSM Drive Commissioning Workbench**. [UI terminology](terminology.md) fixes
+the vocabulary for identification, operating points, residuals, excitation,
+bias/offset, quasi-steady models and controller-aware prediction. Existing
+message identifiers remain catalogue keys; their displayed text is revised in
+both languages. Unknown diagnostic codes are still shown exactly.
+
+The sidebar groups motor parameters, commissioning setup, operating request,
+validation timing and simulation errors. The result summary reads the existing
+quality decision, scenario, speed/bus request, available estimates, M14/M16
+results and firmware availability. It does not calculate a new quality or
+feasibility decision. Rejected estimates are labelled as estimates with the
+prior controller retained; firmware export remains blocked.
+
+Headings are smaller and the run button uses Streamlit's neutral styling.
+CSS styles our title/summary markup and reduces main-container top padding using
+one stable Streamlit test ID. It does not target generated class names or
+change widget behavior. Reason codes use monospace text. Numeric values and
+SI units are unchanged.
+
+The README screenshot is an actual default one-shot run: seed 1901, ideal
+scenario, 1000 rpm, 24 V. To reproduce the view, run `python -m app`, leave the
+defaults, select **Devreye Almayı Başlat**, and open **Parametreler ve kontrol**.
+The screenshot is captured from the browser; it is not generated artwork.
+Both landing pages embed it.
+
+Focused tests protect canonical terms/titles, retained language-switch state,
+unknown codes, and the accepted/rejected overview against the original result.
+The full Python/compiler/headless/Windows runtime gates are rerun on this PR;
+current head-specific results are recorded in the PR description. Packaging
+sources, workflow, launch flags, runtime architecture and engineering backend
+are unchanged by this review.
