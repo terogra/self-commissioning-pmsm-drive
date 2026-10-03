@@ -1,6 +1,6 @@
-# v1.0.0 release-candidate notes
+# v1.0.0 release notes
 
-**Prepared for review; not tagged or released.**
+Released under the MIT License.
 
 ## Scope
 
@@ -35,8 +35,9 @@ validation uses GCC/Clang through the existing M18 tools and CI.
   Streamlit/backend/demo plus Python 3.11/3.12 and GCC/Clang.
 
 See [validation details](docs/v1_validation.md) for exact numbers, reproducibility,
-the unchanged M16 reverse-excursion diagnostic and evidence limitations. CI status
-must be checked on the PR; local GCC is not a claim of local Clang verification.
+the unchanged M16 reverse-excursion diagnostic and evidence limitations. GitHub
+Actions verifies Python 3.11/3.12, GCC, Clang and the headless application/demo;
+local GCC is not a claim of local Clang verification.
 
 ## Boundary and review decisions
 
@@ -47,8 +48,6 @@ infeasible despite accepted identification, and quasi-steady timing is not a
 universal physical bound. Historical failed/biased cases remain available.
 
 The UI is synchronous and local. This is a simulation research/engineering tool,
-not a real-time high-power control interface. There is no declared software
-license; no license was invented during release preparation. PR/CI review and a
-license decision should precede any distribution/release decision.
-
-No Git tag, GitHub release or merge is authorized by this milestone.
+not a real-time high-power control interface. Source code is distributed under
+the MIT License; see `LICENSE`. The license permits use, copying, modification
+and redistribution subject to its notice and disclaimer.
