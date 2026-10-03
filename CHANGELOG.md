@@ -1,5 +1,31 @@
 # Changelog
 
+## 1.1.0 — release candidate
+
+### Productization and access
+
+- Turkish-first repository landing page with a full English alternative.
+- Turkish/English language switch across the Streamlit engineering interface.
+- Turkish engineering terminology uses **devreye alma** for commissioning while
+  preserving established symbols and technical abbreviations.
+- Localized result tables, scenario names, status labels and engineering plots.
+- Optional Windows x64 portable distribution for users who do not want to
+  install Python.
+- Source-code execution remains a first-class path; the executable is not
+  required.
+- GitHub Actions builds the Windows package from repository source, smoke-tests
+  the packaged local web application, creates a ZIP and publishes SHA-256
+  checksums.
+- The packaged executable is currently unsigned; documentation directs users
+  who prefer not to run an unsigned binary to the source-code method.
+
+### Preserved engineering baseline
+
+M1-M19 engineering algorithms, identification equations, quality thresholds,
+adaptive supervisor rules, M14/M16 semantics, M17 stress definitions and M18
+C/Python parity budgets are unchanged. v1.1 is a localization/distribution
+release, not a new motor-control algorithm milestone.
+
 ## 1.0.0 — 2026-10-03
 
 ### Added in Milestone 19
