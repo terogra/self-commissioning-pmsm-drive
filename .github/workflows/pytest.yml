@@ -47,7 +47,9 @@ jobs:
       - name: Reproduce generated configuration and quantitative evidence
         run: python -m experiments.firmware_parity --output "$RUNNER_TEMP/firmware_parity"
   engineering-app:
-    name: Native Qt application and deterministic demo
+    # Keep the historical required-check name used by the main-branch ruleset.
+    # The job itself now validates the native Qt application and deterministic demo.
+    name: Headless v1 application and demo
     runs-on: ubuntu-latest
     env:
       MPLBACKEND: Agg
