@@ -1,0 +1,111 @@
+name: Windows package
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  windows-package:
+    name: Windows x64 portable package
+    runs-on: windows-latest
+    env:
+      MPLBACKEND: Agg
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.12'
+          cache: pip
+
+      - name: Install application and packaging dependencies
+        shell: pwsh
+        run: |
+          python -m pip install -r requirements.txt
+          python -m pip install pyinstaller==6.22.3
+
+      - name: Run localization and application regression tests
+        shell: pwsh
+        run: |
+          python -m pytest -q tests/test_engineering_app.py tests/test_i18n.py
+
+      - name: Build portable Windows application
+        shell: pwsh
+        run: |
+          python -m PyInstaller packaging/PMSM_Engineering_App.spec --noconfirm --clean
+
+      - name: Smoke-test packaged application
+        shell: pwsh
+        run: |
+          $env:PMSM_HEADLESS = "1"
+          $env:PMSM_PORT = "8765"
+          $exe = Resolve-Path "dist/PMSM-Engineering-App/PMSM Engineering App.exe"
+          $process = Start-Process -FilePath $exe -PassThru
+          try {
+            $ready = $false
+            for ($i = 0; $i -lt 60; $i++) {
+              Start-Sleep -Seconds 1
+              try {
+                $response = Invoke-WebRequest -Uri "http://127.0.0.1:8765" -UseBasicParsing -TimeoutSec 2
+                if ($response.StatusCode -eq 200) {
+                  $ready = $true
+                  break
+                }
+              } catch {}
+              if ($process.HasExited) {
+                throw "Packaged application exited before becoming ready."
+              }
+            }
+            if (-not $ready) {
+              throw "Packaged application did not become ready within 60 seconds."
+            }
+          } finally {
+            if (-not $process.HasExited) {
+              Stop-Process -Id $process.Id -Force
+            }
+          }
+
+      - name: Create portable ZIP and SHA-256 checksum
+        id: package
+        shell: pwsh
+        run: |
+          if ($env:GITHUB_REF_TYPE -eq "tag") {
+            $version = $env:GITHUB_REF_NAME
+          } else {
+            $version = "build-" + $env:GITHUB_SHA.Substring(0, 12)
+          }
+          $zip = "PMSM-Engineering-App-$version-Windows-x64.zip"
+          Copy-Item "packaging/README_WINDOWS_TR.md" "dist/PMSM-Engineering-App/KULLANIM_TR.md"
+          Compress-Archive -Path "dist/PMSM-Engineering-App/*" -DestinationPath $zip -CompressionLevel Optimal
+          $hash = (Get-FileHash $zip -Algorithm SHA256).Hash.ToLower()
+          "$hash  $zip" | Out-File -Encoding ascii "SHA256SUMS.txt"
+          "zip=$zip" >> $env:GITHUB_OUTPUT
+
+      - name: Upload workflow artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-x64-portable
+          path: |
+            ${{ steps.package.outputs.zip }}
+            SHA256SUMS.txt
+          if-no-files-found: error
+
+      - name: Attach package to tagged GitHub Release
+        if: startsWith(github.ref, 'refs/tags/v')
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $tag = $env:GITHUB_REF_NAME
+          gh release view $tag *> $null
+          if ($LASTEXITCODE -ne 0) {
+            gh release create $tag --title $tag --generate-notes --latest
+          }
+          gh release upload $tag "${{ steps.package.outputs.zip }}" "SHA256SUMS.txt" --clobber
