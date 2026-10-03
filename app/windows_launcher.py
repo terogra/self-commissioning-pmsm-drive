@@ -30,6 +30,11 @@ def main():
         "server.headless": headless,
         "browser.gatherUsageStats": False,
     }
+    # The normal Streamlit CLI loads flag options before bootstrap.run().
+    # Our packaged launcher calls bootstrap directly, so mirror that setup
+    # explicitly; otherwise Streamlit falls back to its default port/headless
+    # values even though the flags are passed to the watcher layer.
+    bootstrap.load_config_options(flags)
     bootstrap.run(str(dashboard_path()), False, [], flags)
     return 0
 
