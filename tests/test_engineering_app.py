@@ -29,7 +29,7 @@ def test_launch_is_one_command_and_bound_to_localhost():
     assert command[4] == str(ROOT/"app/dashboard.py")
     assert "--server.address=127.0.0.1" in command
     assert command[-1] == "--server.headless=true"
-    assert __version__ == "1.0.0"
+    assert __version__ == "1.1.0"
 
 
 def test_presentation_is_read_only_and_has_no_engineering_equations(demos):
@@ -130,6 +130,13 @@ def test_dashboard_headless_smoke_and_real_accept_reject_cycle():
     from app import dashboard  # import must not launch a server or run commissioning
     assert callable(dashboard.main)
     app = AppTest.from_file(str(ROOT/"app/dashboard.py"), default_timeout=45).run()
+    assert not app.exception
+    assert app.selectbox(key="language_picker").value == "Türkçe"
+    assert any("PMSM Otomatik Devreye Alma" in title.value for title in app.title)
+    app.selectbox(key="language_picker").select("English").run()
+    assert not app.exception
+    assert any("Self-Commissioning PMSM Engineering" in title.value for title in app.title)
+    app.selectbox(key="language_picker").select("Türkçe").run()
     assert not app.exception
     assert "result" not in app.session_state
     # AppTest bypasses native HTML step validation. Verify the actual widget
