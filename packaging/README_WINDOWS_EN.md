@@ -25,4 +25,4 @@ This remains a simulation study, not a hardware drive or deployed MCU firmware.
 Good speed tracking does not prove accurate commissioning. Quasi-steady timing
 is not a universal physical lower bound. Source is MIT licensed; dependencies
 retain their licenses. `BUILD_INFO.json` records version/build provenance.
-v1.1.0 remains a release candidate.
+v1.1.0 is the released version.
