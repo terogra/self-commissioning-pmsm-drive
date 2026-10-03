@@ -1,4 +1,4 @@
-"""Launch the local engineering application: python -m app [Streamlit options]."""
+"""Legacy development-only web UI. Primary product: python -m desktop."""
 
 from pathlib import Path
 import subprocess

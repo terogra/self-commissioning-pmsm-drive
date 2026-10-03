@@ -1,4 +1,4 @@
-"""In-process portable launcher. sys.executable is an EXE, not Python here."""
+"""Retired web launcher retained for history; excluded from the native package."""
 
 import logging
 import os

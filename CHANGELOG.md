@@ -4,8 +4,10 @@
 
 - Turkish-first README and full English landing page; v1.0 reference preserved.
 - Centralized Turkish/English presentation with stable widget/backend state.
-- Optional Windows x64 onedir EXE, in-process loopback launcher, explicit logs.
-- Pinned Windows build, actual EXE HTTP smoke test, extracted-ZIP retest,
+- Native PySide6/Qt desktop, responsive commissioning worker and embedded plots.
+- Windowed Windows x64 onedir EXE without a browser, web server or console.
+- Legacy Streamlit UI retained only as an optional development dependency.
+- Pinned Windows build, actual Qt window initialization, extracted-ZIP retest,
   SHA-256 and workflow artifacts; attach only to an existing matching release.
 - Preserve v1.0 algorithms, gates, historical evidence and source execution.
 - Historical numeric/header reproduction distinguishes version provenance only.

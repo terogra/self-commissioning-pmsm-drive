@@ -1,4 +1,4 @@
 numpy
 matplotlib
 pytest
-streamlit==1.65.0
+PySide6==6.11.2

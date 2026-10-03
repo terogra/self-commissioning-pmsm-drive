@@ -1,4 +1,4 @@
-"""Streamlit presentation of real workflow results; import has no UI side effects."""
+"""Legacy development-only Streamlit UI; the primary product is desktop/."""
 
 from dataclasses import replace
 from html import escape

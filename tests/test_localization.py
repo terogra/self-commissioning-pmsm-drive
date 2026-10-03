@@ -123,6 +123,7 @@ def test_plot_translation_does_not_change_numeric_artists_or_result():
 
 
 def test_language_switch_preserves_widgets_results_and_export():
+    pytest.importorskip("streamlit", reason="Optional legacy web UI is not a desktop runtime dependency")
     from streamlit.testing.v1 import AppTest
     app = AppTest.from_file(str(ROOT/"app/dashboard.py"), default_timeout=60).run()
     from streamlit import get_option

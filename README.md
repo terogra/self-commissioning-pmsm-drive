@@ -9,7 +9,8 @@ kestirimi yapar. Kalite kontrolleri sağlanırsa akım ve hız PI denetleyiciler
 yeniden ayarlar; çalışma noktasını ve kapalı çevrim yanıtını inceler. Ret durumunda
 başlangıç parametreleri korunur, firmware dışa aktarımı kapatılır.
 
-v1.0 altyapısı kararlı; v1.1.0 Türkçe/English arayüz ve Windows dağıtımı için
+PySide6/Qt ile bağımsız masaüstü uygulamasıdır; tarayıcı veya yerel web sunucusu
+gerekmez. v1.0 altyapısı kararlı; v1.1.0 Türkçe/English arayüz ve Windows dağıtımı için
 **sürüm adayıdır, henüz yayımlanmamıştır**.
 
 ![PMSM Sürücü Devreye Alma Aracı — gerçek simülasyon sonucu](docs/images/v1_1_dashboard_tr.png)
@@ -19,7 +20,7 @@ v1.0 altyapısı kararlı; v1.1.0 Türkçe/English arayüz ve Windows dağıtım
 ### 1 — Windows paketi
 
 Windows x64 için hedef dosya:
-**`PMSM-Engineering-App-v1.1.0-Windows-x64.zip`**.
+**`PMSM-Commissioning-Workbench-v1.1.0-Windows-x64.zip`**.
 
 1. [Windows derleme iş akışından](https://github.com/terogra/self-commissioning-pmsm-drive/actions/workflows/windows-portable.yml)
    başarılı derlemenin ZIP ve `SHA256SUMS.txt` dosyalarını indirin. İnceleme
@@ -27,10 +28,11 @@ Windows x64 için hedef dosya:
    v1.1 yayımlandığında [Releases](https://github.com/terogra/self-commissioning-pmsm-drive/releases)
    sayfasında bulunacaktır.
 2. ZIP'in **tamamını** çıkartın; `_internal` klasörünü koruyun.
-3. **`PMSM Engineering App.exe`** dosyasına çift tıklayın. Uygulama yerel
-   tarayıcıda açılır. Python, pip veya Git gerekmez.
-4. Bitirmek için açılan konsolda **Ctrl+C** kullanın. Yalnızca tarayıcı
-   sekmesini kapatmak sunucuyu durdurmaz.
+3. **`PMSM-Commissioning-Workbench.exe`** dosyasına çift tıklayın. Uygulama
+   bağımsız bir masaüstü penceresinde açılır; tarayıcı veya yerel web sunucusu
+   gerekmez. Python, pip veya Git gerekmez; konsol açılmaz.
+4. Bitirmek için uygulama penceresini kapatın. Çalışan devreye alma işleminin
+   tamamlanmasını bekleyin.
 
 **EXE imzasızdır.** Windows SmartScreen uyarabilir. SHA-256 dosya bütünlüğünü
 kontrol eder; kod imzası veya güvenlik garantisi değildir. İmzasız ikili
@@ -47,19 +49,21 @@ cd self-commissioning-pmsm-drive
 python -m venv .venv
 .\.venv\Scripts\Activate.ps1
 python -m pip install -r requirements.txt
-python -m app
+python -m desktop
 ```
 
 Etkinleştirme betiği engellenirse ortamı etkinleştirmeden
 `.\.venv\Scripts\python.exe -m pip install -r requirements.txt` ve
-`.\.venv\Scripts\python.exe -m app` kullanılabilir.
+`.\.venv\Scripts\python.exe -m desktop` kullanılabilir.
 Linux/macOS'ta etkinleştirme komutu `source .venv/bin/activate` olur.
 Git olmadan kaynak ZIP'i indirmek de mümkündür.
 
 Arayüz varsayılan olarak Türkçedir; **Dil / Language** ile English seçilebilir.
 Dil değişimi parametreleri veya hesaplanmış sonucu değiştirmez.
 **Devreye Almayı Başlat** yeni hesaplama yapar; sekme veya dil değişimi yapmaz.
-Sunucu yalnızca yerel `127.0.0.1` adresinde çalışır.
+Hesaplama arka plan iş parçacığında çalışır; aynı anda ikinci işlem başlatılmaz.
+Grafikler ve kayıt tabloları Qt penceresindedir. Dışa aktarımda yerel dosya
+kaydetme iletişim kutusu kullanılır.
 
 ## Devreye alma akışı
 
@@ -88,10 +92,12 @@ ve JSON anahtarları iki dilde de tekrarlanabilirlik için sabittir.
 - Ölçümlerle `Rs, Ld, Lq, psi_f, J, B` kestirimi, ölçüm tabanlı kalite kapıları ve sınırlandırılmış uyarlamalı denemeler.
 - Ayrı geliştirme/değerlendirme popülasyonları, başarısız ve bias içeren kabul örnekleri; M17 ölçüm/inverter/gecikme/bara/Rs hata modelleri.
 - Kararlı v1.0: **265 test**, **43 yerel C doğrulaması**, **31.484 Python/C örneği**; **16 doyum sınırı farkı** kanıtta korunur.
-- v1.1 CI: Python 3.11/3.12, GCC/Clang, başsız uygulama, dil değişimi ve gerçek paketlenmiş EXE için HTTP 200; çıkartılan ZIP yeniden sınanır ve SHA-256 üretilir.
+- v1.1 CI: Python 3.11/3.12, GCC/Clang, gerçek Qt pencere oluşturma, dil değişimi,
+  kabul/ret ve dışa aktarım. Paketlenmiş EXE ve boşluk içeren yola çıkartılan ZIP
+  Qt offscreen ortamında sınanır; SHA-256 üretilir. HTTP hazır olma testi kullanılmaz.
 
 [Doğrulama ayrıntıları](docs/v1_validation.md) · [v1.1 ürünleştirme](docs/v1_1_productization.md) ·
-[Mimari](docs/architecture.md) · [Mühendislik günlüğü](docs/engineering_log.md).
+[Masaüstü mimarisi](docs/desktop_architecture.md) · [v1.0 mimari kaydı](docs/architecture.md) · [Mühendislik günlüğü](docs/engineering_log.md).
 [Arayüz terminolojisi](docs/terminology.md).
 
 Tarayıcısız gerçek gösterim:
@@ -104,6 +110,10 @@ python -m pytest -q
 Bir kabul ve bir açık ret durumu hesaplanır. Depodaki v1.0 kanıtı yeniden
 etiketlenmez veya üzerine yazılmaz; yeni çalışmanın sürüm bilgisi ayrıdır.
 [v1.0 teknik başvuru ve deney komutları](README.v1.0.md).
+
+Eski Streamlit arayüzü yalnızca geliştirme için tutulur: `python -m pip install
+-r requirements-legacy.txt`, ardından `python -m app`. Windows masaüstü
+ürününe dahil edilmez; ana kullanım yolu değildir.
 
 ## Varsayımlar ve sınırlar
 

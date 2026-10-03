@@ -10,9 +10,9 @@ import shutil
 
 def create_archive(directory, output, version, smoke_result):
     directory, output = Path(directory).resolve(), Path(output).resolve()
-    if not json.loads(Path(smoke_result).read_text(encoding="utf-8"))["http_200"]:
+    if not json.loads(Path(smoke_result).read_text(encoding="utf-8"))["native_desktop_verified"]:
         raise ValueError("A successful packaged-EXE smoke test is required")
-    if not (directory/"PMSM Engineering App.exe").is_file():
+    if not (directory/"PMSM-Commissioning-Workbench.exe").is_file():
         raise FileNotFoundError("Missing portable executable")
     root = Path(__file__).resolve().parents[1]
     shutil.copy2(root/"LICENSE", directory/"LICENSE")
@@ -22,7 +22,7 @@ def create_archive(directory, output, version, smoke_result):
         "source_commit": os.environ.get("GITHUB_SHA"), "build_workflow": os.environ.get("GITHUB_RUN_ID"),
         "unsigned": True}, indent=2)+"\n", encoding="utf-8")
     output.mkdir(parents=True, exist_ok=True)
-    name = f"PMSM-Engineering-App-v{version}-Windows-x64"
+    name = f"PMSM-Commissioning-Workbench-v{version}-Windows-x64"
     archive = Path(shutil.make_archive(str(output/name), "zip", root_dir=directory.parent, base_dir=directory.name))
     with archive.open("rb") as file:
         digest = hashlib.file_digest(file, "sha256").hexdigest()

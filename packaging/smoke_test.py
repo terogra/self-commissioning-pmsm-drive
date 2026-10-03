@@ -1,97 +1,75 @@
-"""Start the actual packaged EXE from an unrelated directory and require HTTP 200.
+"""Run the actual windowed EXE, initialize native Qt and require a clean exit.
 
-All failures print exit code, stdout, stderr and listening-port diagnostics.
-No browser opens; no installed Python/Git is used by the child executable.
+Offscreen is a test-only Qt platform. Normal execution uses the native Windows
+platform/window/event loop. No socket, HTTP readiness or browser is involved.
 """
 
 import argparse
 import json
 import os
 from pathlib import Path
-import socket
 import subprocess
+import struct
+import sys
 import tempfile
 import time
-from urllib.request import urlopen
-from urllib.error import URLError
 
 
-def smoke_test(executable, output, port=18511, timeout=45):
+def smoke_test(executable, output, timeout=45):
     executable, output = Path(executable).resolve(), Path(output).resolve()
     output.mkdir(parents=True, exist_ok=True)
-    stdout, stderr = output/"stdout.log", output/"stderr.log"
+    report_path = output/"qt_startup.json"
+    report_path.unlink(missing_ok=True)
     started = time.monotonic()
     process = None
-    success = False
     failure = None
-    workspace = None
+    native = {}
+    subsystem = None
+    workspace = tempfile.TemporaryDirectory(prefix="pmsm unrelated cwd ")
     try:
-        with socket.socket() as probe:
-            probe.bind(("127.0.0.1", port))  # fail before launch if the test port is occupied
-        environment = dict(os.environ, PMSM_HEADLESS="1", PMSM_PORT=str(port))
-        for key in ("PYTHONPATH", "PYTHONHOME"):
+        if os.name == "nt":
+            binary = executable.read_bytes()
+            pe_offset = struct.unpack_from("<I", binary, 0x3c)[0]
+            subsystem = struct.unpack_from("<H", binary, pe_offset+24+68)[0]
+            if subsystem != 2: raise RuntimeError("EXE is not a windowed Windows GUI executable")
+        environment = dict(os.environ, QT_QPA_PLATFORM="offscreen")
+        for key in ("PYTHONPATH", "PYTHONHOME", "QT_PLUGIN_PATH", "QT_QPA_PLATFORM_PLUGIN_PATH"):
             environment.pop(key, None)
-        workspace = tempfile.TemporaryDirectory(prefix="pmsm unrelated cwd ")
-        with stdout.open("w", encoding="utf-8") as out, stderr.open("w", encoding="utf-8") as err:
-            flags = subprocess.CREATE_NEW_PROCESS_GROUP | subprocess.CREATE_NO_WINDOW if os.name == "nt" else 0
-            process = subprocess.Popen([str(executable)], cwd=workspace.name, env=environment,
-                stdout=out, stderr=err, creationflags=flags)
-            while time.monotonic()-started < timeout:
-                if process.poll() is not None:
-                    raise RuntimeError("Packaged executable exited before readiness")
-                try:
-                    with urlopen(f"http://127.0.0.1:{port}/_stcore/health", timeout=1) as response:
-                        healthy = response.status == 200
-                    with urlopen(f"http://127.0.0.1:{port}/", timeout=1) as response:
-                        body = response.read().decode("utf-8")
-                        success = healthy and response.status == 200 and "streamlit" in body.lower()
-                    if success:
-                        if process.poll() is not None:
-                            raise RuntimeError("Executable exited after HTTP response")
-                        break
-                except (URLError, TimeoutError, OSError):
-                    pass
-                time.sleep(.2)
-            if not success:
-                raise RuntimeError(f"No HTTP 200 readiness within {timeout} s")
-            print(f"Packaged EXE HTTP 200: 127.0.0.1:{port}; ready in {time.monotonic()-started:.3f} s", flush=True)
-            # A hidden Windows test process has no interactive console for
-            # Ctrl+C. It has no spawned Python child; terminate then wait.
-            process.terminate()
-            process.wait(timeout=10)
+        with (output/"stdout.log").open("w", encoding="utf-8") as out, (output/"stderr.log").open("w", encoding="utf-8") as err:
+            process = subprocess.Popen([str(executable), "--smoke-report", str(report_path)],
+                cwd=workspace.name, env=environment, stdout=out, stderr=err)
+            process.wait(timeout=timeout)
+        if process.returncode != 0: raise RuntimeError(f"Native executable exited with {process.returncode}")
+        native = json.loads(report_path.read_text(encoding="utf-8"))
+        if not all(native.get(name) for name in ("qt_window_initialized", "window_visible", "frozen")):
+            raise RuntimeError("Actual packaged Qt window was not initialized")
+        if native.get("qt_platform") != "offscreen" or native.get("forbidden_runtime_modules") != []:
+            raise RuntimeError("Unexpected Qt platform or web runtime dependency")
+        print(f"Native packaged Qt window initialized; clean exit; {time.monotonic()-started:.3f} s", flush=True)
     except Exception as exc:
         failure = str(exc)
     finally:
         if process is not None and process.poll() is None:
             process.kill()
             process.wait(timeout=10)
-        # Kill/wait MUST precede removal of a Windows process's locked cwd.
-        if workspace is not None:
-            try:
-                workspace.cleanup()
-            except OSError as exc:
-                failure = (failure+"; " if failure else "")+f"Temporary directory cleanup failed: {exc}"
-        report = {"http_200": success and failure is None, "port": port, "loopback": "127.0.0.1",
-            "elapsed_s": time.monotonic()-started, "exit_code_after_cleanup": None if process is None else process.returncode,
-            "failure": failure, "executable": str(executable)}
-        (output/"smoke_result.json").write_text(json.dumps(report, indent=2)+"\n", encoding="utf-8")
+        workspace.cleanup()
+        report = {"native_desktop_verified": failure is None, "elapsed_s": time.monotonic()-started,
+            "exit_code": None if process is None else process.returncode, "failure": failure,
+            "executable": str(executable), "windows_pe_subsystem": subsystem, "qt": native}
+        (output/"smoke_result.json").write_text(json.dumps(report, indent=2, ensure_ascii=False)+"\n", encoding="utf-8")
         if failure:
-            print("SMOKE FAILURE:", failure, flush=True)
-            print("Process exit code:", report["exit_code_after_cleanup"], flush=True)
-            for name, path in (("stdout", stdout), ("stderr", stderr)):
-                print(f"--- {name} ---\n{path.read_text(encoding='utf-8', errors='replace') if path.exists() else '(not created)'}", flush=True)
-            if os.name == "nt":
-                ports = subprocess.run(["netstat", "-ano"], capture_output=True, text=True).stdout
-                print("Relevant listening ports:\n"+"\n".join(line for line in ports.splitlines()
-                    if "LISTENING" in line and (f":{port} " in line or ":8501 " in line)), flush=True)
+            print("NATIVE SMOKE FAILURE:", failure, flush=True)
+            for path in (output/"stdout.log", output/"stderr.log"):
+                content = path.read_text(encoding="utf-8", errors="replace") if path.exists() else "(not created)"
+                print(path.name+":\n"+content, flush=True)
             raise RuntimeError(failure)
     return report
 
 
 if __name__ == "__main__":
+    sys.stdout.reconfigure(encoding="utf-8", errors="backslashreplace")
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--exe", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
-    parser.add_argument("--port", type=int, default=18511)
     args = parser.parse_args()
-    smoke_test(args.exe, args.output, args.port)
+    smoke_test(args.exe, args.output)

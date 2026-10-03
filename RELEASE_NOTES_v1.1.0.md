@@ -5,21 +5,22 @@ Henüz etiketlenmedi veya yayımlanmadı. Not tagged or released.
 ## Scope
 
 Turkish-first landing page, full English equivalent, centralized bilingual
-presentation and optional Windows x64 onedir distribution. Source execution
-with `python -m app` remains supported. This is productization, **not M20**.
+presentation in a native PySide6/Qt desktop and Windows x64 onedir distribution.
+Source execution is `python -m desktop`. The old Streamlit UI is an optional
+development-only interface. This is productization, **not M20**.
 
 ## Distribution
 
 Expected assets after independent review and publication:
 
-- `PMSM-Engineering-App-v1.1.0-Windows-x64.zip`
+- `PMSM-Commissioning-Workbench-v1.1.0-Windows-x64.zip`
 - `SHA256SUMS.txt`
 - GitHub's source ZIP/tar.gz
 
 During review use verified Actions artifacts or run from source. The portable
-EXE starts Streamlit in-process, binds only to loopback and opens a browser in
-normal mode. CI sets `PMSM_HEADLESS=1` and tests the built and extracted EXE.
-Required runtime/static resources and committed M18 parity data are bundled.
+EXE opens a native Qt window with no browser, HTTP server or persistent console.
+CI initializes the actual built and extracted Qt executable in offscreen mode.
+Qt plugins, Matplotlib resources and committed M18 parity data are bundled.
 The EXE is unsigned; SHA-256 and Actions provenance are not code signing.
 
 ## Engineering preservation

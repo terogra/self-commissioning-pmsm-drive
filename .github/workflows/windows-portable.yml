@@ -1,4 +1,4 @@
-name: Windows portable application
+name: Windows native desktop application
 
 on:
   push:
@@ -15,11 +15,12 @@ permissions:
 
 jobs:
   windows-package:
-    name: Windows x64 build, EXE runtime, ZIP and SHA-256
+    name: Windows x64 Qt build, native EXE, ZIP and SHA-256
     runs-on: windows-latest
     env:
       PYTHONNOUSERSITE: '1'
       PYTHONUSERBASE: ${{ github.workspace }}/build/isolated-user-site
+      QT_QPA_PLATFORM: offscreen
     outputs:
       version: ${{ steps.version.outputs.version }}
     steps:
@@ -40,27 +41,27 @@ jobs:
           if ($env:GITHUB_REF.StartsWith('refs/tags/') -and $env:GITHUB_REF_NAME -ne "v$appVersion") {
             throw "Tag does not match source version"
           }
-      - name: Localization and real headless application tests
-        run: python -m pytest -q tests/test_localization.py tests/test_windows_packaging.py tests/test_engineering_app.py tests/test_engineering_workflow.py
+      - name: Localization, native Qt, preservation and workflow tests (no Streamlit installed)
+        run: python -m pytest -q tests/test_localization.py tests/test_windows_packaging.py tests/test_desktop.py tests/test_engineering_app.py tests/test_engineering_workflow.py
       - name: Build actual onedir executable
         shell: pwsh
         run: |
           python -m PyInstaller --noconfirm --distpath dist --workpath build packaging/windows.spec 2>&1 | Tee-Object -FilePath package-build.log
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-      - name: Start packaged EXE and require loopback HTTP 200
-        run: python packaging/smoke_test.py --exe "dist/PMSM Engineering App/PMSM Engineering App.exe" --output package-diagnostics/build --port 18511
+      - name: Initialize the actual packaged native Qt window
+        run: python packaging/smoke_test.py --exe "dist/PMSM-Commissioning-Workbench/PMSM-Commissioning-Workbench.exe" --output package-diagnostics/build
       - name: Create ZIP and SHA-256 after runtime success
-        run: python packaging/archive.py --directory "dist/PMSM Engineering App" --output portable-artifacts --version "${{ steps.version.outputs.version }}" --smoke-result package-diagnostics/build/smoke_result.json
+        run: python packaging/archive.py --directory "dist/PMSM-Commissioning-Workbench" --output portable-artifacts --version "${{ steps.version.outputs.version }}" --smoke-result package-diagnostics/build/smoke_result.json
       - name: Extract ZIP into a path with spaces and test again
         shell: pwsh
         run: |
           $extractedPath = Join-Path $env:RUNNER_TEMP 'PMSM extracted with spaces'
-          Expand-Archive -LiteralPath "portable-artifacts/PMSM-Engineering-App-v${{ steps.version.outputs.version }}-Windows-x64.zip" -DestinationPath $extractedPath
-          $appExe = Join-Path $extractedPath 'PMSM Engineering App/PMSM Engineering App.exe'
-          python packaging/smoke_test.py --exe $appExe --output package-diagnostics/extracted --port 18512
+          Expand-Archive -LiteralPath "portable-artifacts/PMSM-Commissioning-Workbench-v${{ steps.version.outputs.version }}-Windows-x64.zip" -DestinationPath $extractedPath
+          $appExe = Join-Path $extractedPath 'PMSM-Commissioning-Workbench/PMSM-Commissioning-Workbench.exe'
+          python packaging/smoke_test.py --exe $appExe --output package-diagnostics/extracted
       - uses: actions/upload-artifact@v6
         with:
-          name: PMSM-Engineering-App-v${{ steps.version.outputs.version }}-Windows-x64
+          name: PMSM-Commissioning-Workbench-v${{ steps.version.outputs.version }}-Windows-x64
           path: |
             portable-artifacts/*.zip
             portable-artifacts/SHA256SUMS.txt
@@ -73,6 +74,7 @@ jobs:
           path: |
             package-build.log
             package-diagnostics/
+            ~/AppData/Local/PMSMCommissioningWorkbench/logs/
           if-no-files-found: warn
 
   release-assets:
@@ -85,7 +87,7 @@ jobs:
     steps:
       - uses: actions/download-artifact@v7
         with:
-          name: PMSM-Engineering-App-v${{ needs.windows-package.outputs.version }}-Windows-x64
+          name: PMSM-Commissioning-Workbench-v${{ needs.windows-package.outputs.version }}-Windows-x64
           path: portable-artifacts
       - name: Upload only to a release already created by the maintainer
         env:

@@ -10,6 +10,8 @@ permissions:
 jobs:
   tests:
     runs-on: ubuntu-latest
+    env:
+      QT_QPA_PLATFORM: offscreen
     strategy:
       matrix:
         python-version: ['3.11', '3.12']
@@ -19,7 +21,7 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
           cache: pip
-      - run: python -m pip install -r requirements.txt
+      - run: python -m pip install -r requirements-legacy.txt
       - run: python -m pytest -q
   firmware-parity:
     name: C99 compile and parity (${{ matrix.compiler }})
@@ -41,10 +43,11 @@ jobs:
       - name: Reproduce generated configuration and quantitative evidence
         run: python -m experiments.firmware_parity --output "$RUNNER_TEMP/firmware_parity"
   engineering-app:
-    name: Headless v1 application and demo
+    name: Native Qt application and deterministic demo
     runs-on: ubuntu-latest
     env:
       MPLBACKEND: Agg
+      QT_QPA_PLATFORM: offscreen
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-python@v7
@@ -52,7 +55,7 @@ jobs:
           python-version: '3.12'
           cache: pip
       - run: python -m pip install -r requirements.txt
-      - name: Real backend and Streamlit AppTest (no browser)
-        run: python -m pytest -q tests/test_engineering_workflow.py tests/test_engineering_app.py
+      - name: Real backend and native Qt (no browser)
+        run: python -m pytest -q tests/test_engineering_workflow.py tests/test_engineering_app.py tests/test_desktop.py
       - name: One-command demonstration
         run: python -m experiments.v1_demo --output "$RUNNER_TEMP/v1_demo"

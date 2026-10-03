@@ -154,6 +154,7 @@ def test_one_command_demo_reproduces_committed_results_and_headers(tmp_path):
 
 
 def test_dashboard_headless_smoke_and_real_accept_reject_cycle():
+    pytest.importorskip("streamlit", reason="Optional legacy web UI is not a desktop runtime dependency")
     from streamlit.testing.v1 import AppTest
     from app import dashboard  # import must not launch a server or run commissioning
     assert callable(dashboard.main)

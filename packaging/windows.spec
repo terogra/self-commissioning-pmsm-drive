@@ -1,20 +1,21 @@
-"""Windows x64 onedir build; source/static resources retain repository layout."""
+"""Native Qt Windows x64 onedir product, with no console or web runtime."""
 
 from pathlib import Path
-from PyInstaller.utils.hooks import collect_all, collect_submodules, copy_metadata
+from PyInstaller.utils.hooks import collect_submodules
 
 root = Path(SPECPATH).parent
-datas, binaries, hiddenimports = collect_all("streamlit")
-datas += copy_metadata("streamlit", recursive=True)
-datas += [(str(p), "app") for p in (root/"app").glob("*.py")]
-datas += [(str(root/"results/firmware_parity/parity_summary.json"), "results/firmware_parity")]
-hiddenimports += collect_submodules("app") + collect_submodules("src") + collect_submodules("experiments")
-hiddenimports += collect_submodules("uvicorn")
+datas = [(str(root/"results/firmware_parity/parity_summary.json"), "results/firmware_parity")]
 a = Analysis([str(root/"packaging/launcher.py")], pathex=[str(root)],
-    binaries=binaries, datas=datas, hiddenimports=hiddenimports,
-    hookspath=[], runtime_hooks=[], excludes=["tkinter"],
-    hooksconfig={"matplotlib": {"backends": ["Agg"]}}, noarchive=False)
+    binaries=[], datas=datas, hiddenimports=collect_submodules("src"),
+    hookspath=[], runtime_hooks=[],
+    excludes=["streamlit", "uvicorn", "flask", "fastapi", "pandas", "pyarrow", "tkinter", "PyQt5", "PyQt6",
+              "PySide2", "PySide6.QtWebEngineCore", "PySide6.QtWebEngineWidgets"],
+    hooksconfig={"matplotlib": {"backends": ["Agg", "QtAgg"]}}, noarchive=False)
+# Qt uses Windows' ICU API. An unrelated Poppler DLL on the build PATH can
+# shadow System32/icuuc.dll with versioned ICU exports and break QtCore import.
+# Resolve this OS component through Windows, never bundle an ambient ICU DLL.
+a.binaries = [entry for entry in a.binaries if Path(entry[0]).name.lower() != "icuuc.dll"]
 pyz = PYZ(a.pure)
-exe = EXE(pyz, a.scripts, [], exclude_binaries=True, name="PMSM Engineering App",
-    debug=False, bootloader_ignore_signals=False, strip=False, upx=False, console=True)
-coll = COLLECT(exe, a.binaries, a.datas, strip=False, upx=False, name="PMSM Engineering App")
+exe = EXE(pyz, a.scripts, [], exclude_binaries=True, name="PMSM-Commissioning-Workbench",
+    debug=False, bootloader_ignore_signals=False, strip=False, upx=False, console=False)
+coll = COLLECT(exe, a.binaries, a.datas, strip=False, upx=False, name="PMSM-Commissioning-Workbench")
