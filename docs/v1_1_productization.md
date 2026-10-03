@@ -4,8 +4,8 @@
 
 Existing PR #17, branch `codex/v1.1.0-productization`. The native migration starts
 at `ff20c89238d4b620db8198aadaeedcd76b5ebcae`; baseline **283 passed in 197.59 s**
-on local Python 3.12.5 including native GCC checks. Version stays 1.1.0, an
-unreleased candidate. This adds no engineering milestone or algorithm.
+on local Python 3.12.5 including native GCC checks. Version 1.1.0 is the released productization baseline. This adds no
+engineering milestone or algorithm.
 
 The initial browser-hosted EXE did not meet the intended desktop requirement.
 Its HTTP readiness evidence was valid for that earlier implementation, but
@@ -131,4 +131,4 @@ No MCU deployment, target timing, hardware validation or MISRA claim is made.
 Quality acceptance can coexist with biased estimates. Full dq transients may
 enter the band earlier than M16's quasi-steady estimate.
 
-No merge, tag or release performed.
+PR #17 was merged before release finalization; v1.1.0 publication uses the validated native package workflow.

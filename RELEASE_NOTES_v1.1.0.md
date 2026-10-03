@@ -1,45 +1,47 @@
-# v1.1.0 — sürüm adayı / release candidate
+# v1.1.0
 
-Henüz etiketlenmedi veya yayımlanmadı. Not tagged or released.
+## Öne çıkanlar / Highlights
 
-## Scope
+- Native **PySide6/Qt** masaüstü uygulaması; tarayıcı, localhost arayüzü veya kalıcı konsol yok.
+- Türkçe varsayılan arayüz ve tam English seçeneği.
+- Varsayılan kullanımda bilinmeyen `Rs, Ld, Lq, psi_f, J, B` değerlerini girme zorunluluğu yok; bunlar ölçümlerden kestirilir.
+- Simülasyon gerçek değerleri **Gelişmiş Simülasyon Ayarları** altında gizlidir ve kestiriciye verilmez.
+- `python -m app` ve Windows EXE aynı native uygulamayı açar.
+- Windows x64 için doğrulanmış PyInstaller `onedir` paketi ve SHA-256 bütünlük dosyası.
+- M1–M19 mühendislik algoritmaları, kalite eşikleri, M14/M16/M17 semantiği ve M18 C99 çekirdeği değiştirilmemiştir.
 
-Turkish-first landing page, full English equivalent, centralized bilingual
-presentation in a native PySide6/Qt desktop and Windows x64 onedir distribution.
-Source execution is `python -m app`, opening the same native Qt application.
-Unknown motor parameters are hidden from the default input workflow: the
-simulation model is in a collapsed advanced section, and editable prior values
-require an explicit Custom selection. All numerical defaults remain unchanged.
-The old Streamlit UI (`python -m app.legacy`) is an optional
-development-only interface. This is productization, **not M20**.
+## Windows
 
-## Distribution
-
-Expected assets after independent review and publication:
+Sürüm varlıkları:
 
 - `PMSM-Commissioning-Workbench-v1.1.0-Windows-x64.zip`
 - `SHA256SUMS.txt`
-- GitHub's source ZIP/tar.gz
+- GitHub source ZIP/tar.gz
 
-During review use verified Actions artifacts or run from source. The portable
-EXE opens a native Qt window with no browser, HTTP server or persistent console.
-CI initializes the actual built and extracted Qt executable in offscreen mode.
-Qt plugins, Matplotlib resources and committed M18 parity data are bundled.
-The EXE is unsigned; SHA-256 and Actions provenance are not code signing.
+ZIP'in tamamını çıkartın ve `PMSM-Commissioning-Workbench.exe` dosyasını çalıştırın.
+`_internal` klasörünü EXE ile birlikte tutun. EXE imzasızdır; Windows SmartScreen
+uyarabilir. SHA-256 bütünlük kontrolüdür, kod imzası değildir.
 
-## Engineering preservation
+## Kaynaktan / From source
 
-No model, transform, estimator, controller, acceptance threshold, retry budget,
-feasibility semantics, M17 definitions, C equations or parity tolerance changes.
-Historical results/docs remain intact. Current export version provenance may
-differ from historical v1.0 headers; numeric content remains exact.
-Original technical README is archived verbatim as `README.v1.0.md`.
+```powershell
+python -m pip install -r requirements.txt
+python -m app
+```
 
-## Validation and limits
+Eski Streamlit arayüzü yalnızca geliştirme içindir ve `python -m app.legacy`
+ile ayrı olarak çalıştırılır.
 
-See [productization evidence](docs/v1_1_productization.md) and PR CI for exact
-Python/compiler/localization/EXE smoke results. Compilation alone does not
-satisfy acceptance. No MCU deployment, target timing, hardware validation,
-MISRA or physical safety claim. Existing bias/identifiability/model limits remain.
+## Doğrulama / Validation
 
-No merge, v1.1 tag or release publication is performed by this change.
+v1.1.0; Python 3.11/3.12 testleri, GCC/Clang C99 parity, native Qt kabul/ret
+akışları, paketlenmiş Windows EXE başlangıcı ve boşluk içeren dizine çıkartılmış
+ZIP tekrar testiyle doğrulanmıştır. Derleme tek başına kabul ölçütü değildir.
+
+## Kapsam ve sınırlar / Scope and limits
+
+Bu sürüm ürünleştirme ve dağıtım çalışmasıdır; **M20 değildir**. Uygulama halen
+simülasyon tabanlıdır. MCU dağıtımı, gerçek motor doğrulaması, hedef zamanlama,
+MISRA uygunluğu veya fiziksel güvenlik sertifikasyonu iddia edilmez. İyi hız
+izleme tek başına doğru parametre kestirimini kanıtlamaz. M16 yarı kararlı süre
+kestirimi evrensel bir fiziksel alt sınır değildir.

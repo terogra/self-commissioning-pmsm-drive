@@ -1,6 +1,6 @@
 # Changelog
 
-## 1.1.0 — release candidate, not released
+## 1.1.0 — 2026-10-03
 
 - Turkish-first README and full English landing page; v1.0 reference preserved.
 - Centralized Turkish/English presentation with stable widget/backend state.
