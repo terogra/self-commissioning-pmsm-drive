@@ -1,0 +1,383 @@
+{
+  "attempts": [
+    {
+      "action": null,
+      "configuration": {
+        "current_noise_std_a": 0.01,
+        "d_hold_samples": 23,
+        "d_voltage_v": 1.2,
+        "dc_bus_voltage_v": 24.0,
+        "duration_s": 0.4,
+        "integration_dt_s": 2e-05,
+        "q_hold_samples": 31,
+        "q_voltage_v": 1.4,
+        "sample_dt_s": 0.0001,
+        "seed": 1901,
+        "speed_noise_std_rad_s": 0.02,
+        "voltage_noise_std_v": 0.01
+      },
+      "decision": "accepted",
+      "diagnostics": {
+        "component_snr": null,
+        "effective_rank": 3,
+        "noise_information_fraction": 0.00038727922881826385,
+        "relative_sensitivity": [
+          0.0002554506205849695,
+          0.000742214250098558,
+          0.0005113742251184295
+        ],
+        "residual_rmse": 1.5157102474876279e-05,
+        "scaled_condition_number": 1.0012059144102208,
+        "split_relative_difference": 0.0006540670068508724
+      },
+      "estimated_parameters": {
+        "Ld": 0.0011998665089995645,
+        "Lq": 0.0008998205646831202,
+        "Rs": 0.4999714668704501
+      },
+      "estimator_succeeded": true,
+      "next_configuration": null,
+      "number": 1,
+      "quality": {
+        "accepted": true,
+        "checks": [
+          {
+            "limit": 0,
+            "name": "standstill.rank_deficiency",
+            "passed": true,
+            "value": 0
+          },
+          {
+            "limit": 0,
+            "name": "standstill.insufficient_windows",
+            "passed": true,
+            "value": -390
+          },
+          {
+            "limit": 100.0,
+            "name": "standstill.conditioning",
+            "passed": true,
+            "value": 1.0012059144102208
+          },
+          {
+            "limit": 0.05,
+            "name": "standstill.noise_information",
+            "passed": true,
+            "value": 0.00038727922881826385
+          },
+          {
+            "limit": 0.03333333333333333,
+            "name": "standstill.relative_uncertainty",
+            "passed": true,
+            "value": 0.000742214250098558
+          },
+          {
+            "limit": 0.1,
+            "name": "standstill.inconsistent_halves",
+            "passed": true,
+            "value": 0.0006540670068508724
+          },
+          {
+            "limit": 1.0,
+            "name": "standstill.excessive_residual",
+            "passed": true,
+            "value": 0.25993424093292156
+          }
+        ],
+        "estimator_failure": null,
+        "rejection_reasons": []
+      },
+      "stage": "standstill"
+    },
+    {
+      "action": null,
+      "configuration": {
+        "current_noise_std_a": 0.01,
+        "d_hold_samples": 19,
+        "d_voltage_v": 0.7,
+        "dc_bus_voltage_v": 24.0,
+        "duration_s": 0.3,
+        "integration_dt_s": 2e-05,
+        "q_hold_samples": 29,
+        "q_voltage_base_v": 5,
+        "q_voltage_perturb_v": 0.7,
+        "sample_dt_s": 0.0001,
+        "seed": 1902,
+        "speed_noise_std_rad_s": 0.02,
+        "speed_rpm": 600.0,
+        "voltage_noise_std_v": 0.01
+      },
+      "decision": "accepted",
+      "diagnostics": {
+        "component_snr": null,
+        "effective_rank": 1,
+        "noise_information_fraction": 9.625487342980771e-09,
+        "relative_sensitivity": [
+          4.8005261655521115e-05
+        ],
+        "residual_rmse": 1.3403750320368459e-05,
+        "scaled_condition_number": 1.0,
+        "split_relative_difference": 1.3408141209915152e-05
+      },
+      "estimated_parameters": {
+        "psi_f": 0.02199917603768355
+      },
+      "estimator_succeeded": true,
+      "next_configuration": null,
+      "number": 1,
+      "quality": {
+        "accepted": true,
+        "checks": [
+          {
+            "limit": 0,
+            "name": "rotating.rank_deficiency",
+            "passed": true,
+            "value": 0
+          },
+          {
+            "limit": 0,
+            "name": "rotating.insufficient_windows",
+            "passed": true,
+            "value": -290
+          },
+          {
+            "limit": 100.0,
+            "name": "rotating.conditioning",
+            "passed": true,
+            "value": 1.0
+          },
+          {
+            "limit": 0.05,
+            "name": "rotating.noise_information",
+            "passed": true,
+            "value": 9.625487342980771e-09
+          },
+          {
+            "limit": 0.03333333333333333,
+            "name": "rotating.relative_uncertainty",
+            "passed": true,
+            "value": 4.8005261655521115e-05
+          },
+          {
+            "limit": 0.1,
+            "name": "rotating.inconsistent_halves",
+            "passed": true,
+            "value": 1.3408141209915152e-05
+          },
+          {
+            "limit": 1.0,
+            "name": "rotating.excessive_residual",
+            "passed": true,
+            "value": 0.1410506217961836
+          },
+          {
+            "limit": 0,
+            "name": "rotating.insufficient_speed",
+            "passed": true,
+            "value": -211.01861278735356
+          },
+          {
+            "limit": 0.1,
+            "name": "rotating.weak_back_emf",
+            "passed": true,
+            "value": 0.0023957149995518768
+          }
+        ],
+        "estimator_failure": null,
+        "rejection_reasons": []
+      },
+      "stage": "rotating"
+    },
+    {
+      "action": null,
+      "configuration": {
+        "control_dt_s": 4e-05,
+        "current_noise_std_a": 0.01,
+        "current_reference_limit_a": 1.0,
+        "dc_bus_voltage_v": 24.0,
+        "iq_plateaus_a": [
+          0.8,
+          0.0,
+          0.4,
+          -0.4,
+          0.0,
+          0.8,
+          0.0,
+          0.4,
+          -0.4,
+          0.0
+        ],
+        "plateau_duration_s": 0.25,
+        "sample_dt_s": 0.001,
+        "seed": 1903,
+        "speed_noise_std_rad_s": 0.05
+      },
+      "decision": "accepted",
+      "diagnostics": {
+        "component_snr": [
+          69.45833330784534,
+          13.547795285298736
+        ],
+        "effective_rank": 2,
+        "noise_information_fraction": 0.00019606175380695471,
+        "relative_sensitivity": [
+          0.0011536360048014685,
+          0.002777477972477091
+        ],
+        "residual_rmse": 3.914325371369332e-05,
+        "scaled_condition_number": 1.0921890027506511,
+        "split_relative_difference": 0.0034537711585897993
+      },
+      "estimated_parameters": {
+        "B": 0.00019975742406827315,
+        "J": 0.0005491416419952162
+      },
+      "estimator_succeeded": true,
+      "next_configuration": null,
+      "number": 1,
+      "quality": {
+        "accepted": true,
+        "checks": [
+          {
+            "limit": 0,
+            "name": "mechanical.rank_deficiency",
+            "passed": true,
+            "value": 0
+          },
+          {
+            "limit": 0,
+            "name": "mechanical.insufficient_windows",
+            "passed": true,
+            "value": -40
+          },
+          {
+            "limit": 100.0,
+            "name": "mechanical.conditioning",
+            "passed": true,
+            "value": 1.0921890027506511
+          },
+          {
+            "limit": 0.05,
+            "name": "mechanical.noise_information",
+            "passed": true,
+            "value": 0.00019606175380695471
+          },
+          {
+            "limit": 0.03333333333333333,
+            "name": "mechanical.relative_uncertainty",
+            "passed": true,
+            "value": 0.002777477972477091
+          },
+          {
+            "limit": 0,
+            "name": "mechanical.insufficient_excitation",
+            "passed": true,
+            "value": -10.547795285298736
+          },
+          {
+            "limit": 0.1,
+            "name": "mechanical.inconsistent_halves",
+            "passed": true,
+            "value": 0.0034537711585897993
+          },
+          {
+            "limit": 1.0,
+            "name": "mechanical.excessive_residual",
+            "passed": true,
+            "value": 0.2633999653569579
+          }
+        ],
+        "estimator_failure": null,
+        "rejection_reasons": []
+      },
+      "stage": "mechanical"
+    }
+  ],
+  "measurement_records": [
+    {
+      "configuration": {
+        "current_noise_std_a": 0.01,
+        "d_hold_samples": 23,
+        "d_voltage_v": 1.2,
+        "dc_bus_voltage_v": 24.0,
+        "duration_s": 0.4,
+        "integration_dt_s": 2e-05,
+        "q_hold_samples": 31,
+        "q_voltage_v": 1.4,
+        "sample_dt_s": 0.0001,
+        "seed": 1901,
+        "speed_noise_std_rad_s": 0.02,
+        "voltage_noise_std_v": 0.01
+      },
+      "measurement_failure": null,
+      "noise_metadata": {
+        "current_std_a": 0.01,
+        "speed_std_rad_s": 0.02,
+        "voltage_std_v": 0.01
+      },
+      "number": 1,
+      "sample_count": 4001,
+      "stage": "standstill"
+    },
+    {
+      "configuration": {
+        "current_noise_std_a": 0.01,
+        "d_hold_samples": 19,
+        "d_voltage_v": 0.7,
+        "dc_bus_voltage_v": 24.0,
+        "duration_s": 0.3,
+        "integration_dt_s": 2e-05,
+        "q_hold_samples": 29,
+        "q_voltage_base_v": 5,
+        "q_voltage_perturb_v": 0.7,
+        "sample_dt_s": 0.0001,
+        "seed": 1902,
+        "speed_noise_std_rad_s": 0.02,
+        "speed_rpm": 600.0,
+        "voltage_noise_std_v": 0.01
+      },
+      "measurement_failure": null,
+      "noise_metadata": {
+        "current_std_a": 0.01,
+        "speed_std_rad_s": 0.02,
+        "voltage_std_v": 0.01
+      },
+      "number": 1,
+      "sample_count": 3001,
+      "stage": "rotating"
+    },
+    {
+      "configuration": {
+        "control_dt_s": 4e-05,
+        "current_noise_std_a": 0.01,
+        "current_reference_limit_a": 1.0,
+        "dc_bus_voltage_v": 24.0,
+        "iq_plateaus_a": [
+          0.8,
+          0.0,
+          0.4,
+          -0.4,
+          0.0,
+          0.8,
+          0.0,
+          0.4,
+          -0.4,
+          0.0
+        ],
+        "plateau_duration_s": 0.25,
+        "sample_dt_s": 0.001,
+        "seed": 1903,
+        "speed_noise_std_rad_s": 0.05
+      },
+      "measurement_failure": null,
+      "noise_metadata": {
+        "current_std_a": 0.01,
+        "speed_std_rad_s": 0.05,
+        "voltage_std_v": 0.0
+      },
+      "number": 1,
+      "sample_count": 2501,
+      "stage": "mechanical"
+    }
+  ]
+}

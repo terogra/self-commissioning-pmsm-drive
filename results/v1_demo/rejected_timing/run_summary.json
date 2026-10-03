@@ -1,0 +1,242 @@
+{
+  "bundle_schema": "pmsm-engineering-run-v1",
+  "control_metrics": null,
+  "controller_constants": {
+    "current": {
+      "anti_windup_gain": 1884.9555921538758,
+      "dc_bus_voltage_v": 24.0,
+      "ki_d": 753.9822368615504,
+      "ki_q": 753.9822368615504,
+      "kp_d": 1.8849555921538759,
+      "kp_q": 1.8849555921538759,
+      "voltage_limit_v": 13.85640646055102
+    },
+    "speed": {
+      "iq_limit_a": 5.0,
+      "ki": 5.263789013914324,
+      "kp": 0.16688494152478894,
+      "torque_constant_nm_per_a": 0.15000000000000002
+    }
+  },
+  "controller_parameters": {
+    "B": 0.0001,
+    "J": 0.0002,
+    "Ld": 0.001,
+    "Lq": 0.001,
+    "Rs": 0.4,
+    "pole_pairs": 4,
+    "psi_f": 0.025
+  },
+  "dynamic_feasibility": null,
+  "estimator_visible_configuration": {
+    "current_limit_a": 5.0,
+    "dc_bus_voltage_v": 24.0,
+    "deadline_s": 0.6,
+    "exposure": "combined",
+    "hold_time_s": 0.1,
+    "load_step_time_s": 0.3,
+    "load_torque_nm": 0.05,
+    "mechanical": {
+      "control_dt_s": 4e-05,
+      "current_noise_std_a": 0.01,
+      "current_reference_limit_a": 1.0,
+      "dc_bus_voltage_v": 24.0,
+      "iq_plateaus_a": [
+        0.8,
+        0.0,
+        0.4,
+        -0.4,
+        0.0,
+        0.8,
+        0.0,
+        0.4,
+        -0.4,
+        0.0
+      ],
+      "plateau_duration_s": 0.25,
+      "sample_dt_s": 0.001,
+      "seed": 1903,
+      "speed_noise_std_rad_s": 0.05
+    },
+    "mode": "adaptive",
+    "prior_assumptions": {
+      "B": 0.0001,
+      "J": 0.0002,
+      "Ld": 0.001,
+      "Lq": 0.001,
+      "Rs": 0.4,
+      "pole_pairs": 4,
+      "psi_f": 0.025
+    },
+    "rotating": {
+      "current_noise_std_a": 0.01,
+      "d_hold_samples": 19,
+      "d_voltage_v": 0.7,
+      "dc_bus_voltage_v": 24.0,
+      "duration_s": 0.3,
+      "integration_dt_s": 2e-05,
+      "q_hold_samples": 29,
+      "q_voltage_base_v": 5,
+      "q_voltage_perturb_v": 0.7,
+      "sample_dt_s": 0.0001,
+      "seed": 1902,
+      "speed_noise_std_rad_s": 0.02,
+      "speed_rpm": 600.0,
+      "voltage_noise_std_v": 0.01
+    },
+    "scenario": "timing_one_sample",
+    "seed": 1901,
+    "simulation_dt_s": 4e-05,
+    "simulation_duration_s": 0.6,
+    "speed_target_rpm": 1000.0,
+    "standstill": {
+      "current_noise_std_a": 0.01,
+      "d_hold_samples": 23,
+      "d_voltage_v": 1.2,
+      "dc_bus_voltage_v": 24.0,
+      "duration_s": 0.4,
+      "integration_dt_s": 2e-05,
+      "q_hold_samples": 31,
+      "q_voltage_v": 1.4,
+      "sample_dt_s": 0.0001,
+      "seed": 1901,
+      "speed_noise_std_rad_s": 0.02,
+      "voltage_noise_std_v": 0.01
+    }
+  },
+  "evidence_kind": "CURRENT RUN RESULTS",
+  "firmware_available": false,
+  "firmware_configuration": null,
+  "metadata": {
+    "generated_at_utc": "2026-10-03T00:11:36.590898+00:00",
+    "release_status": "release candidate",
+    "repository_dirty": true,
+    "repository_revision": "fe0173120fbc64a5accb05ca474a86892ec569e1",
+    "version": "1.0.0"
+  },
+  "nonfinite_diagnostic_serialization": "Nonfinite diagnostic values become JSON null, never a finite result.",
+  "nonidealities": {
+    "actuation": {
+      "bus_sag_fraction": 0.0,
+      "phase_sign_voltage_drop_v": 0.0
+    },
+    "current": {
+      "phase_gains": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "phase_offsets_a": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "quantum_a": 0.0
+    },
+    "drift": {
+      "rs_factor": 1.0
+    },
+    "frame": {
+      "electrical_angle_bias_rad": 0.0
+    },
+    "timing": {
+      "feedback_delay_steps": 1,
+      "record_current_delay_samples": 1
+    },
+    "voltage": {
+      "dq_gains": [
+        1.0,
+        1.0
+      ],
+      "dq_offsets_v": [
+        0.0,
+        0.0
+      ],
+      "quantum_v": 0.0,
+      "source": "command"
+    }
+  },
+  "quality": {
+    "accepted": false,
+    "checks": [
+      {
+        "limit": 0,
+        "name": "standstill.rank_deficiency",
+        "passed": true,
+        "value": 0
+      },
+      {
+        "limit": 0,
+        "name": "standstill.insufficient_windows",
+        "passed": true,
+        "value": -390
+      },
+      {
+        "limit": 100.0,
+        "name": "standstill.conditioning",
+        "passed": true,
+        "value": 1.0026856200502245
+      },
+      {
+        "limit": 0.05,
+        "name": "standstill.noise_information",
+        "passed": true,
+        "value": 0.0003889782992004982
+      },
+      {
+        "limit": 0.03333333333333333,
+        "name": "standstill.relative_uncertainty",
+        "passed": true,
+        "value": 0.000751255376556865
+      },
+      {
+        "limit": 0.1,
+        "name": "standstill.inconsistent_halves",
+        "passed": true,
+        "value": 0.017690519195231597
+      },
+      {
+        "limit": 1.0,
+        "name": "standstill.excessive_residual",
+        "passed": false,
+        "value": 1.6977787767548365
+      }
+    ],
+    "estimator_failure": null,
+    "rejection_reasons": [
+      "standstill.excessive_residual"
+    ]
+  },
+  "simulation_evaluation_ground_truth": {
+    "parameter_absolute_error_percent": {
+      "Ld": 3.545061500147548,
+      "Lq": 4.380313203450681,
+      "Rs": 5.433159479764882
+    },
+    "truth": {
+      "B": 0.0002,
+      "J": 0.00055,
+      "Ld": 0.0012,
+      "Lq": 0.0009,
+      "Rs": 0.5,
+      "pole_pairs": 4,
+      "psi_f": 0.022
+    }
+  },
+  "status": "REJECTED",
+  "steady_classification": null,
+  "steady_feasibility": null,
+  "supervisor_state": "terminal_rejected",
+  "supervisor_terminal_reason": "standstill.model_residual_terminal",
+  "trace_export": {
+    "additional_rows": "final sample and both saturation-state transitions",
+    "metrics_use_full_trace": true,
+    "uniform_stride": 25
+  },
+  "warnings": [
+    "Mechanical commissioning assumes explicitly known zero external load.",
+    "M16 prediction uses constant load from t=0; closed-loop validation uses the configured load step.",
+    "Rejected commissioning: prior parameters retained; commissioned operation and firmware export unavailable.",
+    "Configured M17 impairments are simulation stress/error models, not hardware specifications."
+  ]
+}

@@ -1,5 +1,150 @@
 # Self-Commissioning PMSM Drive
 
+## v1.0.0 release candidate
+
+A local engineering application for **simulation-based PMSM self-commissioning**.
+It acquires simulated sampled measurements, identifies `Rs/Ld/Lq/psi_f/J/B`,
+applies measured-data quality gates, optionally retries diagnosed weak tests,
+retunes the existing controllers, assesses operation, and exports an accepted
+configuration for the portable C99 controller. The dashboard calls the real
+repository backend; it contains no separate estimator or tuning equations.
+
+### Run the application
+
+From the repository root with Python 3.11 or 3.12:
+
+```sh
+python -m pip install -r requirements.txt
+python -m app
+```
+
+The Streamlit application binds to `127.0.0.1`. Configure a case and select
+**Run Commissioning**. Numerical work runs only on that action; changing a
+display tab does not repeat commissioning or compile C. The version is defined
+once in `src/version.py`. This is release preparation: no v1 tag or GitHub
+release has been created.
+
+### What the application does
+
+```mermaid
+flowchart LR
+    C[Case and seed] --> M[Sampled measurements]
+    M --> E[Rs / Ld / Lq then psi_f]
+    E --> J[J / B from reconstructed torque]
+    J --> Q[Measured-data quality gates]
+    Q -->|Diagnosed retry| A[Bounded adaptive supervisor]
+    A --> M
+    Q -->|Rejected| R[Retain prior controller / block export]
+    Q -->|Full accepted| T[Existing controller retuning]
+    T --> F[M14 steady / M16 dynamic analysis]
+    T --> V[Hidden-plant simulation with optional M17 errors]
+    T --> H[M18 firmware configuration]
+```
+
+The wide dashboard exposes each stage's estimates, units, fit plots, checks,
+rejection reasons, failures, attempts and next retry settings. It shows prior
+assumptions and active controller constants obtained from the existing
+constructors. Operating analysis keeps steady classification, quasi-steady
+timing, and controller-aware prediction separate. **The quasi-steady estimate
+is not a certified physical lower bound.** The full dq transient simulation can
+enter the speed band earlier, as the preserved M16 evaluation demonstrated.
+
+Simulation truth, percentage errors and true-frame validation traces appear
+only under **Simulation evaluation / ground truth**. The estimators receive
+measurement records; gates and retries receive no true motor parameters or
+post-hoc control outcomes. Known pole pairs and known zero external load during
+mechanical commissioning remain explicit assumptions. Actual operation uses a
+configured load step, whereas M16 prediction uses constant load from time zero.
+
+Exact M17 presets cover current/voltage measurement errors, angle bias, timing
+delay, averaged inverter voltage error, bus sag, resistance drift and combined
+errors. Their values and phase exposure are inspectable. Plots distinguish
+requested, limited-command and terminal voltage, nominal/actual bus limits,
+measured/true currents, and both saturation states. These are simulation stress
+models, not hardware specifications. Good tracking does not prove accurate
+commissioning; any statement about the current run is derived post hoc.
+
+### Reproduce the v1 demonstration
+
+```sh
+python -m experiments.v1_demo
+```
+
+This computes two predeclared cases through the same headless orchestration API,
+without loading historical results as inputs. Both use seed **1901**, a 24 V
+nominal bus, a 1000 rpm target, a 5 A iq limit, and a 0.05 N m load step at 0.3 s.
+
+| Result | Nominal, one-shot | One-sample timing delay, adaptive |
+| --- | --- | --- |
+| Overall commissioning | FULL ACCEPTED | REJECTED |
+| Attempts | 3 accepted stages | 1 standstill attempt; terminal rejection |
+| Named reason | None | `standstill.excessive_residual` |
+| Supervisor terminal reason | Not used | `standstill.model_residual_terminal` |
+| Controller parameters | Six identified values | All prior assumptions retained |
+| Steady operation | `feasible` | Not run |
+| Controller-aware dynamic success | True | Not run |
+| Post-load speed RMSE | 1.6072373104 rpm | Not run |
+| True-frame iq tracking RMSE | 0.00302036187 A | Not run |
+| Maximum post-load speed deviation | 5.2102936790 rpm | Not run |
+| Recovery time (existing +/-10 rpm band) | 0 s; excursion remains within band | Not run |
+| Command / actual-bus saturation fraction | 0 / 0 | Not run |
+| Firmware header | Available | Blocked |
+
+Nominal absolute estimation errors are Rs **0.00570663%**, Ld **0.01112425%**,
+Lq **0.01993726%**, psi_f **0.00374528%**, J **0.15606509%**, B **0.12128797%**.
+M16 predicts first entry at **0.10172 s** and hold completion at **0.20172 s**;
+its quasi-steady transition estimate is **0.09495434 s**. Preserve its additional
+`dynamic.reverse_speed_excursion` diagnostic: the predicted minimum is
+**-0.017218 rpm**, even though the existing deadline/hold criterion succeeds.
+The application displays both without changing the M16 criterion.
+
+The rejected case retains partial Rs/Ld/Lq estimates and a measured integral
+residual of **0.00010183420 V s**. Its normalized excess residual is
+**1.69777878**, above the existing **1.0** threshold; it is not relabeled a
+numerical estimator failure. No flux/mechanical commissioning, operating
+validation or firmware export is fabricated afterward.
+
+Artifacts: [accepted bundle](results/v1_demo/nominal),
+[rejected bundle](results/v1_demo/rejected_timing). Each includes summary JSON,
+attempts JSON and a summary plot; only acceptance adds the sampled control CSV
+and generated C header. CSV sampling retains every saturation transition;
+reported metrics use the full trace. UTC time and repository revision/dirty
+state are metadata, not computation inputs. The app can download the same
+bundle for any current run. Historical M1-M18 result directories are protected.
+
+![Actual dashboard rejection and blocked export](docs/images/v1_dashboard_rejected.png)
+
+### Validation and boundaries
+
+Local full suite: **265 passing tests**, including **33 new M19 tests**, with
+headless Streamlit AppTest and deterministic demo reproduction. GCC 16.2.0 strict
+C99 verification passes **43 native assertions** and **31,484 Python/C samples**.
+The unchanged M18 evidence has maximum absolute difference **0.00015357158 V**,
+maximum relative difference **0.00585030427** (q integral), and **30,592/30,608**
+saturation-flag agreement; all **16** boundary disagreements remain reported.
+The dashboard labels this artifact **COMMITTED M18 VALIDATION EVIDENCE**, separate
+from current-run results. GitHub Actions retains Python 3.11/3.12 and GCC/Clang
+jobs and adds headless application/demo verification. See
+[validation details](docs/v1_validation.md) for assumptions and evidence scope.
+
+**Portable firmware-ready control configuration — not deployed MCU firmware.**
+The project does not claim STM32 deployment, target timing, hardware validation,
+MISRA compliance, or physical safety certification. Commissioning remains in
+Python. Gates can accept biased measurements; quality acceptance does not imply
+an operating request is feasible. Unknown load, Coulomb/static friction,
+attached inertia and unmodeled sensor bias remain limitations. No new control,
+identification or quality algorithm is introduced by M19.
+
+Further reading: [architecture](docs/architecture.md),
+[v1 validation](docs/v1_validation.md), [engineering journal](docs/engineering_log.md),
+[changelog](CHANGELOG.md), [release candidate notes](RELEASE_NOTES_v1.0.0.md).
+
+## Technical model and milestone evidence
+
+The following sections retain the underlying model, experiments and historical
+quantitative evidence. Their experiment defaults can differ from the explicit
+24 V / 40 microsecond application demonstration.
+
 Python model of a permanent-magnet synchronous motor (PMSM) drive. The current
 stage includes a dq-axis plant, Clarke/Park transforms, cascaded speed and dq
 current PI control, a DC-bus voltage constraint, parameter mismatch studies,
@@ -56,13 +201,13 @@ case does not saturate and retains the previous trajectory. Simulation output
 includes applied `voltage_d`, `voltage_q`, their magnitude, the requested
 magnitude, and a per-step `voltage_saturated` flag.
 
-The voltage circle approximates an ideal linear SVPWM inverter. The closed-loop
-model does not include switching, bus sag, overmodulation, dead time,
-measurement noise, or sampling delays; rotor position and currents are
-measured exactly. The commissioning experiment below can add sampled
-measurement noise independently.
+The voltage circle approximates an ideal linear SVPWM inverter. The default
+ideal simulation uses exact current/position sensing and excludes switching,
+overmodulation and transistor-level dynamics. Optional M17 models add sensing,
+timing, averaged voltage error, bus sag and resistance drift through the existing
+nonideality chain. Commissioning can add sampled measurement noise independently.
 
-## Run
+## Advanced experiment commands
 
 From the repository root, install dependencies and run:
 
