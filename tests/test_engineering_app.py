@@ -5,6 +5,7 @@ import csv
 from decimal import Decimal
 import io
 import json
+import re
 import zipfile
 
 import numpy as np
@@ -116,7 +117,12 @@ def test_one_command_demo_reproduces_committed_results_and_headers(tmp_path):
         _compare_numbers(json.loads((generated/"commissioning_attempts.json").read_text()),
                          json.loads((committed/"commissioning_attempts.json").read_text()))
         if (committed/"generated_motor_config.h").exists():
-            assert (generated/"generated_motor_config.h").read_bytes() == (committed/"generated_motor_config.h").read_bytes()
+            # v1.1 changes application/distribution version only. Preserve the historical
+            # v1.0 demo artifact and ignore only the generated provenance version token.
+            generated_header = (generated/"generated_motor_config.h").read_text(encoding="utf-8")
+            committed_header = (committed/"generated_motor_config.h").read_text(encoding="utf-8")
+            normalize_version = lambda value: re.sub(r"project \\d+\\.\\d+\\.\\d+;", "project <version>;", value)
+            assert normalize_version(generated_header) == normalize_version(committed_header)
             # Numeric trace equality across supported host platforms, not PNG-byte identity.
             def read_trace(path):
                 with path.open(newline="", encoding="utf-8") as file:
