@@ -142,6 +142,25 @@ TRANSLATIONS = {
     "Away-boundary agreement": {"tr": "Sınır bölgesi dışı uyum", "en": "Away-boundary agreement"},
     "Boundary disagreements": {"tr": "Sınır bölgesi uyuşmazlıkları", "en": "Boundary disagreements"},
 
+    "artifact_sha": {"tr": "Artefakt SHA-256", "en": "Artifact SHA-256"},
+
+    # M17 scenario display names
+    "current_mild": {"tr": "Akım ölçümü — hafif", "en": "Current measurement — mild"},
+    "current_strong": {"tr": "Akım ölçümü — güçlü", "en": "Current measurement — strong"},
+    "voltage_mild": {"tr": "Gerilim ölçümü — hafif", "en": "Voltage measurement — mild"},
+    "voltage_strong": {"tr": "Gerilim ölçümü — güçlü", "en": "Voltage measurement — strong"},
+    "angle_mild": {"tr": "Elektriksel açı hatası — hafif", "en": "Electrical angle error — mild"},
+    "angle_strong": {"tr": "Elektriksel açı hatası — güçlü", "en": "Electrical angle error — strong"},
+    "inverter_mild": {"tr": "İnverter gerilim hatası — hafif", "en": "Inverter voltage error — mild"},
+    "inverter_strong": {"tr": "İnverter gerilim hatası — güçlü", "en": "Inverter voltage error — strong"},
+    "bus_sag_mild": {"tr": "DC bara çökmesi — hafif", "en": "DC bus sag — mild"},
+    "bus_sag_strong": {"tr": "DC bara çökmesi — güçlü", "en": "DC bus sag — strong"},
+    "rs_drift_mild": {"tr": "Rs sürüklenmesi — hafif", "en": "Rs drift — mild"},
+    "rs_drift_strong": {"tr": "Rs sürüklenmesi — güçlü", "en": "Rs drift — strong"},
+    "timing_one_sample": {"tr": "Zamanlama gecikmesi — 1 örnek", "en": "Timing delay — 1 sample"},
+    "combined_mild": {"tr": "Birleşik hatalar — hafif", "en": "Combined errors — mild"},
+    "combined_strong": {"tr": "Birleşik hatalar — güçlü", "en": "Combined errors — strong"},
+
     # Status/value translations
     "FULL ACCEPTED": {"tr": "TAM KABUL", "en": "FULL ACCEPTED"},
     "REJECTED": {"tr": "REDDEDİLDİ", "en": "REJECTED"},
