@@ -343,7 +343,7 @@ def show_parity():
             if language == "tr" else evidence["boundary_note"]
         )
         st.caption(boundary_note)
-        st.caption("Artifact SHA-256: " + evidence["artifact_sha256"])
+        st.caption(_t("artifact_sha") + ": " + evidence["artifact_sha256"])
         with st.expander(_t("parity_full")):
             st.json(evidence)
     except (OSError, ValueError, KeyError) as exc:
@@ -351,11 +351,11 @@ def show_parity():
 
 
 def main():
-    st.session_state.setdefault("language", DEFAULT_LANGUAGE)
     st.set_page_config(
-        page_title=text(_lang(), "app_title"),
+        page_title=text(DEFAULT_LANGUAGE, "app_title"),
         layout="wide",
     )
+    st.session_state.setdefault("language", DEFAULT_LANGUAGE)
 
     labels = list(LANGUAGE_OPTIONS)
     current_label = next(
