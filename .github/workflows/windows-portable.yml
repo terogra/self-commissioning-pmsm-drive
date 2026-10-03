@@ -66,6 +66,15 @@ jobs:
             portable-artifacts/*.zip
             portable-artifacts/SHA256SUMS.txt
           if-no-files-found: error
+      - name: Collect application logs into workspace diagnostics
+        if: always()
+        shell: pwsh
+        run: |
+          $logPath = Join-Path $env:LOCALAPPDATA 'PMSMCommissioningWorkbench/logs/desktop.log'
+          if (Test-Path -LiteralPath $logPath) {
+            New-Item -ItemType Directory -Force -Path 'package-diagnostics/application' | Out-Null
+            Copy-Item -LiteralPath $logPath -Destination 'package-diagnostics/application/desktop.log'
+          }
       - name: Preserve startup/build diagnostics even on failure
         if: always()
         uses: actions/upload-artifact@v6
@@ -74,7 +83,6 @@ jobs:
           path: |
             package-build.log
             package-diagnostics/
-            ~/AppData/Local/PMSMCommissioningWorkbench/logs/
           if-no-files-found: warn
 
   release-assets:

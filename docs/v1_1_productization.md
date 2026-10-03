@@ -82,6 +82,12 @@ The first Linux GUI CI run failed at test collection because the runner lacked
 jobs now install `libegl1` and `libopengl0`; no tests are skipped to address
 that environment failure. GCC/Clang checks passed on that initial head.
 
+Windows CI subsequently passed the native tests, built and validated both
+executables, but its final diagnostics upload failed because AppData was on
+drive C while the workspace was on drive D. The workflow now copies the
+application log into workspace diagnostics before upload. Native runtime
+success is retained separately from artifact-upload success.
+
 ## Preservation and limits
 
 The unchanged 74-file contract protects prior engineering code, protocols and
