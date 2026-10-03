@@ -47,6 +47,24 @@ def _choice(value):
     return str(value).replace("_", " ")
 
 
+def _localized_selectbox(label_key, options, state_key):
+    """Keep backend values stable while recreating localized selectboxes per language."""
+    language = _lang()
+    persisted_key = f"_{state_key}_value"
+    current = st.session_state.get(persisted_key, options[0])
+    if current not in options:
+        current = options[0]
+    selected = st.selectbox(
+        _t(label_key),
+        options,
+        index=options.index(current),
+        format_func=_choice,
+        key=f"{state_key}_{language}",
+    )
+    st.session_state[persisted_key] = selected
+    return selected
+
+
 def _motor_inputs(default, prefix):
     values = {}
     steps = {"Rs": .001, "Ld": 1e-7, "Lq": 1e-7, "psi_f": 1e-6, "J": 1e-7, "B": 1e-7}
@@ -66,18 +84,10 @@ def configuration_form():
     default = EngineeringWorkflowConfig()
     with st.sidebar.form("drive_configuration"):
         st.subheader(_t("config_title"))
-        scenario = st.selectbox(
-            _t("scenario"),
-            [s.name for s in scenarios()],
-            format_func=_choice,
-            key="scenario",
-        )
-        mode = st.selectbox(_t("mode"), ["one_shot", "adaptive"], format_func=_choice, key="mode")
-        exposure = st.selectbox(
-            _t("exposure"),
-            ["combined", "commissioning_only", "operation_only"],
-            format_func=_choice,
-            key="exposure",
+        scenario = _localized_selectbox("scenario", [s.name for s in scenarios()], "scenario")
+        mode = _localized_selectbox("mode", ["one_shot", "adaptive"], "mode")
+        exposure = _localized_selectbox(
+            "exposure", ["combined", "commissioning_only", "operation_only"], "exposure"
         )
         seed = st.number_input(
             _t("seed"), min_value=0, max_value=2**31-3, value=default.seed, step=1, key="seed"
