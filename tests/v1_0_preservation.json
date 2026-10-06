@@ -26,7 +26,7 @@
       "presentation_note": "Editorial changes to prose or module docstrings; equations, executable logic and recorded numerical results are unchanged."
     },
     "docs/firmware_core_protocol.md": {
-      "sha256": "c0710e398136cf1485a4d84b5962717942408d1532b338a8ca695ed04cd0f85e",
+      "sha256": "c136ec1d4ea0ec7044887bcb31dbd266e0a822fa6891819533c5b1932320406e",
       "binary": false,
       "baseline_sha256": "96d7bd468a59cc7bc0b9bcd8488693b8e7db000e49c78c330e5635fa6cf59ea0",
       "presentation_note": "Editorial changes to prose or module docstrings; equations, executable logic and recorded numerical results are unchanged."

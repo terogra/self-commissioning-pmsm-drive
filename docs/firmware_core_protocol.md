@@ -71,6 +71,7 @@ The transform budget covers a few rounded operations and single-precision libm
 calls on the bounded test magnitudes/angles. These are engineering regression
 budgets for the declared streams, not a universal error theorem or a target-MCU
 timing/accuracy guarantee. Record actual errors even when far below budget.
+Do not loosen these budgets after a failing parity test.
 A tolerance change requires a separate comparison study.
 
 Report maximum absolute error and its stream/sample/signal, plus maximum relative
