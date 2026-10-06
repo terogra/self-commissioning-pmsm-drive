@@ -3,8 +3,8 @@
 1. ZIP'in **tamamını** çıkartın; EXE'yi ZIP içinden çalıştırmayın.
 2. `PMSM-Commissioning-Workbench.exe` dosyasına çift tıklayın. `_internal`
    klasörünü koruyun.
-3. Bağımsız Qt masaüstü penceresi açılır. Tarayıcı, yerel web sunucusu, konsol,
-   Python, pip veya Git gerekmez.
+3. Masaüstü penceresi açılır. Paket çalışma bağımlılıklarını içerir;
+   Python kurulumu gerekmez.
 4. Türkçe varsayılandır; **Dil / Language** ile English seçilebilir.
 5. Ayarları girip **Devreye Almayı Başlat** düğmesine basın. İşlem sırasında
    ikinci devreye alma engellenir. Bitirmek için işlemin tamamlanmasını bekleyip
@@ -12,13 +12,11 @@
 
 Tam kabulde **C başlığını dışa aktar** yerel kaydetme iletişim kutusunu açar.
 Ret durumunda düğme devre dışıdır; başlangıç denetleyicisi korunur. Başarısız
-kestirimler ve ret kodları sonuçlarda görünür. Çalışma paketi ZIP olarak da
-kaydedilebilir.
+kestirimler ve ret kodları sonuçlarda görünür. **Çalışma paketini kaydet** ile JSON, CSV ve grafikleri dışa aktarabilirsiniz.
 
 Başlatma/işlem sorunları
 `%LOCALAPPDATA%/PMSMCommissioningWorkbench/logs/desktop.log` dosyasındadır.
-Bu yol kullanılamazsa aynı göreli klasör geçici dizinde oluşturulur. Uygulama
-EXE'yi taşıdığınızda `_internal` klasörü ve içeriği de taşınmalıdır.
+Bu yol kullanılamazsa aynı göreli klasör geçici dizinde oluşturulur. EXE'yi taşıdığınızda `_internal` klasörü ve içeriği de taşınmalıdır.
 
 **EXE imzasızdır; SmartScreen uyarabilir.** SHA-256 bütünlük kontrolüdür, kod
 imzası veya güvenlik garantisi değildir. Kaynak kullanım yolu `python -m app`;

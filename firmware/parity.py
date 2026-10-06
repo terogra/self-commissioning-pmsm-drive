@@ -1,8 +1,4 @@
-"""Compile the C99 kernel and replay identical inputs against real Python controllers.
-
-This host harness may use Python/ctypes/files/subprocess; none belongs to the
-portable C runtime. Tolerances are declared in docs/firmware_core_protocol.md.
-"""
+"""Compile the C99 core and compare its outputs with Python controllers."""
 
 import ctypes as ct
 from dataclasses import asdict

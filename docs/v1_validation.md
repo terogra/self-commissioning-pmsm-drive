@@ -1,12 +1,10 @@
 # v1.0.0 validation
 
-This document separates newly computed M19 application results from retained
-M1-M18 engineering evidence. It is not a hardware-validation report.
+Validation record for the v1.0 application: integration tests, two demonstration cases, and the earlier Python/C comparison. All measurements here are from simulation or host execution.
 
 ## Starting state and scope
 
-Fetched/verified main **fe0173120fbc64a5accb05ca474a86892ec569e1** before M19
-application integration. Baseline: **232 passed in 117.87 s**.
+M19 application integration started from **fe0173120fbc64a5accb05ca474a86892ec569e1**. Baseline: **232 passed in 117.87 s**.
 M19 adds orchestration/presentation/tests/docs; no pre-existing functional
 engineering source, threshold, equation, held-out seed or historical result is
 changed. No new population is used to tune the dashboard demonstration.
@@ -14,7 +12,7 @@ changed. No new population is used to tune the dashboard demonstration.
 ## Local test evidence
 
 Full suite: **265 passed in 168.01 s**, no skips or xfails. The 33 new tests
-exercise real headless orchestration, not stored result substitution:
+exercise the headless workflow:
 
 - Accepted and rejected end-to-end paths, partial estimates and retained priors.
 - Six identified parameters, original constructor gains and M18 header equivalence.
@@ -30,9 +28,9 @@ exercise real headless orchestration, not stored result substitution:
 - Native HTML numeric-grid defaults checked so the real browser can submit small
   SI parameters, rather than relying only on AppTest's non-browser input path.
 
-Actual local-browser inspection also verified accepted controller update,
+Local browser inspection also checked accepted controller update,
 terminal rejection, inspectable partial fits and absence of the export button
-after rejection. Screenshots are actual computed runs:
+after rejection. Screenshots from the demonstration runs:
 
 - [Accepted controller update](images/v1_dashboard_accepted.png)
 - [Rejected timing-delay case](images/v1_dashboard_rejected.png)
@@ -115,15 +113,14 @@ Exact M17 `timing_one_sample` preset, adaptive mode, same plant/seed/request.
 One standstill estimator succeeds numerically but quality rejects with
 `standstill.excessive_residual`. Supervisor terminates with
 `standstill.model_residual_terminal`; action `model_residual_terminal`, no next
-retry configuration. This is a model-residual rejection, not a fabricated
-estimator failure.
+retry configuration. This is a model-residual rejection, with the estimator fit recorded separately.
 
 Partial estimates: Rs **0.4728342026011756 ohm**, Ld **0.0012425407380017705 H**,
 Lq **0.0009394228188310561 H**. Rank=3, scaled condition=**1.0026856200502245**,
 residual RMSE=**0.0001018341996930411 V s**, normalized excess residual
 **1.6977787767548365** against existing threshold **1.0**. All 4,001 sampled
 standstill measurements remain in the workflow record. No later stages are
-invented. All prior controller parameters remain unchanged. No steady/dynamic
+computed. All prior controller parameters remain unchanged. No steady/dynamic
 analysis, commissioned control trace or firmware header is created.
 
 ## Reproduction and artifact inspection

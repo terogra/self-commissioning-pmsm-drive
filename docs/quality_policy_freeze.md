@@ -1,4 +1,4 @@
-# Commissioning quality policy freeze
+# Electrical quality thresholds and evaluation
 
 This record precedes the independent final evaluation. The commit introducing
 this file freezes `QualityPolicy` and the measured-data decision logic.

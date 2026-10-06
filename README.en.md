@@ -4,43 +4,32 @@
 
 ## PMSM drive commissioning and parameter identification
 
-A local tool for identifying `Rs, Ld, Lq, psi_f, J, B` from simulated voltage,
-current and speed measurements. Accepted commissioning retunes the current and
-speed PI controllers, then checks the operating point and closed-loop response.
-Rejection retains the prior controller parameters and blocks firmware export.
+How does a PMSM controller behave when its motor parameters are wrong? This
+project investigates that question by estimating parameters from simulated
+measurements and retuning the current and speed PI controllers.
 
-This is a native PySide6/Qt desktop application; no browser or local web server
-is required. The v1.0 engineering baseline is preserved; v1.1.0 is released
-with the Turkish/English UI and Windows x64 distribution.
+The PySide6/Qt desktop application runs experiments, shows fits and rejection
+reasons, and evaluates the closed-loop response. Accepted commissioning can
+export a configuration header for the portable C99 control core.
 
-![PMSM Drive Commissioning Workbench — Turkish UI, actual simulation result](docs/images/v1_1_dashboard_tr.png)
+![PMSM commissioning results — Turkish interface](docs/images/v1_1_dashboard_tr.png)
 
-## Run the application
+## Quick start
 
-### 1 — Windows package
+### Windows
 
-Target Windows x64 file:
-**`PMSM-Commissioning-Workbench-v1.1.0-Windows-x64.zip`**.
+1. Download `PMSM-Commissioning-Workbench-v1.1.0-Windows-x64.zip` and `SHA256SUMS.txt`
+   from the [v1.1.0 release](https://github.com/terogra/self-commissioning-pmsm-drive/releases/tag/v1.1.0).
+2. Extract the entire ZIP. Keep the `_internal` directory beside the EXE.
+3. Open `PMSM-Commissioning-Workbench.exe`.
 
-1. Download the Windows ZIP and `SHA256SUMS.txt` from the
-   [v1.1.0 release](https://github.com/terogra/self-commissioning-pmsm-drive/releases/tag/v1.1.0).
-   Verified CI artifacts are also retained in the
-   [Windows workflow](https://github.com/terogra/self-commissioning-pmsm-drive/actions/workflows/windows-portable.yml).
-2. Extract the **entire ZIP** and retain its `_internal` folder.
-3. Double-click **`PMSM-Commissioning-Workbench.exe`**. The application opens as
-   a standalone desktop window; no browser or local web server is required.
-   No Python, pip, Git or console window is needed.
-4. Close the application window to exit. Wait for any active commissioning run
-   to finish first.
+Python installation is not required. The EXE is unsigned, so Windows SmartScreen
+may show a warning. SHA-256 verifies file integrity; it does not replace code signing.
+See the [Windows usage and troubleshooting notes](packaging/README_WINDOWS_EN.md).
 
-**The EXE is unsigned.** Windows SmartScreen may warn. SHA-256 checks integrity,
-not signing or safety. If you prefer not to run an unsigned binary, use the
-source path below. The EXE is optional.
-[Windows startup and troubleshooting](packaging/README_WINDOWS_EN.md).
+### Source code
 
-### 2 — Source code
-
-With Python **3.11 or 3.12**, in Windows PowerShell:
+With Python 3.11 or 3.12, in Windows PowerShell:
 
 ```powershell
 git clone https://github.com/terogra/self-commissioning-pmsm-drive.git
@@ -51,94 +40,79 @@ python -m pip install -r requirements.txt
 python -m app
 ```
 
-If activation is blocked, use `.\.venv\Scripts\python.exe -m pip install -r requirements.txt`
-and `.\.venv\Scripts\python.exe -m app` without activating.
-On Linux/macOS use `source .venv/bin/activate` instead.
-Downloading the source ZIP also works without Git.
+If activation is blocked, use `.\.venv\Scripts\python.exe` directly with
+`-m pip install -r requirements.txt` and `-m app`.
+On Linux/macOS, activate the environment with `source .venv/bin/activate`.
 
-Turkish is the default; select English using **Dil / Language** in the sidebar.
-Language changes do not modify parameters or computed results.
-**Run Commissioning** performs a new computation; tab/language changes do not.
-Computation runs on a worker thread; overlapping runs are blocked. Plots and
-tables stay inside the Qt window. Exports use native save-file dialogs.
+## First experiment
 
-The basic view asks for pole pairs, DC bus, speed/load request, current limit,
-commissioning mode, seed and M17 scenario. **Initial model: Default** uses the
-existing prior assumptions; you do not need to enter the six unknown motor
-parameters. `Rs, Ld, Lq, psi_f, J, B` are estimated from measurements.
-**Custom** reveals the prior/fallback model fields. The simulated plant values,
-excitation/noise and validation timing are under **Advanced Simulation Settings**,
-collapsed by default. Those motor values define only the simulated plant;
-estimators do not receive them. Results distinguish prior assumptions,
-estimates and active controller values; ground truth belongs to **Validation**.
+Select **Run Commissioning** with the default settings. You do not need to enter
+the six unknown motor parameters: the application estimates them from sampled
+records. Choose English from **Dil / Language**.
 
-## Commissioning workflow
+| Stage | Estimated parameters | Method |
+| --- | --- | --- |
+| Locked rotor | `Rs`, `Ld`, `Lq` | Two-axis voltage excitation and integrated regression |
+| Driven rotor | `psi_f` | Flux estimation from voltage, current and speed records |
+| Free rotor | `J`, `B` | Mechanical estimation using reconstructed torque and speed changes |
 
-```mermaid
-flowchart LR
-    S[Motor and scenario] --> M[Sampled measurements]
-    M --> E[Rs / Ld / Lq and psi_f]
-    E --> J[J / B]
-    J --> Q[Quality gates and adaptive supervision]
-    Q -->|Reject| R[Retain prior controller]
-    Q -->|Full accept| C[Retune FOC and speed PI]
-    C --> F[Steady and dynamic feasibility]
-    C --> V[Closed-loop / M17 errors]
-    C --> H[Portable C99 configuration]
-```
+Accepted measurements allow controller retuning. Rejection retains the prior
+controller and blocks firmware export; partial fits and rejection reasons remain
+visible. Adaptive commissioning requests a limited number of new measurements
+for specific quality failures.
 
-Inspect stage estimates, measured/fitted plots, residual/sensitivity diagnostics,
-rejection reasons, retry history, controller gains and current/voltage limits.
-Simulation ground truth is separate under **Validation**;
-estimators and quality gates do not receive it. Diagnostic codes and JSON keys
-remain stable in both languages for reproducibility.
+**Advanced Simulation Settings** controls the simulated motor, excitation and
+measurement noise. True motor values are used to evaluate accuracy and are not
+passed to the estimators. **Initial model: Custom** exposes the controller's
+prior assumptions.
 
-## Validation
+The result tabs show parameters, gains, operating-point analysis, closed-loop
+plots and error scenarios. **Save run bundle** exports JSON, CSV and figures;
+full acceptance enables **Export C header**. Wait for a running computation to
+finish before closing the application.
 
-- dq PMSM, Clarke/Park, current FOC and cascaded speed PI; DC-bus saturation and anti-windup.
-- `Rs, Ld, Lq, psi_f, J, B` from measurements; measured-data gates and bounded adaptive attempts.
-- Separate development/evaluation populations, retained failed/biased cases, and M17 sensing/inverter/delay/bus/resistance error models.
-- Stable v1.0: **265 tests**, **43 native C assertions**, **31,484 Python/C samples**. All **16 saturation-boundary differences** remain in the evidence.
-- v1.1 CI checks Python 3.11/3.12, GCC/Clang, native Qt initialization, language
-  state, acceptance/rejection and export. The actual EXE and ZIP extracted into
-  a path with spaces are tested with Qt offscreen; SHA-256 is generated.
-  HTTP readiness is not a desktop acceptance criterion.
-
-[Validation details](docs/v1_validation.md) · [v1.1 productization](docs/v1_1_productization.md) ·
-[Desktop architecture](docs/desktop_architecture.md) · [Historical v1.0 architecture](docs/architecture.md) · [Engineering journal](docs/engineering_log.md).
-[UI terminology](docs/terminology.md).
-
-Browser-free real demonstration:
+## Experiments and validation
 
 ```sh
 python -m experiments.v1_demo --output demo-current
 python -m pytest -q
 ```
 
-This computes accepted and explicitly rejected cases. Committed v1.0 evidence
-is not relabeled or overwritten; current-run version provenance is separate.
-[v1.0 technical reference and advanced commands](README.v1.0.md).
+The demo computes a nominal accepted case and a rejected measurement-delay case.
+Other experiments examine parameter mismatch, voltage saturation, measurement
+noise, sensor errors, bus sag and resistance drift. Failed runs and biased
+estimates remain in the result records.
 
-The old Streamlit UI is retained for development only: install
-`requirements-legacy.txt`, then `python -m app.legacy`. It is excluded from the Windows
-desktop product and is not the primary application.
+The v1.0 validation record contains **265 Python tests**, **43 C assertions** and
+**31,484 Python/C comparison samples**. It also reports **16 saturation-boundary
+differences** from single-precision arithmetic. Current CI checks Python 3.11/3.12,
+GCC/Clang, the Qt interface and the packaged Windows application.
 
-## Assumptions and boundaries
+## Assumptions and limits
 
-This is a **simulation study**. Known pole pairs and known zero external load
-during mechanical commissioning are explicit. Unknown load, Coulomb/static
-friction, attached inertia and sensor bias limit applicability. Good tracking
-alone does not prove accurate commissioning. Quality acceptance does not
-establish feasibility of every operating request.
+This is a simulation study. Pole pairs are known, and mechanical identification
+assumes known zero external load. Unknown load, Coulomb/static friction, changing
+inertia and systematic sensor errors limit estimation accuracy. Good speed
+tracking alone does not establish correct motor parameters. Accepted commissioning
+does not guarantee that the requested speed and load fit the available current
+and voltage limits.
 
-The quasi-steady timing estimate is **not a physical minimum or universal lower bound**;
-the **full dq transient simulation** can enter the band earlier.
+The M16 quasi-steady timing estimate is **not a physical minimum or universal lower bound**;
+the **full dq transient simulation** can enter the speed band earlier.
 
-C99 configuration is **firmware-ready**, not deployed MCU firmware. No STM32
-deployment, target timing, hardware validation, MISRA compliance or physical
-safety guarantee is claimed. The Windows package is local and unsigned.
+The C99 core is validated on a host computer. MCU execution, peripheral drivers,
+target timing, physical motor tests and MISRA compliance remain outside the
+current scope.
 
-## License and version
+## Technical documentation
+
+- [Model, equations and experiment commands](README.v1.0.md)
+- [Engineering journal](docs/engineering_log.md)
+- [v1.0 validation results](docs/v1_validation.md)
+- [Desktop architecture](docs/desktop_architecture.md) and [Windows build notes](docs/v1_1_productization.md)
+- [UI terminology](docs/terminology.md), [changelog](CHANGELOG.md) and [release notes](RELEASE_NOTES_v1.1.0.md)
+
+For the legacy Streamlit interface, install `requirements-legacy.txt` and run
+`python -m app.legacy`.
 
 Source code is [MIT licensed](LICENSE); dependencies retain their own licenses.
-[Changelog](CHANGELOG.md) · [v1.1 release notes](RELEASE_NOTES_v1.1.0.md).

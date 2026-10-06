@@ -1,21 +1,20 @@
-# Self-Commissioning PMSM Drive
+# PMSM drive technical reference — v1.0.0
 
-## v1.0.0
+This reference records the v1.0 model, methods and experiments. For the current desktop application, start with [the README](README.en.md).
 
-A local engineering application for **simulation-based PMSM self-commissioning**.
+The v1.0 application performs **simulation-based PMSM self-commissioning**.
 It acquires simulated sampled measurements, identifies `Rs/Ld/Lq/psi_f/J/B`,
 applies measured-data quality gates, optionally retries diagnosed weak tests,
 retunes the existing controllers, assesses operation, and exports an accepted
-configuration for the portable C99 controller. The dashboard calls the real
-repository backend; it contains no separate estimator or tuning equations.
+configuration for the portable C99 controller. The dashboard delegates estimation and controller tuning to the backend.
 
 ### Run the application
 
 From the repository root with Python 3.11 or 3.12:
 
 ```sh
-python -m pip install -r requirements.txt
-python -m app
+python -m pip install -r requirements-legacy.txt
+python -m app.legacy
 ```
 
 The Streamlit application binds to `127.0.0.1`. Configure a case and select
@@ -35,9 +34,9 @@ flowchart LR
     Q -->|Diagnosed retry| A[Bounded adaptive supervisor]
     A --> M
     Q -->|Rejected| R[Retain prior controller / block export]
-    Q -->|Full accepted| T[Existing controller retuning]
+    Q -->|Full accepted| T[Controller retuning]
     T --> F[M14 steady / M16 dynamic analysis]
-    T --> V[Hidden-plant simulation with optional M17 errors]
+    T --> V[Plant simulation with M17 errors]
     T --> H[M18 firmware configuration]
 ```
 
@@ -101,8 +100,7 @@ The application displays both without changing the M16 criterion.
 The rejected case retains partial Rs/Ld/Lq estimates and a measured integral
 residual of **0.00010183420 V s**. Its normalized excess residual is
 **1.69777878**, above the existing **1.0** threshold; it is not relabeled a
-numerical estimator failure. No flux/mechanical commissioning, operating
-validation or firmware export is fabricated afterward.
+numerical estimator failure. Flux/mechanical commissioning, operating validation and firmware export are unavailable after rejection.
 
 Artifacts: [accepted bundle](results/v1_demo/nominal),
 [rejected bundle](results/v1_demo/rejected_timing). Each includes summary JSON,
@@ -146,8 +144,7 @@ The following sections retain the underlying model, experiments and historical
 quantitative evidence. Their experiment defaults can differ from the explicit
 24 V / 40 microsecond application demonstration.
 
-Python model of a permanent-magnet synchronous motor (PMSM) drive. The current
-stage includes a dq-axis plant, Clarke/Park transforms, cascaded speed and dq
+Python model of a permanent-magnet synchronous motor (PMSM) drive. The model includes a dq-axis plant, Clarke/Park transforms, cascaded speed and dq
 current PI control, a DC-bus voltage constraint, parameter mismatch studies,
 and a two-stage electrical commissioning workflow. Locked-rotor excitation
 estimates `Rs`, `Ld`, and `Lq`; driven-rotor excitation estimates `psi_f`.
@@ -160,12 +157,12 @@ development and evaluation populations measure coverage, accuracy, and outcomes.
 An independent operating-point layer now checks accepted estimates against the
 requested steady-state current and voltage envelope, without changing either
 identification-quality decision.
-A bounded commissioning supervisor can now retry a diagnosed weak test within
+A bounded commissioning supervisor retries a diagnosed weak test within
 configured simulation limits. It records every attempt, updates controllers
 only after full acceptance, and reports operating feasibility separately.
-A separate dynamic analysis now estimates a quasi-steady acceleration time and
+A separate dynamic analysis estimates a quasi-steady acceleration time and
 predicts deadline/hold success with the existing controller on the identified model.
-Milestone 17 now characterizes this unchanged workflow with structured sensing,
+Milestone 17 characterizes this workflow with structured sensing,
 angle, timing, averaged actuation, bus-sag and post-commissioning resistance errors.
 Independent populations retain biased acceptances and rejected cases; these
 nonidealities are optional and the default simulation remains unchanged.
@@ -173,7 +170,7 @@ Milestone 18 adds a portable single-precision C controller kernel, an accepted-
 commissioning configuration exporter and deterministic Python/C replay tests.
 Commissioning and the simulation remain in Python.
 
-## Current simulation
+## Simulation model
 
 `src.motor.PMSMParameters` stores motor constants. `PMSMModel` uses the **plant**
 parameters for electrical and mechanical dynamics. `CurrentFOCController` and
@@ -619,7 +616,7 @@ Accuracy is scored **after** the gate: all four absolute parameter errors must
 be ≤10%. False acceptance is reported both as inaccurate/accepted and as
 accepted/inaccurate complete estimates; false rejection is rejected/accurate
 complete estimates. Estimator failures without all four estimates are counted
-separately, not assigned an invented error. Partial estimates remain in the CSV
+separately, reported with no assigned error. Partial estimates remain in the CSV
 and overall parameter summaries. Closed-loop success uses the composite
 criterion in the Monte Carlo section above, including its relative-degradation
 limit. Speed and iq RMSE use the post-load interval; saturation uses the full run.
@@ -1872,4 +1869,4 @@ deadline has been measured on target silicon and no hardware validation or MISRA
 compliance is claimed. Actual STM32 integration belongs to future hardware work.
 Float32/libm behavior, target ABI, execution timing and compiler/FPU settings need
 target-specific verification. Estimators, gates, retries, M16/M17 scenarios and
-historical results remain unchanged; no M19 work is included.
+historical results remain unchanged.

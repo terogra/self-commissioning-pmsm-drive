@@ -1,4 +1,4 @@
-"""Read-only tables and versioned evidence; never fit, gate, tune or simulate."""
+"""Format result tables and load recorded Python/C comparison evidence."""
 
 from dataclasses import asdict
 import hashlib

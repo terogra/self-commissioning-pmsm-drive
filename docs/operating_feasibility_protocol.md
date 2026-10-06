@@ -1,4 +1,4 @@
-# Operating feasibility evaluation protocol
+# Steady-state feasibility evaluation
 
 Specified before running the new held-out population. The classifier uses the
 existing model equations and inclusive physical limits; it fits no thresholds

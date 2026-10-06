@@ -6,18 +6,19 @@ Released under the MIT License.
 
 The application connects the existing engineering system from simulated
 measurements to electrical/mechanical estimates, measured-data acceptance,
-optional bounded retries, controller retuning, operating analysis, actual
+bounded retries, controller retuning, operating analysis,
 simulation stress evaluation and portable C configuration. M19 adds integration
 and presentation, not another control or identification algorithm.
 
 ## Run
 
 ```sh
-python -m pip install -r requirements.txt
-python -m app
+python -m pip install -r requirements-legacy.txt
+python -m app.legacy
 ```
 
-Python 3.11/3.12; local Streamlit on loopback. Use `python -m experiments.v1_demo`
+On the current source tree, the v1.0 Streamlit interface runs through the legacy
+launcher above. Python 3.11/3.12 is supported. Use `python -m experiments.v1_demo`
 for a browser-free accepted nominal case and an explicit adaptive timing-error
 rejection. The application itself does not require a C compiler; compiler-backed
 validation uses GCC/Clang through the existing M18 tools and CI.
@@ -31,15 +32,15 @@ validation uses GCC/Clang through the existing M18 tools and CI.
   0.00302036 A, maximum speed deviation 5.21029368 rpm, zero saturation.
 - Timing-delay adaptive case: `standstill.excessive_residual`, terminal
   rejection, retained prior controller and blocked firmware export.
-- Real local browser accepted/rejected paths inspected; CI covers headless
+- Local browser accepted/rejected paths inspected; CI covers headless
   Streamlit/backend/demo plus Python 3.11/3.12 and GCC/Clang.
 
 See [validation details](docs/v1_validation.md) for exact numbers, reproducibility,
 the unchanged M16 reverse-excursion diagnostic and evidence limitations. GitHub
 Actions verifies Python 3.11/3.12, GCC, Clang and the headless application/demo;
-local GCC is not a claim of local Clang verification.
+the compiler-specific checks run in CI.
 
-## Boundary and review decisions
+## Scope and limits
 
 Portable firmware-ready configuration is not deployed MCU firmware. No target
 timing, peripherals, hardware validation, physical safety guarantee or MISRA

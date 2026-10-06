@@ -9,7 +9,7 @@
   prior model. `python -m app` opens native Qt; `python -m app.legacy` is development-only.
 - Windowed Windows x64 onedir EXE without a browser, web server or console.
 - Legacy Streamlit UI retained only as an optional development dependency.
-- Pinned Windows build, actual Qt window initialization, extracted-ZIP retest,
+- Pinned Windows build, Qt window initialization, extracted-ZIP retest,
   SHA-256 and workflow artifacts; attach only to an existing matching release.
 - Preserve v1.0 algorithms, gates, historical evidence and source execution.
 - Historical numeric/header reproduction distinguishes version provenance only.
@@ -19,7 +19,7 @@
 ### Added in Milestone 19
 
 - One-command local Streamlit engineering application: `python -m app`.
-- Typed headless orchestration of real sampled commissioning, quality gates,
+- Typed headless orchestration of sampled commissioning, quality gates,
   bounded adaptive supervision, retuning, M14/M16 analysis, M17 simulation and
   M18 configuration export.
 - Per-stage fit/diagnostic inspection, retained failed attempts and partial fits,
@@ -31,7 +31,7 @@
 - 33 application/backend tests; complete local suite now has 265 passing tests.
 - MIT License for source-code use, modification and redistribution.
 
-### Preserved
+### Compatibility
 
 M1-M18 algorithms, estimator/gate thresholds, adaptive logic, M14/M16 semantics,
 M17 scenario/evaluation evidence and M18 C/parity equations/budgets. The earlier
@@ -47,5 +47,4 @@ new integration paths only; existing engineering numerical results are unchanged
 ## Earlier engineering milestones
 
 See [the chronological engineering journal](docs/engineering_log.md) and
-historical experiment evidence for M1-M18. Their history is not reconstructed
-as fabricated package releases.
+historical experiment evidence for M1-M18. Results and design decisions are recorded there by milestone.

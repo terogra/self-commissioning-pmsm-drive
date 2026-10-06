@@ -1,8 +1,4 @@
-"""Accepted full commissioning -> existing Python tuning -> binary32 C constants.
-
-No estimator, gate, or gain formula is duplicated here. C consumes constants;
-commissioning remains a Python/offline responsibility.
-"""
+"""Build binary32 C controller constants from accepted commissioning."""
 
 from dataclasses import dataclass, fields
 from pathlib import Path

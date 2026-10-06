@@ -1,4 +1,4 @@
-"""One command, two predeclared real runs: accepted nominal and rejected timing."""
+"""Run nominal acceptance and timing-error rejection demonstrations."""
 
 import argparse
 from pathlib import Path

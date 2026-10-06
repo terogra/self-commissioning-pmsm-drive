@@ -1,9 +1,9 @@
-# M18 portable C kernel and parity protocol
+# C control core and Python/C comparison
 
 Reference main: `3eb116ef6d22550668c507c23c9847cdde01c04b`.
 Python controllers, transforms, commissioning and M16/M17 results stay unchanged.
 
-## API defined before implementation
+## C API
 
 ISO C99, IEEE binary32 `float`, explicit caller-owned structs, no heap or mutable
 global state. Headers separate motor/controller configuration, transform vectors
@@ -35,7 +35,7 @@ then rounds motor/gain constants to binary32 once. C99 hexadecimal literals with
 `f` suffix preserve those exact constants. Rejection cannot export a configuration.
 Unconstrained voltage is an explicit disabled-limit setting for reference tests.
 
-## Frozen parity discipline (declared before observing C results)
+## Comparison method and predefined tolerances
 
 Both implementations receive the same binary32-representable input values; Python
 receives them as Python floats and retains its original float64 arithmetic.
@@ -72,6 +72,7 @@ calls on the bounded test magnitudes/angles. These are engineering regression
 budgets for the declared streams, not a universal error theorem or a target-MCU
 timing/accuracy guarantee. Record actual errors even when far below budget.
 Do not loosen these budgets after a failing parity test.
+A tolerance change requires a separate comparison study.
 
 Report maximum absolute error and its stream/sample/signal, plus maximum relative
 error only where `abs(reference)>=1e-6`; relative error at cancellation/zero is
@@ -79,7 +80,7 @@ undefined or misleading, so also retain signed/absolute errors. Exact saturation
 flag agreement is required away from a boundary. Boundary probes within
 `16*u*(abs(requested_magnitude)+abs(limit))` report both flags, distance and any
 disagreement separately. Precision can change a strict comparison at equality;
-do not silently tune flags or discard such probes. An explicit binary32 Python
+compiler flags and probe records remain fixed. An explicit binary32 Python
 FOC/PI calculation provides a secondary rounding diagnostic, without replacing
 the unmodified float64 reference.
 

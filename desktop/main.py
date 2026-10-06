@@ -1,4 +1,4 @@
-"""Source and windowed EXE entry: one QApplication, no browser or web runtime."""
+"""Initialize the Qt application from source or the Windows package."""
 
 import argparse
 import json

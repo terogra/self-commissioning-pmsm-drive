@@ -2,15 +2,15 @@
 
 1. Extract the **entire ZIP**. Do not run the EXE inside the ZIP.
 2. Double-click `PMSM-Commissioning-Workbench.exe`. Retain the `_internal` folder.
-3. A native Qt desktop window opens. No browser, local web server, console,
-   Python, pip or Git is required.
+3. The desktop window opens. The package includes its runtime dependencies;
+   Python installation is not required.
 4. Turkish is the default; choose English using **Dil / Language**.
 5. Configure inputs and select **Run Commissioning**. Overlapping runs are
    blocked. Wait for the active computation to finish, then close the window.
 
 Full acceptance enables **Export C header**, using a native save dialog.
 Rejection disables export and retains the prior controller. Failed estimates
-and exact reason codes remain visible. A current-run ZIP bundle can also be saved.
+and exact reason codes remain visible. Use **Save run bundle** for JSON, CSV and figures.
 
 Startup/runtime diagnostics are in
 `%LOCALAPPDATA%/PMSMCommissioningWorkbench/logs/desktop.log`, with a temporary

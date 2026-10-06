@@ -1,4 +1,4 @@
-"""Embed the existing engineering figures; never recreate their calculations."""
+"""Embed Matplotlib result figures in Qt widgets."""
 
 from matplotlib.backends.backend_qtagg import FigureCanvasQTAgg, NavigationToolbar2QT
 from PySide6.QtWidgets import QVBoxLayout, QWidget
