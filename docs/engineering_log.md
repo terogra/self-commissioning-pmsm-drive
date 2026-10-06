@@ -690,8 +690,8 @@ apparently precise. Characterization was needed before changing the algorithms.
 
 ### Engineering Decision
 
-Start from merged M16 main **047d6511b86c34ce571005f8377387eb3674602b** on
-`codex/realistic-drive-nonidealities`. Keep estimators, gates, adaptive retry
+Start from merged M16 main **047d6511b86c34ce571005f8377387eb3674602b**.
+Keep estimators, gates, adaptive retry
 policy/actions, FOC tuning and M16 calculations unchanged. Put deterministic
 nonidealities at the simulation measurement/actuation boundary. Pair one-shot
 and adaptive methods, separate commissioning-only/operation-only/combined
@@ -887,8 +887,8 @@ demonstrate that equivalence.
 
 ### Engineering Decision
 
-Verified/fetched main `3eb116ef6d22550668c507c23c9847cdde01c04b` and created
-`codex/firmware-ready-c-core`. Port only transforms, generic PI, dq FOC, vector
+Verified/fetched main `3eb116ef6d22550668c507c23c9847cdde01c04b`.
+Port only transforms, generic PI, dq FOC, vector
 limiting and speed PI. Keep Python commissioning, tuning formulas, plant and
 M16/M17 evidence unchanged. Define the [C API/parity protocol](firmware_core_protocol.md)
 before implementation; use real IEEE binary32 `float`, caller-owned configuration
@@ -1025,8 +1025,8 @@ change quality gates, hide failures or mistake historical evidence for a new run
 
 ### Engineering Decision
 
-Verified/fetched current main `fe0173120fbc64a5accb05ca474a86892ec569e1` and
-created `codex/end-to-end-engineering-app-v1`. Implement the headless orchestration
+Verified/fetched current main `fe0173120fbc64a5accb05ca474a86892ec569e1`.
+Implement the headless orchestration
 first, then a thin local Streamlit dashboard. Keep existing algorithms, gates,
 adaptive actions, M14/M16 semantics, M17 registry/results and M18 C budgets
 unchanged. Use typed frozen result envelopes, an explicit simulation-truth
