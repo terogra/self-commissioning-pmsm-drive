@@ -2,13 +2,13 @@
 
 ## Öne çıkanlar / Highlights
 
-- Native **PySide6/Qt** masaüstü uygulaması; tarayıcı, localhost arayüzü veya kalıcı konsol yok.
-- Türkçe varsayılan arayüz ve tam English seçeneği.
+- **PySide6/Qt** masaüstü uygulaması.
+- Türkçe varsayılan arayüz ve İngilizce dil seçeneği.
 - Varsayılan kullanımda bilinmeyen `Rs, Ld, Lq, psi_f, J, B` değerlerini girme zorunluluğu yok; bunlar ölçümlerden kestirilir.
 - Simülasyon gerçek değerleri **Gelişmiş Simülasyon Ayarları** altında gizlidir ve kestiriciye verilmez.
-- `python -m app` ve Windows EXE aynı native uygulamayı açar.
+- `python -m app` ve Windows EXE aynı masaüstü uygulamasını açar.
 - Windows x64 için doğrulanmış PyInstaller `onedir` paketi ve SHA-256 bütünlük dosyası.
-- M1–M19 mühendislik algoritmaları, kalite eşikleri, M14/M16/M17 semantiği ve M18 C99 çekirdeği değiştirilmemiştir.
+- v1.0 kestirim ve kontrol altyapısı ile C99 çekirdeği kullanılır.
 
 ## Windows
 
@@ -34,13 +34,13 @@ ile ayrı olarak çalıştırılır.
 
 ## Doğrulama / Validation
 
-v1.1.0; Python 3.11/3.12 testleri, GCC/Clang C99 parity, native Qt kabul/ret
+v1.1.0; Python 3.11/3.12 testleri, GCC/Clang C99 parity, Qt kabul/ret
 akışları, paketlenmiş Windows EXE başlangıcı ve boşluk içeren dizine çıkartılmış
-ZIP tekrar testiyle doğrulanmıştır. Derleme tek başına kabul ölçütü değildir.
+ZIP tekrar testiyle doğrulanmıştır. Paket testleri uygulamanın başlatılmasını ve temiz kapanmasını da kontrol eder.
 
 ## Kapsam ve sınırlar / Scope and limits
 
-Bu sürüm ürünleştirme ve dağıtım çalışmasıdır; **M20 değildir**. Uygulama halen
+Bu sürüm masaüstü arayüz ve Windows dağıtımını ekler. Uygulama
 simülasyon tabanlıdır. MCU dağıtımı, gerçek motor doğrulaması, hedef zamanlama,
 MISRA uygunluğu veya fiziksel güvenlik sertifikasyonu iddia edilmez. İyi hız
 izleme tek başına doğru parametre kestirimini kanıtlamaz. M16 yarı kararlı süre

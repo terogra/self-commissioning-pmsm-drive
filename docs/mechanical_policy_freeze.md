@@ -1,4 +1,4 @@
-# Mechanical quality policy and evaluation freeze
+# Mechanical quality thresholds and evaluation
 
 This record is committed before the held-out mechanical population is run.
 The new estimator and gate use only measurements, commissioned electrical
@@ -62,6 +62,6 @@ Compare all four controller types on each same plant; rejected full results
 explicitly run the unchanged-prior fallback and cannot count as full success.
 Report finite-value statistics with missing counts for unrecovered cases.
 
-Do not change the gate after observing final results. Any later revision needs
+The gate was fixed before final evaluation. Any later revision needs
 a new held-out population. The small stratified study is exploratory, not a
 population confidence estimate.

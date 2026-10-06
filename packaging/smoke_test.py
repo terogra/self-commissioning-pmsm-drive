@@ -1,8 +1,4 @@
-"""Run the actual windowed EXE, initialize native Qt and require a clean exit.
-
-Offscreen is a test-only Qt platform. Normal execution uses the native Windows
-platform/window/event loop. No socket, HTTP readiness or browser is involved.
-"""
+"""Check packaged Qt startup and clean process shutdown."""
 
 import argparse
 import json

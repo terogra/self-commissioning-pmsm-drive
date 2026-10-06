@@ -1,4 +1,4 @@
-"""Application boundary: configuration and existing backend operations only."""
+"""Translate desktop settings into workflow and export calls."""
 
 from dataclasses import replace
 from pathlib import Path

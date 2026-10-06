@@ -1,13 +1,12 @@
-# v1 engineering application architecture
+# Application architecture — v1.0
 
-Version **1.0.0**. M19 integrates M1-M18 without changing
-their equations, thresholds, adaptive actions or numerical parity budgets.
+This document describes the v1.0 Streamlit interface and its backend. The current Qt application is described in [desktop architecture](desktop_architecture.md).
 
 ## Entry points and ownership
 
 | Layer | Modules | Responsibility |
 | --- | --- | --- |
-| Local launch | `app/__main__.py` | Launch the installed Streamlit on loopback using the current Python interpreter |
+| Local launch | `app/legacy.py` | Launch Streamlit on loopback with the current Python interpreter |
 | Dashboard | `app/dashboard.py` | Configure, submit once, inspect, download; retain the last completed run in session state |
 | Presentation | `app/presentation.py` | Read-only units/tables and explicitly versioned M18 evidence |
 | Orchestration | `src/engineering_workflow.py` | Typed input/result, real measurement providers, existing commissioning, retuning and downstream analyses |
@@ -20,14 +19,14 @@ their equations, thresholds, adaptive actions or numerical parity budgets.
 flowchart TD
     UI[Streamlit or headless caller] --> CFG[EngineeringWorkflowConfig]
     CFG --> WF[run_engineering_workflow]
-    WF --> P[Existing simulated measurement providers]
-    P --> ID[Existing electrical and mechanical commissioning]
-    ID --> G[Existing measured-data quality gates]
-    G --> SUP[Optional existing bounded supervisor]
+    WF --> P[Simulated measurement providers]
+    P --> ID[Electrical and mechanical commissioning]
+    ID --> G[Measured-data quality gates]
+    G --> SUP[Optional bounded supervisor]
     SUP --> P
     G --> R[EngineeringWorkflowResult]
     R -->|Accepted only| OP[M14 and M16]
-    R -->|Accepted only| SIM[Existing speed FOC and M17 simulation]
+    R -->|Accepted only| SIM[Speed FOC and M17 simulation]
     R -->|Accepted only| FW[M18 config builder and C exporter]
     OP --> OUT[Typed analysis and trace results]
     SIM --> OUT
@@ -59,7 +58,7 @@ Trace arrays and their mapping are read-only. Existing nested diagnostic objects
 retain their original backend types; this is not a new serialization schema for
 the research estimators. Bundle JSON has schema `pmsm-engineering-run-v1`.
 
-## Real backend calls
+## Backend APIs
 
 | Stage | Existing API used |
 | --- | --- |
@@ -102,7 +101,7 @@ On acceptance, identification quality and operating feasibility remain separate.
 A voltage-infeasible target can retain accepted commissioning and an available
 motor configuration while M14/M16/control validation report their adverse
 outcomes. A downstream numerical/configuration failure produces an unavailable
-section and warning, not a fabricated result or changed identification gate.
+section and warning, while leaving the identification decision intact.
 
 ## Prediction versus evaluation
 
@@ -110,13 +109,13 @@ M14/M16 use the identified model. M16 includes its quasi-steady estimate and
 controller-aware ideal-model prediction. Its quasi-steady time is **not a
 universal physical minimum**. M16 uses constant load from time zero; the actual
 validation uses the configured load step. M17 operation errors affect the
-actual validation, not a secretly modified M16 predictor. The dashboard exposes
+actual validation, with the M16 predictor evaluated separately. The dashboard exposes
 these assumptions and preserves all returned reason strings.
 
 Actual current/torque/bus truth, percentage errors and true-frame metrics appear
 under **Simulation evaluation / ground truth**. Terminal voltage after M17
 errors is distinct from the controller's nominal-bus limited command. The
-unchanged anti-windup does not receive an extra hidden terminal correction.
+unchanged anti-windup does not receive an additional terminal-voltage correction.
 
 ## Reproduction and deployment boundary
 

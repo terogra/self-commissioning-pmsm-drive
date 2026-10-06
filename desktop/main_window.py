@@ -1,4 +1,4 @@
-"""Native engineering workbench. All decisions and numbers come from the backend."""
+"""Qt workbench for drive settings, commissioning results and exports."""
 
 import json
 import logging

@@ -1,4 +1,4 @@
-"""Reproducible JSON/CSV/header/figure bundles for the real workflow."""
+"""Export workflow results as JSON, CSV, figures and C configuration."""
 
 import csv
 from dataclasses import fields, is_dataclass

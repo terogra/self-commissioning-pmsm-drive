@@ -1,4 +1,4 @@
-"""Engineering figures from computed records; no estimator or tuning equations."""
+"""Plot measurement fits and simulated control responses."""
 
 import numpy as np
 from matplotlib.figure import Figure

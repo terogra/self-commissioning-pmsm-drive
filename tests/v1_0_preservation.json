@@ -2,26 +2,34 @@
   "baseline": "d3ae7f3ef62a814b5bc7a93ea737c73af1b819da",
   "files": {
     "docs/adaptive_commissioning_protocol.md": {
-      "sha256": "c5b95aea8a93da2b820d4d61b8f13f9067691138cc8a524c0a9c49657eae6b3a",
-      "binary": false
+      "sha256": "b8684ec34fe0e21f6443582af7833bcb0241a6e7f59f760075522d97e075e02d",
+      "binary": false,
+      "baseline_sha256": "c5b95aea8a93da2b820d4d61b8f13f9067691138cc8a524c0a9c49657eae6b3a",
+      "presentation_note": "Editorial changes to prose or module docstrings; equations, executable logic and recorded numerical results are unchanged."
     },
     "docs/architecture.md": {
-      "sha256": "9955e8d7727d6f1ae3174d2d20eceb781b6671d71dd73185f6c6bc9e5575e9a8",
-      "binary": false
+      "sha256": "8d9943c54f374354205ee54ec336a19c6ff719db7cbcacf4930388896a15ae0d",
+      "binary": false,
+      "baseline_sha256": "9955e8d7727d6f1ae3174d2d20eceb781b6671d71dd73185f6c6bc9e5575e9a8",
+      "presentation_note": "Editorial changes to prose or module docstrings; equations, executable logic and recorded numerical results are unchanged."
     },
     "docs/dynamic_feasibility_protocol.md": {
-      "sha256": "5168669a9fd62d92929801b793377bde7312a34c9444be0db099ee435539ff22",
-      "binary": false
+      "sha256": "aed20593b1d57a105eab5f10bba96e7e1a2ab7aeeb2c28a9edcf77f6e82232b6",
+      "binary": false,
+      "baseline_sha256": "5168669a9fd62d92929801b793377bde7312a34c9444be0db099ee435539ff22",
+      "presentation_note": "Editorial changes to prose or module docstrings; equations, executable logic and recorded numerical results are unchanged."
     },
     "docs/engineering_log.md": {
-      "sha256": "1ad19b2a42f914fcc8f99a1799fd8364b66c6975a5b111d08e7a981771690669",
+      "sha256": "b411d9c7925a9cbc3dc3dac9730b194d270000440896c2310cebeac7dba6a7a3",
       "binary": false,
       "baseline_sha256": "c04aec611c2016339d27ad13281e84a0194c595299e223acf8ece3fc926f6d74",
-      "presentation_note": "Removed development branch-name references only; baseline commit, engineering decisions, numerical results and limitations are retained."
+      "presentation_note": "Editorial changes to prose or module docstrings; equations, executable logic and recorded numerical results are unchanged."
     },
     "docs/firmware_core_protocol.md": {
-      "sha256": "96d7bd468a59cc7bc0b9bcd8488693b8e7db000e49c78c330e5635fa6cf59ea0",
-      "binary": false
+      "sha256": "c0710e398136cf1485a4d84b5962717942408d1532b338a8ca695ed04cd0f85e",
+      "binary": false,
+      "baseline_sha256": "96d7bd468a59cc7bc0b9bcd8488693b8e7db000e49c78c330e5635fa6cf59ea0",
+      "presentation_note": "Editorial changes to prose or module docstrings; equations, executable logic and recorded numerical results are unchanged."
     },
     "docs/images/v1_dashboard_accepted.png": {
       "sha256": "4ad5cb1c4b741fa685ee0513401232bbafab7b9ff14cf485d2b0d39067124d4b",
@@ -32,26 +40,34 @@
       "binary": true
     },
     "docs/mechanical_policy_freeze.md": {
-      "sha256": "edb89e889b4e21b5bd39dab926eb22f62284bc0dace01f96b6c1beffdd7e65c7",
-      "binary": false
+      "sha256": "15d5af5acbb7bd9aa001db60d3a7ea9283bdd30f1f2aa418bbaf16f9b21c666a",
+      "binary": false,
+      "baseline_sha256": "edb89e889b4e21b5bd39dab926eb22f62284bc0dace01f96b6c1beffdd7e65c7",
+      "presentation_note": "Editorial changes to prose or module docstrings; equations, executable logic and recorded numerical results are unchanged."
     },
     "docs/nonideality_robustness_protocol.md": {
-      "sha256": "40b76a2e8a0c9229bd5c7ce1a23135b2fdd00be3e1f4636250f8a2c6ac448be6",
-      "binary": false
+      "sha256": "1f818dc6f12b7a01a203c61ae22e0ca637f5974a6b03a899916f5b328843c96e",
+      "binary": false,
+      "baseline_sha256": "40b76a2e8a0c9229bd5c7ce1a23135b2fdd00be3e1f4636250f8a2c6ac448be6",
+      "presentation_note": "Editorial changes to prose or module docstrings; equations, executable logic and recorded numerical results are unchanged."
     },
     "docs/operating_feasibility_protocol.md": {
-      "sha256": "830d5bb6ba474c2185ecb913a7a99061e622157c1d80878349cdfafc60dc3543",
-      "binary": false
+      "sha256": "bc91f31e2d4c3a13f78e325e0a3b03d9b64048c2f5dbc8c225ee7c3a16a50043",
+      "binary": false,
+      "baseline_sha256": "830d5bb6ba474c2185ecb913a7a99061e622157c1d80878349cdfafc60dc3543",
+      "presentation_note": "Editorial changes to prose or module docstrings; equations, executable logic and recorded numerical results are unchanged."
     },
     "docs/quality_policy_freeze.md": {
-      "sha256": "8dd1fef001a84dd91f71a57f011320be69f47cf689171ad8d91ad4e7dd6dd29a",
-      "binary": false
+      "sha256": "d44ea7a73623d080b4481c3668279c7f6c033887c429e6354871309a5ddee34b",
+      "binary": false,
+      "baseline_sha256": "8dd1fef001a84dd91f71a57f011320be69f47cf689171ad8d91ad4e7dd6dd29a",
+      "presentation_note": "Editorial changes to prose or module docstrings; equations, executable logic and recorded numerical results are unchanged."
     },
     "docs/v1_validation.md": {
-      "sha256": "d8158524c7ad7cd398a12cb7165e5fde2b31d9c408917675b4486c6a220feebf",
+      "sha256": "adc7cde29af2e46e2a13f90d27c5eb159fc19e7fc5cd45b7580b265648ce3fbc",
       "binary": false,
       "baseline_sha256": "ac46952fb21575978c8dee3cbb3daa8a5722bbcef6dac942329d7581fd9c676d",
-      "presentation_note": "Removed development branch-name references only; baseline commit, engineering decisions, numerical results and limitations are retained."
+      "presentation_note": "Editorial changes to prose or module docstrings; equations, executable logic and recorded numerical results are unchanged."
     },
     "experiments/__init__.py": {
       "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
@@ -118,8 +134,10 @@
       "binary": false
     },
     "experiments/v1_demo.py": {
-      "sha256": "1bc39f306f4db0717517ce1ae50b09c71315bc49c3ac327cb3dab3f941a1b9c8",
-      "binary": false
+      "sha256": "9220a3638c74b10e1d5ff49760dc435b71734ef88939e4a6697a623d4998d8db",
+      "binary": false,
+      "baseline_sha256": "1bc39f306f4db0717517ce1ae50b09c71315bc49c3ac327cb3dab3f941a1b9c8",
+      "presentation_note": "Editorial changes to prose or module docstrings; equations, executable logic and recorded numerical results are unchanged."
     },
     "experiments/voltage_saturation_mismatch.py": {
       "sha256": "c7613bd1c3209702928669186b5deaba1f0f1735e1ab9807761505c15c2217b2",
@@ -142,8 +160,10 @@
       "binary": false
     },
     "firmware/parity.py": {
-      "sha256": "d9c44ec5ac0a1b78f27487223041049b6f47fc1cb4b852c1417f129403e9f0dc",
-      "binary": false
+      "sha256": "f85ebc60de120efdedd30d4205a4742003b494dfc155058ab9d6bf367d001e5b",
+      "binary": false,
+      "baseline_sha256": "d9c44ec5ac0a1b78f27487223041049b6f47fc1cb4b852c1417f129403e9f0dc",
+      "presentation_note": "Editorial changes to prose or module docstrings; equations, executable logic and recorded numerical results are unchanged."
     },
     "firmware/src/pmsm_control.c": {
       "sha256": "981ff013d62d972d4daa8d5ea4121d4ea5147f05f474f1c4a5acbb60f12db4bd",
@@ -222,20 +242,28 @@
       "binary": false
     },
     "src/engineering_bundle.py": {
-      "sha256": "c139c304c2a6d9525dfedceed8c3a79ca487bd8db1a5be7eaaca9f70383341c1",
-      "binary": false
+      "sha256": "7ed7eeb8e8d5e67699985d8e03ed926c52280dad221c1d626ce3382237c0f155",
+      "binary": false,
+      "baseline_sha256": "c139c304c2a6d9525dfedceed8c3a79ca487bd8db1a5be7eaaca9f70383341c1",
+      "presentation_note": "Editorial changes to prose or module docstrings; equations, executable logic and recorded numerical results are unchanged."
     },
     "src/engineering_reporting.py": {
-      "sha256": "b9251dfea738d6c266fed523ed111f5a8c8a06318d012549d7740d00220aea95",
-      "binary": false
+      "sha256": "2b59b3433d23f4228cd093f2f2cfb79b8f0662d0d32232e32b38887806e6eef3",
+      "binary": false,
+      "baseline_sha256": "b9251dfea738d6c266fed523ed111f5a8c8a06318d012549d7740d00220aea95",
+      "presentation_note": "Editorial changes to prose or module docstrings; equations, executable logic and recorded numerical results are unchanged."
     },
     "src/engineering_workflow.py": {
-      "sha256": "b507caae9d2669ef3038214976030f261a65a637c234d23056fd7b42dfb94216",
-      "binary": false
+      "sha256": "c2185a7b9e2417d25250b3268c7892b27cab9a382455e5195305e85ca9526b3c",
+      "binary": false,
+      "baseline_sha256": "b507caae9d2669ef3038214976030f261a65a637c234d23056fd7b42dfb94216",
+      "presentation_note": "Editorial changes to prose or module docstrings; equations, executable logic and recorded numerical results are unchanged."
     },
     "src/firmware_config.py": {
-      "sha256": "f2d3f0caa8d3962f0b7237b43b2bb45c29ded5de03795ecc13dd48728431d303",
-      "binary": false
+      "sha256": "08a4376a582c1a805d2eff285ce2eda32373da76de9526981868995e8cac60b6",
+      "binary": false,
+      "baseline_sha256": "f2d3f0caa8d3962f0b7237b43b2bb45c29ded5de03795ecc13dd48728431d303",
+      "presentation_note": "Editorial changes to prose or module docstrings; equations, executable logic and recorded numerical results are unchanged."
     },
     "src/foc.py": {
       "sha256": "57b2b0f5387212254fbee2895392808b7bf155abe7fd9304cc4f65e0359810a9",
@@ -298,8 +326,10 @@
       "binary": false
     },
     "README.v1.0.md": {
-      "sha256": "52226a4be9d1ec4b7b98823c98a7d852a4775c098e700b494d8923fb28e6a1a4",
-      "binary": false
+      "sha256": "855ed99d6f016525a8b7d9e08f733e69c79834bb8872ec2475cdbe58b7b2143c",
+      "binary": false,
+      "baseline_sha256": "52226a4be9d1ec4b7b98823c98a7d852a4775c098e700b494d8923fb28e6a1a4",
+      "presentation_note": "Editorial changes to prose or module docstrings; equations, executable logic and recorded numerical results are unchanged."
     }
   }
 }

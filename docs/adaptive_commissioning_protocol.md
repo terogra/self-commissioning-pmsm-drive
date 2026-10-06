@@ -1,4 +1,4 @@
-# Bounded adaptive commissioning: frozen protocol
+# Adaptive commissioning protocol
 
 This protocol defines the retry decisions and finite evaluation design for milestone 15. The existing electrical `QualityPolicy` and mechanical `MechanicalQualityPolicy` are unchanged. Retry bounds are simulation design settings, not hardware safety ratings. The supervisor sees sampled measurements, quality checks, prior controller assumptions, excitation metadata, and an optional operating request. Plant truth and closed-loop outcomes remain in the evaluation layer.
 

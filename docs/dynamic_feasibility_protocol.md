@@ -1,4 +1,4 @@
-# Milestone 16: fixed dynamic-feasibility validation protocol
+# Dynamic feasibility evaluation
 
 ## Method fixed before evaluation
 

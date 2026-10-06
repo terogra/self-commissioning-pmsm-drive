@@ -1,4 +1,4 @@
-# M17 development / held-out characterization protocol
+# Drive nonideality evaluation
 
 This protocol is committed with the models, scenarios, metrics, tests and
 development artifacts **before** held-out evaluation. The freeze commit is
@@ -109,7 +109,7 @@ Rs drift applies only to subsequent operation, even in combined cells. Open-loop
 electrical rigs have no feedback delay; bus sag matters only if their voltage
 commands reach the actual bus circle. Voltage reconstruction errors do not alter
 FOC feedback; during operation they change the logged reconstructed voltage only.
-These inapplicable/ineffective cells are retained, not invented into new dynamics.
+Cases where an effect is inactive remain in the dataset.
 
 Expected rows: **192 development**, **288 held-out** = motors * 16 scenarios *
 2 methods * 3 exposures. These are correlated scenario/exposure rows, **not**
@@ -126,7 +126,7 @@ and rejected-inaccurate/unavailable. Retain stage accepts, estimates, all error
 columns, attempt counts, terminal state/reason and complete adaptive histories.
 
 Only full-accepted results run normal commissioned control. Rejection remains
-explicit `commissioning_unavailable`, not a fabricated zero error or control
+explicit `commissioning_unavailable`, with no assigned zero error or control
 success. Operation exceptions/nonfinite signals are explicit failures. No hidden
 voltage-feasibility filter removes a commissioned case.
 

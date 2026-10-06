@@ -1,9 +1,4 @@
-"""Real simulation/commissioning orchestration, usable without Streamlit.
-
-Truth is confined to measurement/simulation providers and post-hoc evaluation.
-All estimates, gates, retries, gains and metrics use existing M1-M18 APIs.
-Frozen result envelopes are snapshots; trace arrays are exposed read-only.
-"""
+"""Run sampled commissioning, controller retuning and operating analysis."""
 
 from dataclasses import asdict, dataclass, replace
 from datetime import datetime, timezone
