@@ -5,8 +5,8 @@ M1-M18 engineering evidence. It is not a hardware-validation report.
 
 ## Starting state and scope
 
-Fetched/verified main **fe0173120fbc64a5accb05ca474a86892ec569e1** before creating
-`codex/end-to-end-engineering-app-v1`. Baseline: **232 passed in 117.87 s**.
+Fetched/verified main **fe0173120fbc64a5accb05ca474a86892ec569e1** before M19
+application integration. Baseline: **232 passed in 117.87 s**.
 M19 adds orchestration/presentation/tests/docs; no pre-existing functional
 engineering source, threshold, equation, held-out seed or historical result is
 changed. No new population is used to tune the dashboard demonstration.

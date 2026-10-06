@@ -14,8 +14,10 @@
       "binary": false
     },
     "docs/engineering_log.md": {
-      "sha256": "c04aec611c2016339d27ad13281e84a0194c595299e223acf8ece3fc926f6d74",
-      "binary": false
+      "sha256": "1ad19b2a42f914fcc8f99a1799fd8364b66c6975a5b111d08e7a981771690669",
+      "binary": false,
+      "baseline_sha256": "c04aec611c2016339d27ad13281e84a0194c595299e223acf8ece3fc926f6d74",
+      "presentation_note": "Removed development branch-name references only; baseline commit, engineering decisions, numerical results and limitations are retained."
     },
     "docs/firmware_core_protocol.md": {
       "sha256": "96d7bd468a59cc7bc0b9bcd8488693b8e7db000e49c78c330e5635fa6cf59ea0",
@@ -46,8 +48,10 @@
       "binary": false
     },
     "docs/v1_validation.md": {
-      "sha256": "ac46952fb21575978c8dee3cbb3daa8a5722bbcef6dac942329d7581fd9c676d",
-      "binary": false
+      "sha256": "d8158524c7ad7cd398a12cb7165e5fde2b31d9c408917675b4486c6a220feebf",
+      "binary": false,
+      "baseline_sha256": "ac46952fb21575978c8dee3cbb3daa8a5722bbcef6dac942329d7581fd9c676d",
+      "presentation_note": "Removed development branch-name references only; baseline commit, engineering decisions, numerical results and limitations are retained."
     },
     "experiments/__init__.py": {
       "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",

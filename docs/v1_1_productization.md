@@ -2,7 +2,7 @@
 
 ## Baseline and scope
 
-Existing PR #17, branch `codex/v1.1.0-productization`. The native migration starts
+Existing PR #17. The native migration starts
 at `ff20c89238d4b620db8198aadaeedcd76b5ebcae`; baseline **283 passed in 197.59 s**
 on local Python 3.12.5 including native GCC checks. Version 1.1.0 is the released productization baseline. This adds no
 engineering milestone or algorithm.

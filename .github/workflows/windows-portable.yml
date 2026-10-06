@@ -2,7 +2,7 @@ name: Windows native desktop application
 
 on:
   push:
-    branches: [main, codex/v1.1.0-productization]
+    branches: [main]
     tags: ['v1.1.0']
   pull_request:
     branches: [main]
